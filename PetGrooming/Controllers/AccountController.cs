@@ -1,5 +1,4 @@
-﻿using Demo;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PetGrooming.Models;
 
@@ -31,7 +30,7 @@ public class AccountController(DB db, Helper hp) : Controller
 
         if (ModelState.IsValid)
         {
-            TempData["Info"] = "Login successfully.";
+            TempData["Info"] = "Login successfully.";   
 
             // (3) Sign in
             hp.SignIn(u!.Email, u.Role, vm.RememberMe);
