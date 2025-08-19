@@ -1,44 +1,131 @@
-﻿@model RegisterVM
-
+﻿@model IEnumerable<Pet>
 @{
-    ViewBag.Title = "Account | Register";
+    ViewData["Title"] = "Dashboard";
 }
 
-<form class="form" method="post" enctype="multipart/form-data">
-    <div asp-validation-summary="ModelOnly"></div>
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1><i class="fas fa-tachometer-alt"></i> Pet Grooming Dashboard</h1>
+    </div>
+</div>
 
-    <label asp-for="Email"></label>
-    <input asp-for="Email" autofocus>
-    <span asp-validation-for="Email"></span>
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">@ViewBag.TotalPets</h4>
+                        <p class="card-text">Total Pets</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-dog fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">@ViewBag.TotalDoctors</h4>
+                        <p class="card-text">Active Doctors</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-user-md fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">@ViewBag.PetsWithDoctors</h4>
+                        <p class="card-text">Assigned Pets</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">@ViewBag.PetsWithoutDoctors</h4>
+                        <p class="card-text">Unassigned Pets</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-times fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <label asp-for="Password"></label>
-    <input asp-for="Password">
-    <span asp-validation-for="Password"></span>
-
-    <label asp-for="Confirm"></label>
-    <input asp-for="Confirm">
-    <span asp-validation-for="Confirm"></span>
-
-    <label asp-for="Name"></label>
-    <input asp-for="Name">
-    <span asp-validation-for="Name"></span>
-
-    <label asp-for="Photo"></label>
-    <label class="upload">
-        <small>Select Photo...</small>
-        <input asp-for="Photo" accept="image/jpeg,image/png" hidden>
-        <img src="/images/photo.jpg">
-    </label>
-    <span asp-validation-for="Photo"></span>
-
-    <section>
-        <button>Register</button>
-        <button type="reset">Reset</button>
-    </section>
-</form>
-
-@section foot {
-    <script>
-        $.validator.setDefaults({ ignore: '' });
-    </script>
-}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-clock"></i> Recent Pets</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Pet Name</th>
+                                    <th>Species</th>
+                                    <th>Owner</th>
+                                    <th>Assigned Doctor</th>
+                                    <th>Created Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var pet in Model)
+                                {
+                                    <tr>
+                                        <td>@pet.Name</td>
+                                        <td>@pet.Species</td>
+                                        <td>@pet.OwnerName</td>
+                                        <td>
+                                            @if (pet.Doctor != null)
+                                            {
+                                                <span class="badge bg-success">@pet.Doctor.Name</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning">Not Assigned</span>
+                                            }
+                                        </td>
+                                        <td>@pet.CreatedDate.ToString("MMM dd, yyyy")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">No pets registered yet.</p>
+                }
+                <div class="mt-3">
+                    <a asp-controller="Pets" asp-action="Index" class="btn btn-primary">
+                        <i class="fas fa-list"></i> View All Pets
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

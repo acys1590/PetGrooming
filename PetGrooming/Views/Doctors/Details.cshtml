@@ -1,0 +1,86 @@
+﻿<!-- Views/Doctors/Details.cshtml -->
+@model Doctor
+@{
+    ViewData["Title"] = "Doctor Details";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <h1><i class="fas fa-user-md"></i> Doctor Details</h1>
+        
+        <div class="card">
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Name:</dt>
+                    <dd class="col-sm-9">@Model.Name</dd>
+                    
+                    <dt class="col-sm-3">Specialization:</dt>
+                    <dd class="col-sm-9">@Model.Specialization</dd>
+                    
+                    <dt class="col-sm-3">Phone:</dt>
+                    <dd class="col-sm-9">@Model.Phone</dd>
+                    
+                    <dt class="col-sm-3">Email:</dt>
+                    <dd class="col-sm-9">@Model.Email</dd>
+                    
+                    <dt class="col-sm-3">Address:</dt>
+                    <dd class="col-sm-9">@Model.Address</dd>
+                    
+                    <dt class="col-sm-3">Join Date:</dt>
+                    <dd class="col-sm-9">@Model.JoinDate.ToString("MMMM dd, yyyy")</dd>
+                    
+                    <dt class="col-sm-3">Status:</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.IsActive)
+                        {
+                            <span class="badge bg-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Inactive</span>
+                        }
+                    </dd>
+                    
+                    <dt class="col-sm-3">Notes:</dt>
+                    <dd class="col-sm-9">@Model.Notes</dd>
+                </dl>
+                
+                <div class="mt-4">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-dog"></i> Assigned Pets (@Model.Pets.Count())</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Pets.Any())
+                {
+                    <div class="list-group">
+                        @foreach (var pet in Model.Pets)
+                        {
+                            <div class="list-group-item">
+                                <strong>@pet.Name</strong>
+                                <small class="text-muted d-block">@pet.Species - @pet.OwnerName</small>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">No pets assigned yet.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

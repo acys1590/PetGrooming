@@ -1,26 +1,34 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using PetGrooming.Models;
+using Microsoft.EntityFrameworkCore;
+using PetGroomingSystem.Data;
+using PetGroomingSystem.Models;
+using System.Diagnostics;
 
-namespace PetGrooming.Controllers
+namespace PetGroomingSystem.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
-        }
+            ViewBag.TotalPets = await _context.Pets.CountAsync();
+            ViewBag.TotalDoctors = await _context.Doctors.CountAsync(d => d.IsActive);
+            ViewBag.PetsWithDoctors = await _context.Pets.CountAsync(p => p.DoctorId != null);
+            ViewBag.PetsWithoutDoctors = await _context.Pets.CountAsync(p => p.DoctorId == null);
 
-        public IActionResult Privacy()
-        {
-            return View();
+            var recentPets = await _context.Pets
+                .Include(p => p.Doctor)
+                .OrderByDescending(p => p.CreatedDate)
+                .Take(5)
+                .ToListAsync();
+
+            return View(recentPets);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -29,4 +37,12 @@ namespace PetGrooming.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
+
+    public class ErrorViewModel
+    {
+        public string RequestId { get; set; } = string.Empty;
+        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+    }
+
 }
+
