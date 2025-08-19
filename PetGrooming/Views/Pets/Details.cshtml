@@ -1,0 +1,82 @@
+﻿@model Pet
+@{
+    ViewData["Title"] = "Pet Details";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <h1><i class="fas fa-dog"></i> Pet Details</h1>
+
+        <div class="card">
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Name:</dt>
+                    <dd class="col-sm-9">@Model.Name</dd>
+
+                    <dt class="col-sm-3">Species:</dt>
+                    <dd class="col-sm-9">@Model.Species</dd>
+
+                    <dt class="col-sm-3">Breed:</dt>
+                    <dd class="col-sm-9">@Model.Breed</dd>
+
+                    <dt class="col-sm-3">Age:</dt>
+                    <dd class="col-sm-9">@Model.Age years</dd>
+
+                    <dt class="col-sm-3">Gender:</dt>
+                    <dd class="col-sm-9">@Model.Gender</dd>
+
+                    <dt class="col-sm-3">Owner:</dt>
+                    <dd class="col-sm-9">@Model.OwnerName</dd>
+
+                    <dt class="col-sm-3">Phone:</dt>
+                    <dd class="col-sm-9">@Model.OwnerPhone</dd>
+
+                    <dt class="col-sm-3">Email:</dt>
+                    <dd class="col-sm-9">@Model.OwnerEmail</dd>
+
+                    <dt class="col-sm-3">Assigned Doctor:</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.Doctor != null)
+                        {
+                            <span class="badge bg-success">@Model.Doctor.Name</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning">Not Assigned</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">Created Date:</dt>
+                    <dd class="col-sm-9">@Model.CreatedDate.ToString("MMMM dd, yyyy")</dd>
+
+                    <dt class="col-sm-3">Last Grooming:</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.LastGroomingDate.HasValue)
+                        {
+                            @Model.LastGroomingDate.Value.ToString("MMMM dd, yyyy")
+                        }
+                        else
+                        {
+                            <span class="text-muted">Not groomed yet</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">Notes:</dt>
+                    <dd class="col-sm-9">@Model.Notes</dd>
+                </dl>
+
+                <div class="mt-4">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a asp-action="AssignDoctor" asp-route-id="@Model.Id" class="btn btn-success">
+                        <i class="fas fa-user-md"></i> Assign Doctor
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

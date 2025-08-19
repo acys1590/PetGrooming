@@ -1,0 +1,127 @@
+﻿@model PetViewModel
+@{
+    ViewData["Title"] = "Edit Pet";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <h1><i class="fas fa-edit"></i> Edit Pet</h1>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Pet.Id" />
+                    <input type="hidden" asp-for="Pet.CreatedDate" />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Pet.Name" class="form-label">Pet Name</label>
+                                <input asp-for="Pet.Name" class="form-control" />
+                                <span asp-validation-for="Pet.Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Pet.Species" class="form-label">Species</label>
+                                <select asp-for="Pet.Species" class="form-select">
+                                    <option value="">Select Species</option>
+                                    <option value="Dog">Dog</option>
+                                    <option value="Cat">Cat</option>
+                                    <option value="Bird">Bird</option>
+                                    <option value="Rabbit">Rabbit</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span asp-validation-for="Pet.Species" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Pet.Breed" class="form-label">Breed</label>
+                                <input asp-for="Pet.Breed" class="form-control" />
+                                <span asp-validation-for="Pet.Breed" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label asp-for="Pet.Age" class="form-label">Age (years)</label>
+                                <input asp-for="Pet.Age" class="form-control" type="number" min="0" max="30" />
+                                <span asp-validation-for="Pet.Age" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label asp-for="Pet.Gender" class="form-label">Gender</label>
+                                <select asp-for="Pet.Gender" class="form-select">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                                <span asp-validation-for="Pet.Gender" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+                    <h5><i class="fas fa-user"></i> Owner Information</h5>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Pet.OwnerName" class="form-label">Owner Name</label>
+                                <input asp-for="Pet.OwnerName" class="form-control" />
+                                <span asp-validation-for="Pet.OwnerName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Pet.OwnerPhone" class="form-label">Phone Number</label>
+                                <input asp-for="Pet.OwnerPhone" class="form-control" />
+                                <span asp-validation-for="Pet.OwnerPhone" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Pet.OwnerEmail" class="form-label">Email Address</label>
+                        <input asp-for="Pet.OwnerEmail" class="form-control" type="email" />
+                        <span asp-validation-for="Pet.OwnerEmail" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Pet.DoctorId" class="form-label">Assign Doctor</label>
+                        <select asp-for="Pet.DoctorId" asp-items="Model.Doctors" class="form-select">
+                            <option value="">Select Doctor</option>
+                        </select>
+                        <span asp-validation-for="Pet.DoctorId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Pet.Notes" class="form-label">Notes</label>
+                        <textarea asp-for="Pet.Notes" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Pet.Notes" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Update Pet
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to List
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,4 +1,86 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿$(document).ready(function () {
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function () {
+        $('.alert').fadeOut('slow');
+    }, 5000);
 
-// Write your JavaScript code.
+    // Confirm delete actions
+    $('a[href*="Delete"]').click(function (e) {
+        if (!confirm('Are you sure you want to delete this item?')) {
+            e.preventDefault();
+        }
+    });
+
+    // Form validation enhancements
+    $('form').submit(function () {
+        $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+    });
+
+    // Phone number formatting
+    $('input[type="tel"], input[name*="Phone"]').on('input', function () {
+        var value = this.value.replace(/\D/g, '');
+        var formattedValue = value.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+        if (formattedValue.length <= 12) {
+            this.value = formattedValue;
+        }
+    });
+
+    // Species-specific breed suggestions
+    $('#Pet_Species').change(function () {
+        var species = $(this).val();
+        var breedInput = $('#Pet_Breed');
+
+        // Clear current value
+        breedInput.val('');
+
+        // Add placeholder based on species
+        switch (species) {
+            case 'Dog':
+                breedInput.attr('placeholder', 'e.g., Golden Retriever, Labrador, German Shepherd');
+                break;
+            case 'Cat':
+                breedInput.attr('placeholder', 'e.g., Persian, Siamese, Maine Coon');
+                break;
+            case 'Bird':
+                breedInput.attr('placeholder', 'e.g., Parrot, Canary, Cockatiel');
+                break;
+            case 'Rabbit':
+                breedInput.attr('placeholder', 'e.g., Holland Lop, Netherland Dwarf');
+                break;
+            default:
+                breedInput.attr('placeholder', 'Enter breed');
+        }
+    });
+});
+
+// Utility functions
+function formatDate(dateString) {
+    var date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+}
+
+function showNotification(message, type = 'info') {
+    var alertClass = 'alert-' + type;
+    var iconClass = type === 'success' ? 'fa-check-circle' :
+        type === 'danger' ? 'fa-exclamation-circle' :
+            'fa-info-circle';
+
+    var alert = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            <i class="fas ${iconClass}"></i> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+
+    $('.container > main').prepend(alert);
+
+    // Auto-hide after 5 seconds
+    setTimeout(function () {
+        $('.alert').first().fadeOut('slow', function () {
+            $(this).remove();
+        });
+    }, 5000);
