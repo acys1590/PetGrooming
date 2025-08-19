@@ -52,6 +52,11 @@ public class Helper : HelperBase
         throw new NotImplementedException();
     }
 
+    internal string HashPassword(object @new)
+    {
+        throw new NotImplementedException();
+    }
+
     internal string RandomPassword()
     {
         throw new NotImplementedException();
@@ -72,7 +77,17 @@ public class Helper : HelperBase
         throw new NotImplementedException();
     }
 
+    internal string ValidatePhoto(object photo)
+    {
+        throw new NotImplementedException();
+    }
+
     internal bool VerifyPassword(string hash, string current)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal bool VerifyPassword(string hash, object current)
     {
         throw new NotImplementedException();
     }
