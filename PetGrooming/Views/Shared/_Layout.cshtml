@@ -71,6 +71,9 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- 支持两种脚本区域：Scripts 和 foot -->
     @await RenderSectionAsync("Scripts", required: false)
+    @await RenderSectionAsync("foot", required: false)
 </body>
 </html>

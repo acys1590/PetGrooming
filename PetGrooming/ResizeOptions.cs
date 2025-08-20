@@ -2,7 +2,7 @@
 {
     internal class ResizeOptions
     {
-        public object Size { get; set; }
-        public object Mode { get; set; }
+        public required object Size { get; set; }
+        public required object Mode { get; set; }
     }
 }

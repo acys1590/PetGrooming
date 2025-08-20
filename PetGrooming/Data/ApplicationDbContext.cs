@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PetGroomingSystem.Models;
+using PetGrooming;
+using PetGrooming.Models;
+using PetGroomingSystem.Models; // 根据你 User / Member 的命名空间来调整
 
 namespace PetGroomingSystem.Data
 {
@@ -13,6 +15,10 @@ namespace PetGroomingSystem.Data
         public DbSet<Pet> Pets { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
 
+        // ✅ 用 DbSet，而不是 object
+        public DbSet<User> Users { get; set; }
+        public DbSet<Member> Members { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -23,7 +29,6 @@ namespace PetGroomingSystem.Data
                 entity.HasKey(p => p.Id);
                 entity.Property(p => p.CreatedDate).HasDefaultValueSql("GETDATE()");
 
-                // Configure relationship
                 entity.HasOne(p => p.Doctor)
                       .WithMany(d => d.Pets)
                       .HasForeignKey(p => p.DoctorId)
@@ -38,7 +43,18 @@ namespace PetGroomingSystem.Data
                 entity.Property(d => d.IsActive).HasDefaultValue(true);
             });
 
-            // Seed initial data
+            // ✅ 给 User 指定主键（因为你类里没有 Id）
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasKey(u => u.Email);
+            });
+
+            // ✅ 给 Member 指定主键（同样道理）
+            modelBuilder.Entity<Member>(entity =>
+            {
+                entity.HasKey(m => m.Email);
+            });
+
             SeedData(modelBuilder);
         }
 
@@ -72,6 +88,4 @@ namespace PetGroomingSystem.Data
             );
         }
     }
-
 }
-

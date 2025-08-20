@@ -91,4 +91,9 @@ public class Helper : HelperBase
     {
         throw new NotImplementedException();
     }
+
+    internal bool VerifyPassword(object hash, string password)
+    {
+        throw new NotImplementedException();
+    }
 }

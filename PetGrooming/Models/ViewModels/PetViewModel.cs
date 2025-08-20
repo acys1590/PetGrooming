@@ -6,8 +6,8 @@ namespace PetGroomingSystem.Models.ViewModels
 {
     public class PetViewModel
     {
-        public Pet Pet { get; set; }
-        public SelectList Doctors { get; set; }
+        public required Pet Pet { get; set; }
+        public required SelectList Doctors { get; set; }
     }
 
     public class AssignDoctorViewModel
@@ -17,7 +17,7 @@ namespace PetGroomingSystem.Models.ViewModels
         [Required]
         public int DoctorId { get; set; }
 
-        public string PetName { get; set; }
-        public SelectList Doctors { get; set; }
+        public required string PetName { get; set; }
+        public required SelectList Doctors { get; set; }
     }
 }

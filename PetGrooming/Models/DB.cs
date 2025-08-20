@@ -4,9 +4,8 @@ using PetGroomingSystem.Models;
 
 namespace PetGrooming.Models;
 
-public class DB : DbContext
+public class DB(DbContextOptions<DB> options) : DbContext(options)
 {
-    public DB(DbContextOptions<DB> options) : base(options) { }
 
     // 定义数据表
     public DbSet<User> Users { get; set; } = null!;

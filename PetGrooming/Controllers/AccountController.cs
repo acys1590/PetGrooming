@@ -1,13 +1,21 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PetGrooming.Models;
+using PetGrooming.Models.ViewModels;
+using PetGroomingSystem.Data;
 
 namespace PetGrooming.Controllers;
-
-public class AccountController(DB db, Helper hp) : Controller
+public class AccountsController : Controller
 {
-    private readonly DB db = db;
-    private readonly Helper hp = hp;
+    private readonly ApplicationDbContext db;
+    private readonly Helper hp;
+
+    public AccountsController(ApplicationDbContext db, Helper hp)
+
+    {
+        this.db = db;
+        this.hp = hp;
+    }
 
     // GET: Account/Login
     public IActionResult Login()
@@ -30,7 +38,7 @@ public class AccountController(DB db, Helper hp) : Controller
 
         if (ModelState.IsValid)
         {
-            TempData["Info"] = "Login successfully.";   
+            TempData["Info"] = "Login successfully.";
 
             // (3) Sign in
             hp.SignIn(u!.Email, u.Role, vm.RememberMe);
