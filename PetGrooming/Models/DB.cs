@@ -10,8 +10,5 @@ public class DB : DbContext
 
     }
 
-public class Member : User
-{
-    [MaxLength(100)]
-    public string PhotoURL { get; set; }
+
 }
