@@ -12,7 +12,7 @@ using PetGroomingSystem.Models;
 namespace PetGrooming.Migrations
 {
     [DbContext(typeof(DB))]
-    [Migration("20250822035232_DbCreate")]
+    [Migration("20250822101647_DbCreate")]
     partial class DbCreate
     {
         /// <inheritdoc />

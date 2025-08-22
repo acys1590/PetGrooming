@@ -8,9 +8,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Add Entity Framework - Note the class name is now 'DB'
-builder.Services.AddDbContext<DB>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddSqlServer<DB>($@"
+ Data Source=(LocalDB)\MSSQLLocalDB;
+ AttachDbFilename={builder.Environment.ContentRootPath}\Db.mdf;
+");
+
+//// Add Entity Framework - Note the class name is now 'DB'
+//builder.Services.AddDbContext<DB>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // 注册 HttpContextAccessor（给 Helper 用）
 builder.Services.AddHttpContextAccessor();
