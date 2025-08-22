@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using PetGroomingSystem.Data;
+
 using PetGroomingSystem.Models;
 using PetGroomingSystem.Models.ViewModels;
 
@@ -9,9 +9,9 @@ namespace PetGroomingSystem.Controllers
 {
     public class PetsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DB _context;
 
-        public PetsController(ApplicationDbContext context)
+        public PetsController(DB context)
         {
             _context = context;
         }

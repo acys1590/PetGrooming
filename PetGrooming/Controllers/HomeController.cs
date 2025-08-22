@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PetGroomingSystem.Data;
+using PetGroomingSystem.Models;
 using System.Diagnostics;
 
 namespace PetGroomingSystem.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DB _context;
 
-        public HomeController(ApplicationDbContext context)
+        public HomeController(DB context)
         {
             _context = context;
         }

@@ -1,13 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace PetGrooming.Models
-{
-    public class User
-    {
-        [Key]
-        public string Email { get; set; } = string.Empty;
-
-        public string Hash { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty;
-    }
-}
+﻿//namespace PetGrooming.Models
+//{
+//    public class User
+//    {
+//        public string Hash { get; internal set; }
+//        public string Email { get; internal set; }
+//        public string Role { get; internal set; }
+//    }
+//}

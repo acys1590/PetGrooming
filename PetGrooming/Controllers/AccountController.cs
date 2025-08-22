@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PetGrooming.Models;
-using PetGrooming.Models.ViewModels;
-using PetGroomingSystem.Data;
+using PetGroomingSystem.Models;
 
 namespace PetGrooming.Controllers;
 public class AccountsController : Controller

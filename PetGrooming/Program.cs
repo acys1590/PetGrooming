@@ -1,14 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PetGrooming;
-using PetGroomingSystem.Data;
+using PetGroomingSystem.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Add Entity Framework
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+// Add Entity Framework - Note the class name is now 'DB'
+builder.Services.AddDbContext<DB>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // 注册 HttpContextAccessor（给 Helper 用）
@@ -49,12 +48,5 @@ app.UseSession();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-// Ensure database is created and migrated
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.EnsureCreated();
-}
 
 app.Run();
