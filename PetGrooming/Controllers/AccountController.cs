@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PetGroomingSystem.Models.ViewModels;
 using PetGroomingSystem.Models;
+
+
 
 namespace PetGrooming.Controllers;
 public class AccountsController : Controller
 {
-    private readonly ApplicationDbContext db;
+    private readonly DB db;
     private readonly Helper hp;
 
-    public AccountsController(ApplicationDbContext db, Helper hp)
+    public AccountsController(DB db, Helper hp)
 
     {
         this.db = db;

@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PetGrooming;
 using PetGroomingSystem.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +25,7 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var context = scope.ServiceProvider.GetRequiredService<DB>();
     context.Database.EnsureCreated();
 }
 

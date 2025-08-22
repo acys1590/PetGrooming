@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
-namespace PetGrooming.Models.ViewModels;
+namespace PetGroomingSystem.Models.ViewModels;
 
 // View Models ----------------------------------------------------------------
 
