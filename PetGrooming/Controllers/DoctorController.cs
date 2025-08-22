@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PetGroomingSystem.Data;
 using PetGroomingSystem.Models;
 
 namespace PetGroomingSystem.Controllers
 {
     public class DoctorsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DB _context;
 
-        public DoctorsController(ApplicationDbContext context)
+        public DoctorsController(DB context)
         {
             _context = context;
         }

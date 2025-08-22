@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PetGrooming.Models;
+using PetGroomingSystem.Models;
 
 namespace PetGrooming.Controllers;
 
