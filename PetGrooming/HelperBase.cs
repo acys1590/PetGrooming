@@ -1,4 +1,4 @@
-﻿namespace PetGrooming
+﻿namespace PetGroomingSystem
 {
     public class HelperBase
     {

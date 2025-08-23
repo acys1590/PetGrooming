@@ -5,41 +5,88 @@
     ViewBag.Title = "Account | Register";
 }
 
-<form class="form" method="post" enctype="multipart/form-data">
-    <div asp-validation-summary="ModelOnly"></div>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body p-4">
+                    <h3 class="text-center mb-4 fw-bold">Create Account</h3>
 
-    <label asp-for="Email"></label>
-    <input asp-for="Email" autofocus>
-    <span asp-validation-for="Email"></span>
+                    <form class="needs-validation" method="post" enctype="multipart/form-data" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <label asp-for="Password"></label>
-    <input asp-for="Password">
-    <span asp-validation-for="Password"></span>
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" placeholder="Enter your email" autofocus />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
 
-    <label asp-for="Confirm"></label>
-    <input asp-for="Confirm">
-    <span asp-validation-for="Confirm"></span>
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control" type="password" placeholder="Enter password" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
 
-    <label asp-for="Name"></label>
-    <input asp-for="Name">
-    <span asp-validation-for="Name"></span>
+                        <!-- Confirm Password -->
+                        <div class="mb-3">
+                            <label asp-for="Confirm" class="form-label"></label>
+                            <input asp-for="Confirm" class="form-control" type="password" placeholder="Confirm password" />
+                            <span asp-validation-for="Confirm" class="text-danger small"></span>
+                        </div>
 
-    <label asp-for="Photo"></label>
-    <label class="upload">
-        <small>Select Photo...</small>
-        <input asp-for="Photo" accept="image/jpeg,image/png" hidden>
-        <img src="/images/photo.jpg">
-    </label>
-    <span asp-validation-for="Photo"></span>
+                        <!-- Name -->
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" placeholder="Your full name" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
 
-    <section>
-        <button>Register</button>
-        <button type="reset">Reset</button>
-    </section>
-</form>
+                        <!-- Photo Upload -->
+                        <div class="mb-3">
+                            <label asp-for="Photo" class="form-label"></label>
+                            <div class="d-flex align-items-center">
+                                <label class="upload-btn me-3">
+                                    <input asp-for="Photo" type="file" accept="image/jpeg,image/png" hidden id="photoInput" />
+                                    <span class="btn btn-outline-primary btn-sm">Choose Photo</span>
+                                </label>
+                                <img id="preview" src="/images/photo.jpg" class="rounded-circle border" width="70" height="70" style="object-fit:cover;" />
+                            </div>
+                            <span asp-validation-for="Photo" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary rounded-pill">Register</button>
+                            <button type="reset" class="btn btn-outline-secondary rounded-pill">Reset</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section foot {
     <script>
         $.validator.setDefaults({ ignore: '' });
+
+        // 预览上传的照片
+        document.getElementById("photoInput").addEventListener("change", function (e) {
+            const [file] = this.files;
+            if (file) {
+                document.getElementById("preview").src = URL.createObjectURL(file);
+            }
+        });
     </script>
+
+    <style>
+        .card {
+            border-radius: 1rem;
+        }
+        .upload-btn input {
+            display: none;
+        }
+    </style>
 }

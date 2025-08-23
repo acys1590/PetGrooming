@@ -5,30 +5,52 @@
     ViewBag.Title = "Account | Login";
 }
 
-<form class="form" method="post">
-    <div asp-validation-summary="ModelOnly"></div>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body p-4">
+                    <h3 class="text-center mb-4 fw-bold">Welcome Back</h3>
 
-    <label asp-for="Email"></label>
-    <input asp-for="Email" autofocus>
-    <span asp-validation-for="Email"></span>
+                    <form class="needs-validation" method="post" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <label asp-for="Password"></label>
-    <input asp-for="Password">
-    <span asp-validation-for="Password"></span>
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" placeholder="Enter your email" autofocus />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
 
-    <br>
-    <label>
-        <input asp-for="RememberMe">Remember Me
-    </label>
-    <br>
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
 
-    <section>
-        <button>Login</button>
-        <button type="reset">Reset</button>
-    </section>
-</form>
+                        <!-- Remember Me -->
+                        <div class="form-check mb-3">
+                            <input asp-for="RememberMe" class="form-check-input" id="rememberMeCheck" />
+                            <label class="form-check-label" for="rememberMeCheck">
+                                Remember Me
+                            </label>
+                        </div>
 
-<p>
-    [ <a href="/Account/Register">Register</a> |
-    <a href="/Account/ResetPassword">Reset Password</a> ]
-</p>
+                        <!-- Buttons -->
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary rounded-pill">Login</button>
+                            <button type="reset" class="btn btn-outline-secondary rounded-pill">Reset</button>
+                        </div>
+                    </form>
+
+                    <!-- Extra Links -->
+                    <div class="text-center mt-4">
+                        <a href="/Account/Register" class="me-2">Create Account</a> |
+                        <a href="/Account/ResetPassword" class="ms-2">Forgot Password?</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

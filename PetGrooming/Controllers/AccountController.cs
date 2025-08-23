@@ -5,234 +5,236 @@ using PetGroomingSystem.Models;
 
 
 
-namespace PetGrooming.Controllers;
-public class AccountsController : Controller
+namespace PetGroomingSystem.Controllers
 {
-    private readonly DB db;
-    private readonly Helper hp;
-
-    public AccountsController(DB db, Helper hp)
-
+    public class AccountsController : Controller
     {
-        this.db = db;
-        this.hp = hp;
-    }
+        private readonly DB db;
+        private readonly Helper hp;
 
-    // GET: Account/Login
-    public IActionResult Login()
-    {
-        return View();
-    }
+        public AccountsController(DB db, Helper hp)
 
-    // POST: Account/Login
-    [HttpPost]
-    public IActionResult Login(LoginVM vm, string? returnURL)
-    {
-        // (1) Get user (admin or member) record based on email (PK)
-        var u = db.Users.Find(vm.Email);
-
-        // (2) Custom validation -> verify password
-        if (u == null || !hp.VerifyPassword(u.Hash, vm.Password))
         {
-            ModelState.AddModelError("", "Login credentials not matched.");
+            this.db = db;
+            this.hp = hp;
         }
 
-        if (ModelState.IsValid)
+        // GET: Account/Login
+        public IActionResult Login()
         {
-            TempData["Info"] = "Login successfully.";
+            return View();
+        }
 
-            // (3) Sign in
-            hp.SignIn(u!.Email, u.Role, vm.RememberMe);
+        // POST: Account/Login
+        [HttpPost]
+        public IActionResult Login(LoginVM vm, string? returnURL)
+        {
+            // (1) Get user (admin or member) record based on email (PK)
+            var u = db.Users.Find(vm.Email);
 
-            // (4) Handle return URL
-            if (string.IsNullOrEmpty(returnURL))
+            // (2) Custom validation -> verify password
+            if (u == null || !hp.VerifyPassword(u.Hash, vm.Password))
             {
-                return RedirectToAction("Index", "Home");
+                ModelState.AddModelError("", "Login credentials not matched.");
             }
-        }
 
-        return View(vm);
-    }
-
-    // GET: Account/Logout
-    public IActionResult Logout(string? returnURL)
-    {
-        TempData["Info"] = "Logout successfully.";
-
-        // Sign out
-        hp.SignOut();
-
-        return RedirectToAction("Index", "Home");
-    }
-
-    // GET: Account/AccessDenied
-    public IActionResult AccessDenied(string? returnURL)
-    {
-        return View();
-    }
-
-
-
-    // ------------------------------------------------------------------------
-    // Others
-    // ------------------------------------------------------------------------
-
-    // GET: Account/CheckEmail
-    public bool CheckEmail(string email)
-    {
-        return !db.Users.Any(u => u.Email == email);
-    }
-
-    // GET: Account/Register
-    public IActionResult Register()
-    {
-        return View();
-    }
-
-    // POST: Account/Register
-    [HttpPost]
-    public IActionResult Register(RegisterVM vm)
-    {
-        // 检查 Email 是否重复
-        if (ModelState.IsValid && db.Users.Any(u => u.Email == vm.Email))
-        {
-            ModelState.AddModelError("Email", "Duplicated Email.");
-        }
-
-        // 检查上传的图片
-        if (ModelState.IsValid && vm.Photo != null)
-        {
-            var err = hp.ValidatePhoto(vm.Photo);
-            if (!string.IsNullOrEmpty(err))
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("Photo", err);
+                TempData["Info"] = "Login successfully.";
+
+                // (3) Sign in
+                hp.SignIn(u!.Email, u.Role, vm.RememberMe);
+
+                // (4) Handle return URL
+                if (string.IsNullOrEmpty(returnURL))
+                {
+                    return RedirectToAction("Index", "Home");
+                }
             }
+
+            return View(vm);
         }
 
-        return View(vm);
-    }
-
-    // GET: Account/UpdatePassword
-    [Authorize]
-    public IActionResult UpdatePassword()
-    {
-        return View();
-    }
-
-    // POST: Account/UpdatePassword
-    [Authorize]
-    [HttpPost]
-    public IActionResult UpdatePassword(UpdatePasswordVM vm)
-    {
-        // Get user (admin or member) record based on email (PK)
-        var u = db.Users.Find(User.Identity!.Name);
-        if (u == null) return RedirectToAction("Index", "Home");
-
-        // If current password not matched
-        if (!hp.VerifyPassword(u.Hash, vm.Current))
+        // GET: Account/Logout
+        public IActionResult Logout(string? returnURL)
         {
-            ModelState.AddModelError("Current", "Current Password not matched.");
+            TempData["Info"] = "Logout successfully.";
+
+            // Sign out
+            hp.SignOut();
+
+            return RedirectToAction("Index", "Home");
         }
 
-        if (ModelState.IsValid)
+        // GET: Account/AccessDenied
+        public IActionResult AccessDenied(string? returnURL)
         {
-            // Update user password (hash)
-            u.Hash = hp.HashPassword(vm.New);
-            db.SaveChanges();
-
-            TempData["Info"] = "Password updated.";
-            return RedirectToAction();
+            return View();
         }
 
-        return View();
-    }
 
-    // GET: Account/UpdateProfile
-    [Authorize(Roles = "Member")]
-    public IActionResult UpdateProfile()
-    {
-        // Get member record based on email (PK)
-        var m = db.Members.Find(User.Identity!.Name);
-        if (m == null) return RedirectToAction("Index", "Home");
 
-        var vm = new UpdateProfileVM
+        // ------------------------------------------------------------------------
+        // Others
+        // ------------------------------------------------------------------------
+
+        // GET: Account/CheckEmail
+        public bool CheckEmail(string email)
         {
-            Email = m.Email,
-            Name = m.Name,
-            PhotoURL = m.PhotoURL,
-        };
-
-        return View(vm);
-    }
-
-    // POST: Account/UpdateProfile
-    [Authorize(Roles = "Member")]
-    [HttpPost]
-    public IActionResult UpdateProfile(UpdateProfileVM vm)
-    {
-        // Get member record based on email (PK)
-        var m = db.Members.Find(User.Identity!.Name);
-        if (m == null) return RedirectToAction("Index", "Home");
-
-        if (vm.Photo != null)
-        {
-            var err = hp.ValidatePhoto(vm.Photo);
-            if (err != "") ModelState.AddModelError("Photo", err);
+            return !db.Users.Any(u => u.Email == email);
         }
 
-        if (ModelState.IsValid)
+        // GET: Account/Register
+        public IActionResult Register()
         {
-            m.Name = vm.Name;
+            return View();
+        }
+
+        // POST: Account/Register
+        [HttpPost]
+        public IActionResult Register(RegisterVM vm)
+        {
+            // 检查 Email 是否重复
+            if (ModelState.IsValid && db.Users.Any(u => u.Email == vm.Email))
+            {
+                ModelState.AddModelError("Email", "Duplicated Email.");
+            }
+
+            // 检查上传的图片
+            if (ModelState.IsValid && vm.Photo != null)
+            {
+                var err = hp.ValidatePhoto(vm.Photo);
+                if (!string.IsNullOrEmpty(err))
+                {
+                    ModelState.AddModelError("Photo", err);
+                }
+            }
+
+            return View(vm);
+        }
+
+        // GET: Account/UpdatePassword
+        [Authorize]
+        public IActionResult UpdatePassword()
+        {
+            return View();
+        }
+
+        // POST: Account/UpdatePassword
+        [Authorize]
+        [HttpPost]
+        public IActionResult UpdatePassword(UpdatePasswordVM vm)
+        {
+            // Get user (admin or member) record based on email (PK)
+            var u = db.Users.Find(User.Identity!.Name);
+            if (u == null) return RedirectToAction("Index", "Home");
+
+            // If current password not matched
+            if (!hp.VerifyPassword(u.Hash, vm.Current))
+            {
+                ModelState.AddModelError("Current", "Current Password not matched.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                // Update user password (hash)
+                u.Hash = hp.HashPassword(vm.New);
+                db.SaveChanges();
+
+                TempData["Info"] = "Password updated.";
+                return RedirectToAction();
+            }
+
+            return View();
+        }
+
+        // GET: Account/UpdateProfile
+        [Authorize(Roles = "Member")]
+        public IActionResult UpdateProfile()
+        {
+            // Get member record based on email (PK)
+            var m = db.Members.Find(User.Identity!.Name);
+            if (m == null) return RedirectToAction("Index", "Home");
+
+            var vm = new UpdateProfileVM
+            {
+                Email = m.Email,
+                Name = m.Name,
+                PhotoURL = m.PhotoURL,
+            };
+
+            return View(vm);
+        }
+
+        // POST: Account/UpdateProfile
+        [Authorize(Roles = "Member")]
+        [HttpPost]
+        public IActionResult UpdateProfile(UpdateProfileVM vm)
+        {
+            // Get member record based on email (PK)
+            var m = db.Members.Find(User.Identity!.Name);
+            if (m == null) return RedirectToAction("Index", "Home");
 
             if (vm.Photo != null)
             {
-                hp.DeletePhoto(m.PhotoURL, "photos");
-                m.PhotoURL = hp.SavePhoto(vm.Photo, "photos");
+                var err = hp.ValidatePhoto(vm.Photo);
+                if (err != "") ModelState.AddModelError("Photo", err);
             }
 
-            db.SaveChanges();
+            if (ModelState.IsValid)
+            {
+                m.Name = vm.Name;
 
-            TempData["Info"] = "Profile updated.";
-            return RedirectToAction();
+                if (vm.Photo != null)
+                {
+                    hp.DeletePhoto(m.PhotoURL, "photos");
+                    m.PhotoURL = hp.SavePhoto(vm.Photo, "photos");
+                }
+
+                db.SaveChanges();
+
+                TempData["Info"] = "Profile updated.";
+                return RedirectToAction();
+            }
+
+            vm.Email = m.Email;
+            vm.PhotoURL = m.PhotoURL;
+            return View(vm);
         }
 
-        vm.Email = m.Email;
-        vm.PhotoURL = m.PhotoURL;
-        return View(vm);
-    }
-
-    // GET: Account/ResetPassword
-    public IActionResult ResetPassword()
-    {
-        return View();
-    }
-
-    // POST: Account/ResetPassword
-    [HttpPost]
-    public IActionResult ResetPassword(ResetPasswordVM vm)
-    {
-        var u = db.Users.Find(vm.Email);
-
-        if (u == null)
+        // GET: Account/ResetPassword
+        public IActionResult ResetPassword()
         {
-            ModelState.AddModelError("Email", "Email not found.");
+            return View();
         }
 
-        if (ModelState.IsValid)
+        // POST: Account/ResetPassword
+        [HttpPost]
+        public IActionResult ResetPassword(ResetPasswordVM vm)
         {
-            // Generate random password
-            string password = hp.RandomPassword();
+            var u = db.Users.Find(vm.Email);
 
-            // Update user (admin or member) record
-            u!.Hash = hp.HashPassword(password);
-            db.SaveChanges();
+            if (u == null)
+            {
+                ModelState.AddModelError("Email", "Email not found.");
+            }
 
-            // TODO: Send reset password email
+            if (ModelState.IsValid)
+            {
+                // Generate random password
+                string password = hp.RandomPassword();
 
-            TempData["Info"] = $"Password reset to <b>{password}</b>.";
-            return RedirectToAction();
+                // Update user (admin or member) record
+                u!.Hash = hp.HashPassword(password);
+                db.SaveChanges();
+
+                // TODO: Send reset password email
+
+                TempData["Info"] = $"Password reset to <b>{password}</b>.";
+                return RedirectToAction();
+            }
+
+            return View();
         }
-
-        return View();
     }
 }

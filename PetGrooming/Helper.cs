@@ -7,7 +7,7 @@ using System.Security.Claims;
 using System.Text.RegularExpressions;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace PetGrooming;
+namespace PetGroomingSystem;
 
 public class Helper : HelperBase
 {
