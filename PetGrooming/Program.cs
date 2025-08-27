@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PetGrooming.Models;
 using PetGroomingSystem;
-using PetGroomingSystem.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);

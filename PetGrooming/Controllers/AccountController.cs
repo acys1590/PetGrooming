@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PetGroomingSystem.Models.ViewModels;
-using PetGroomingSystem.Models;
+using PetGrooming.Models;
 
 
 
@@ -85,6 +85,8 @@ namespace PetGroomingSystem.Controllers
         }
 
         // GET: Account/Register
+        // POST: Account/Register
+        [HttpGet]
         public IActionResult Register()
         {
             return View();
@@ -92,15 +94,23 @@ namespace PetGroomingSystem.Controllers
 
         // POST: Account/Register
         [HttpPost]
-        public IActionResult Register(RegisterVM vm)
+        public IActionResult Register(RegisterVM vm, string? returnURL)
         {
-            // 检查 Email 是否重复
+            // (1) 检查 Email 是否重复
             if (ModelState.IsValid && db.Users.Any(u => u.Email == vm.Email))
             {
                 ModelState.AddModelError("Email", "Duplicated Email.");
             }
 
-            // 检查上传的图片
+            if (db.Members.Any(m => m.Email == vm.Email))
+            {
+                ModelState.AddModelError("Email", "This email is already registered.");
+                return View(vm);
+            }
+
+
+            // (2) 检查上传的图片
+            string? photoUrl = null;
             if (ModelState.IsValid && vm.Photo != null)
             {
                 var err = hp.ValidatePhoto(vm.Photo);
@@ -108,10 +118,41 @@ namespace PetGroomingSystem.Controllers
                 {
                     ModelState.AddModelError("Photo", err);
                 }
+                else
+                {
+                    photoUrl = hp.SavePhoto(vm.Photo, "photos");
+                }
+            }
+
+            // (3) 存数据库
+            if (ModelState.IsValid)
+            {
+                var user = new User
+                {
+                    Email = vm.Email,
+                    Hash = hp.HashPassword(vm.Password),
+                    Role = "Member"
+                };
+
+                var member = new Member
+                {
+                    Email = vm.Email,
+                    Name = vm.Name,
+                    PhotoURL = photoUrl
+                };
+
+                db.Users.Add(user);
+                db.Members.Add(member);
+                db.SaveChanges();
+
+                TempData["Info"] = "Register successfully.";
+                return RedirectToAction("Login");
             }
 
             return View(vm);
         }
+
+
 
         // GET: Account/UpdatePassword
         [Authorize]

@@ -2,10 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
-using System.Drawing;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PetGroomingSystem;
 
@@ -41,59 +39,79 @@ public class Helper : HelperBase
         return "";
     }
 
-
-    internal void DeletePhoto(string photoURL, string v)
+    internal string SavePhoto(IFormFile photo, string folder)
     {
-        throw new NotImplementedException();
+        if (photo == null || photo.Length == 0) return "";
+
+        // 确保目录存在
+        string uploadPath = Path.Combine(en.WebRootPath, folder);
+        if (!Directory.Exists(uploadPath))
+        {
+            Directory.CreateDirectory(uploadPath);
+        }
+
+        // 生成唯一文件名
+        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(photo.FileName);
+        string filePath = Path.Combine(uploadPath, fileName);
+
+        // 保存文件
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            photo.CopyTo(stream);
+        }
+
+        // 返回相对路径，方便存数据库
+        return $"/{folder}/{fileName}";
+    }
+
+    internal void DeletePhoto(string photoURL, string folder)
+    {
+        if (string.IsNullOrEmpty(photoURL)) return;
+
+        string filePath = Path.Combine(en.WebRootPath, folder, Path.GetFileName(photoURL));
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+        }
     }
 
     internal string HashPassword(string password)
     {
-        throw new NotImplementedException();
+        var hasher = new PasswordHasher<string>();
+        return hasher.HashPassword(null, password);
     }
 
-    internal string HashPassword(object @new)
+    internal bool VerifyPassword(string hash, string password)
     {
-        throw new NotImplementedException();
-    }
-
-    internal string RandomPassword()
-    {
-        throw new NotImplementedException();
-    }
-
-    internal string SavePhoto(IFormFile photo, string v)
-    {
-        throw new NotImplementedException();
+        var hasher = new PasswordHasher<string>();
+        var result = hasher.VerifyHashedPassword(null, hash, password);
+        return result == PasswordVerificationResult.Success;
     }
 
     internal void SignIn(string email, string role, bool rememberMe)
     {
-        throw new NotImplementedException();
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, email),
+            new Claim(ClaimTypes.Role, role)
+        };
+
+        var identity = new ClaimsIdentity(claims, "login");
+        var principal = new ClaimsPrincipal(identity);
+
+        ct.HttpContext.SignInAsync(principal, new AuthenticationProperties
+        {
+            IsPersistent = rememberMe
+        }).Wait();
     }
 
     internal void SignOut()
     {
-        throw new NotImplementedException();
+        ct.HttpContext.SignOutAsync().Wait();
     }
 
-    internal string ValidatePhoto(object photo)
+    internal string RandomPassword()
     {
-        throw new NotImplementedException();
-    }
-
-    internal bool VerifyPassword(string hash, string current)
-    {
-        throw new NotImplementedException();
-    }
-
-    internal bool VerifyPassword(string hash, object current)
-    {
-        throw new NotImplementedException();
-    }
-
-    internal bool VerifyPassword(object hash, string password)
-    {
-        throw new NotImplementedException();
+        return Guid.NewGuid().ToString("N").Substring(0, 8);
     }
 }

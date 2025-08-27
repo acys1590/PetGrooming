@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace PetGroomingSystem.Models;
+namespace PetGrooming.Models;
 
 // DbContext class - moved PhotoURL property out of here as it doesn't belong
 public class DB : DbContext
@@ -184,16 +184,13 @@ public class Member
 // User model
 public class User
 {
-    [Key]
-    [EmailAddress]
-    [StringLength(100)]
-    public string Email { get; set; } = string.Empty;
+    public int Id { get; set; }
+    public required string Email { get; set; }
+    public string? Password { get; set; }
+    public string? Name { get; set; }
 
-    [Required]
-    [StringLength(500)]
-    public string Hash { get; set; } = string.Empty;
-
-    [Required]
-    [StringLength(50)]
-    public string Role { get; set; } = string.Empty;
+    // 数据库存路径，不存 IFormFile
+    public string? PhotoPath { get; set; }
+    public string? Hash { get; internal set; }
+    public string? Role { get; internal set; }
 }

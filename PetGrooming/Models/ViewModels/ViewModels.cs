@@ -40,8 +40,10 @@ public class RegisterVM
     [StringLength(100)]
     public string Name { get; set; }
 
+    // 上传文件用
     public IFormFile Photo { get; set; }
 }
+
 
 public class UpdatePasswordVM
 {

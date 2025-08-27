@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PetGroomingSystem.Models;
+using PetGrooming.Models;
 using System.Diagnostics;
 
 namespace PetGroomingSystem.Controllers
