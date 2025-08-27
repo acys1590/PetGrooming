@@ -12,8 +12,8 @@ using PetGrooming.Models;
 namespace PetGrooming.Migrations
 {
     [DbContext(typeof(DB))]
-    [Migration("20250827054822_UpdateUserTable")]
-    partial class UpdateUserTable
+    [Migration("20250827105401_FixResetTokenColumns")]
+    partial class FixResetTokenColumns
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -185,24 +185,31 @@ namespace PetGrooming.Migrations
             modelBuilder.Entity("PetGrooming.Models.User", b =>
                 {
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Hash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Hash");
 
                     b.Property<string>("PhotoPath")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ResetToken")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("ResetTokenExpiry")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Role")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Email");

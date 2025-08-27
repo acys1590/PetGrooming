@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
@@ -7,12 +8,12 @@ using System.Text.RegularExpressions;
 
 namespace PetGroomingSystem;
 
-public class Helper : HelperBase
+public class HelperBase
 {
     private readonly IWebHostEnvironment en;
     private readonly IHttpContextAccessor ct;
 
-    public Helper(IWebHostEnvironment en, IHttpContextAccessor ct)
+    public HelperBase(IWebHostEnvironment en, IHttpContextAccessor ct)
     {
         this.en = en;
         this.ct = ct;
@@ -21,7 +22,6 @@ public class Helper : HelperBase
     // ------------------------------------------------------------------------
     // Photo Upload
     // ------------------------------------------------------------------------
-
     public string ValidatePhoto(IFormFile f)
     {
         var reType = new Regex(@"^image\/(jpeg|png)$", RegexOptions.IgnoreCase);
@@ -43,24 +43,20 @@ public class Helper : HelperBase
     {
         if (photo == null || photo.Length == 0) return "";
 
-        // 确保目录存在
         string uploadPath = Path.Combine(en.WebRootPath, folder);
         if (!Directory.Exists(uploadPath))
         {
             Directory.CreateDirectory(uploadPath);
         }
 
-        // 生成唯一文件名
         string fileName = Guid.NewGuid().ToString() + Path.GetExtension(photo.FileName);
         string filePath = Path.Combine(uploadPath, fileName);
 
-        // 保存文件
         using (var stream = new FileStream(filePath, FileMode.Create))
         {
             photo.CopyTo(stream);
         }
 
-        // 返回相对路径，方便存数据库
         return $"/{folder}/{fileName}";
     }
 
@@ -88,7 +84,8 @@ public class Helper : HelperBase
         return result == PasswordVerificationResult.Success;
     }
 
-    internal void SignIn(string email, string role, bool rememberMe)
+    // ✅ 修复 SignIn：明确指定 CookieAuthenticationDefaults.AuthenticationScheme
+    internal async Task SignIn(string email, string role, bool rememberMe)
     {
         var claims = new List<Claim>
         {
@@ -96,22 +93,32 @@ public class Helper : HelperBase
             new Claim(ClaimTypes.Role, role)
         };
 
-        var identity = new ClaimsIdentity(claims, "login");
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var principal = new ClaimsPrincipal(identity);
 
-        ct.HttpContext.SignInAsync(principal, new AuthenticationProperties
-        {
-            IsPersistent = rememberMe
-        }).Wait();
+        await ct.HttpContext!.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            principal,
+            new AuthenticationProperties
+            {
+                IsPersistent = rememberMe,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1)
+            });
     }
 
-    internal void SignOut()
+    // ✅ 修复 SignOut：同样指定 scheme
+    internal async Task SignOut()
     {
-        ct.HttpContext.SignOutAsync().Wait();
+        await ct.HttpContext!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
     internal string RandomPassword()
     {
         return Guid.NewGuid().ToString("N").Substring(0, 8);
+    }
+
+    internal bool VerifyPassword(object hash, string current)
+    {
+        throw new NotImplementedException();
     }
 }

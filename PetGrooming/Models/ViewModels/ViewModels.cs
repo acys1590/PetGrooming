@@ -47,18 +47,21 @@ public class RegisterVM
 
 public class UpdatePasswordVM
 {
+    [Required(ErrorMessage = "Current password is required.")]
     [StringLength(100, MinimumLength = 5)]
     [DataType(DataType.Password)]
     [Display(Name = "Current Password")]
     public string Current { get; set; }
 
+    [Required(ErrorMessage = "New password is required.")]
     [StringLength(100, MinimumLength = 5)]
     [DataType(DataType.Password)]
     [Display(Name = "New Password")]
     public string New { get; set; }
 
+    [Required(ErrorMessage = "Confirm password is required.")]
     [StringLength(100, MinimumLength = 5)]
-    [Compare("New")]
+    [Compare("New", ErrorMessage = "New password and confirmation do not match.")]
     [DataType(DataType.Password)]
     [Display(Name = "Confirm Password")]
     public string Confirm { get; set; }
@@ -66,19 +69,68 @@ public class UpdatePasswordVM
 
 public class UpdateProfileVM
 {
-    public string? Email { get; set; }
+    public string Email { get; set; } = string.Empty;
 
-    [StringLength(100)]
-    public string Name { get; set; }
+    [Required, MaxLength(100)]
+    public string Name { get; set; } = string.Empty;
+
+    public IFormFile? Photo { get; set; }
 
     public string? PhotoURL { get; set; }
 
-    public IFormFile? Photo { get; set; }
+    // Modal 修改密码
+    [DataType(DataType.Password)]
+    public string? CurrentPassword { get; set; }
+
+    [DataType(DataType.Password)]
+    public string? NewPassword { get; set; }
 }
+
+
 
 public class ResetPasswordVM
 {
-    [StringLength(100)]
-    [EmailAddress]
+    [Required]
+    public string Token { get; set; }  // 邮件链接里的 token
+
+    [Required(ErrorMessage = "New password is required.")]
+    [StringLength(100, MinimumLength = 5, ErrorMessage = "Password must be at least 5 characters.")]
+    [DataType(DataType.Password)]
+    [Display(Name = "New Password")]
+    public string NewPassword { get; set; }
+
+    [Required(ErrorMessage = "Confirm password is required.")]
+    [DataType(DataType.Password)]
+    [Compare("NewPassword", ErrorMessage = "New password and confirmation do not match.")]
+    [Display(Name = "Confirm Password")]
+    public string ConfirmPassword { get; set; }
+}
+
+
+public class ForgotPasswordVM
+{
+    [Required(ErrorMessage = "Email is required.")]
+    [EmailAddress(ErrorMessage = "Invalid email address.")]
     public string Email { get; set; }
+}
+
+
+public class ProfileVM
+{
+    [Required, MaxLength(100)]
+    public string Name { get; set; }
+
+    [Required, EmailAddress]
+    public string Email { get; set; }
+
+    [DataType(DataType.Password)]
+    public string? Password { get; set; }   // 允许为空，不改就不填
+
+    [DataType(DataType.Password)]
+    [Compare("Password", ErrorMessage = "密码不一致")]
+    public string? Confirm { get; set; }
+
+    public IFormFile? Photo { get; set; }
+
+    public string? ExistingPhoto { get; set; } // 显示当前照片用
 }

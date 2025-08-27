@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PetGrooming.Models;
 
@@ -181,16 +182,25 @@ public class Member
     public string Name { get; set; } = string.Empty;
 }
 
-// User model
 public class User
 {
-    public int Id { get; set; }
-    public required string Email { get; set; }
-    public string? Password { get; set; }
-    public string? Name { get; set; }
+    [Key]
+    [EmailAddress]
+    [StringLength(100)]
+    public string Email { get; set; } = string.Empty;
 
-    // 数据库存路径，不存 IFormFile
+    [Required, MaxLength(100)]
+    public string Name { get; set; } = string.Empty;
+
+    [Required]
+    [Column("Hash")]
+    public string PasswordHash { get; set; } = string.Empty;
+
+    public string Role { get; set; } = "Member";
+
+    [MaxLength(200)]
     public string? PhotoPath { get; set; }
-    public string? Hash { get; internal set; }
-    public string? Role { get; internal set; }
+
+    public string? ResetToken { get; set; }
+    public DateTime? ResetTokenExpiry { get; set; }
 }
