@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PetGroomingSystem.Models;
+namespace PetGrooming.Models;
 
 // DbContext class - moved PhotoURL property out of here as it doesn't belong
 public class DB : DbContext
@@ -181,7 +182,6 @@ public class Member
     public string Name { get; set; } = string.Empty;
 }
 
-// User model
 public class User
 {
     [Key]
@@ -189,13 +189,18 @@ public class User
     [StringLength(100)]
     public string Email { get; set; } = string.Empty;
 
-    [Required]
-    [StringLength(500)]
-    public string Hash { get; set; } = string.Empty;
+    [Required, MaxLength(100)]
+    public string Name { get; set; } = string.Empty;
 
     [Required]
-    [StringLength(50)]
-    public string Role { get; set; } = string.Empty;
+    [Column("Hash")]
+    public string PasswordHash { get; set; } = string.Empty;
+
+    public string Role { get; set; } = "Member";
+
+    [MaxLength(200)]
+    public string? PhotoPath { get; set; }
+
+    public string? ResetToken { get; set; }
+    public DateTime? ResetTokenExpiry { get; set; }
 }
-
-

@@ -2,30 +2,64 @@
 @model UpdateProfileVM
 
 @{
-    ViewBag.Title = "Account | Update Profile";
+    ViewBag.Title = "Profile";
 }
 
-<form class="form" method="post" enctype="multipart/form-data">
-    <div asp-validation-summary="ModelOnly"></div>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4>Update Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdateProfile" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <label asp-for="Email"></label>
-    <b>@Model.Email</b>
-    <br>
+                        <!-- Email (readonly) -->
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" readonly />
+                        </div>
 
-    <label asp-for="Name"></label>
-    <input asp-for="Name" autofocus>
-    <span asp-validation-for="Name"></span>
+                        <!-- Name -->
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
 
-    <label asp-for="Photo"></label>
-    <label class="upload">
-        <small>Select Photo...</small>
-        <input asp-for="Photo" accept="image/jpeg,image/png" hidden>
-        <img src="/photos/@Model.PhotoURL">
-    </label>
-    <span asp-validation-for="Photo"></span>
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" placeholder="********" readonly />
+                            <div class="mt-2">
+                                <a asp-action="UpdatePassword" class="btn btn-link p-0">Change Password</a>
+                            </div>
+                        </div>
 
-    <section>
-        <button>Update</button>
-        <button type="reset">Reset</button>
-    </section>
-</form>
+                        <!-- Photo -->
+                        <div class="mb-3 text-center">
+                            <label asp-for="Photo" class="form-label d-block"></label>
+                            <div class="mb-2">
+                                <img id="preview" src="@(string.IsNullOrEmpty(Model.PhotoURL) ? "/images/default-avatar.png" : Model.PhotoURL)"
+                                     alt="Profile Photo" class="img-thumbnail rounded-circle"
+                                     style="width:120px; height:120px; object-fit:cover;" />
+                            </div>
+                            <input asp-for="Photo" type="file" class="form-control"
+                                   accept="image/jpeg,image/png"
+                                   onchange="document.getElementById('preview').src = window.URL.createObjectURL(this.files[0])" />
+                            <span asp-validation-for="Photo" class="text-danger"></span>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-success px-4">Update</button>
+                            <button type="reset" class="btn btn-secondary px-4">Reset</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

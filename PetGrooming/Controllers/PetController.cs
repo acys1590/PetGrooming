@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using PetGroomingSystem.Models;
+using PetGrooming.Models;
 using PetGroomingSystem.Models.ViewModels;
 
 namespace PetGroomingSystem.Controllers

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PetGrooming.Models;
 using PetGroomingSystem;
-using PetGroomingSystem.Models;
-
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,10 +13,6 @@ builder.Services.AddSqlServer<DB>($@"
  AttachDbFilename={builder.Environment.ContentRootPath}\Db.mdf;
 ");
 
-//// Add Entity Framework - Note the class name is now 'DB'
-//builder.Services.AddDbContext<DB>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 // 注册 HttpContextAccessor（给 Helper 用）
 builder.Services.AddHttpContextAccessor();
 
@@ -24,7 +20,16 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession();
 
 // 注册 Helper
-builder.Services.AddScoped<Helper>();
+builder.Services.AddScoped<HelperBase>();
+
+// ✅ 注册 Cookie 认证
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Accounts/Login";             // 未登录时跳转
+        options.LogoutPath = "/Accounts/Logout";           // 登出路径
+        options.AccessDeniedPath = "/Accounts/AccessDenied"; // 无权限跳转
+    });
 
 var app = builder.Build();
 
@@ -33,7 +38,6 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<DB>();
     context.Database.EnsureCreated();
 }
-
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -47,9 +51,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();   // ✅ 认证要放在 Authorization 前
 app.UseAuthorization();
 
-// ⚠️ 如果启用 Session，必须加这一行
 app.UseSession();
 
 app.MapControllerRoute(

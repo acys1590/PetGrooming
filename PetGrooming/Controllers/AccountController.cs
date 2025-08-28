@@ -1,240 +1,307 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit;
+using MimeKit.Text;
+using PetGrooming.Models;
 using PetGroomingSystem.Models.ViewModels;
-using PetGroomingSystem.Models;
-
-
+using System.Security.Claims;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 
 namespace PetGroomingSystem.Controllers
 {
     public class AccountsController : Controller
     {
         private readonly DB db;
-        private readonly Helper hp;
+        private readonly HelperBase hp;
 
-        public AccountsController(DB db, Helper hp)
+        public object MailboxAddress { get; private set; }
+        public object MimeKit { get; private set; }
 
+        public AccountsController(DB db, HelperBase hp)
         {
             this.db = db;
             this.hp = hp;
         }
 
-        // GET: Account/Login
-        public IActionResult Login()
-        {
-            return View();
-        }
+        #region Register
+        [HttpGet]
+        public IActionResult Register() => View();
 
-        // POST: Account/Login
-        [HttpPost]
-        public IActionResult Login(LoginVM vm, string? returnURL)
-        {
-            // (1) Get user (admin or member) record based on email (PK)
-            var u = db.Users.Find(vm.Email);
-
-            // (2) Custom validation -> verify password
-            if (u == null || !hp.VerifyPassword(u.Hash, vm.Password))
-            {
-                ModelState.AddModelError("", "Login credentials not matched.");
-            }
-
-            if (ModelState.IsValid)
-            {
-                TempData["Info"] = "Login successfully.";
-
-                // (3) Sign in
-                hp.SignIn(u!.Email, u.Role, vm.RememberMe);
-
-                // (4) Handle return URL
-                if (string.IsNullOrEmpty(returnURL))
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-            }
-
-            return View(vm);
-        }
-
-        // GET: Account/Logout
-        public IActionResult Logout(string? returnURL)
-        {
-            TempData["Info"] = "Logout successfully.";
-
-            // Sign out
-            hp.SignOut();
-
-            return RedirectToAction("Index", "Home");
-        }
-
-        // GET: Account/AccessDenied
-        public IActionResult AccessDenied(string? returnURL)
-        {
-            return View();
-        }
-
-
-
-        // ------------------------------------------------------------------------
-        // Others
-        // ------------------------------------------------------------------------
-
-        // GET: Account/CheckEmail
-        public bool CheckEmail(string email)
-        {
-            return !db.Users.Any(u => u.Email == email);
-        }
-
-        // GET: Account/Register
-        public IActionResult Register()
-        {
-            return View();
-        }
-
-        // POST: Account/Register
         [HttpPost]
         public IActionResult Register(RegisterVM vm)
         {
-            // 检查 Email 是否重复
-            if (ModelState.IsValid && db.Users.Any(u => u.Email == vm.Email))
-            {
-                ModelState.AddModelError("Email", "Duplicated Email.");
-            }
-
-            // 检查上传的图片
-            if (ModelState.IsValid && vm.Photo != null)
-            {
-                var err = hp.ValidatePhoto(vm.Photo);
-                if (!string.IsNullOrEmpty(err))
-                {
-                    ModelState.AddModelError("Photo", err);
-                }
-            }
-
-            return View(vm);
-        }
-
-        // GET: Account/UpdatePassword
-        [Authorize]
-        public IActionResult UpdatePassword()
-        {
-            return View();
-        }
-
-        // POST: Account/UpdatePassword
-        [Authorize]
-        [HttpPost]
-        public IActionResult UpdatePassword(UpdatePasswordVM vm)
-        {
-            // Get user (admin or member) record based on email (PK)
-            var u = db.Users.Find(User.Identity!.Name);
-            if (u == null) return RedirectToAction("Index", "Home");
-
-            // If current password not matched
-            if (!hp.VerifyPassword(u.Hash, vm.Current))
-            {
-                ModelState.AddModelError("Current", "Current Password not matched.");
-            }
-
-            if (ModelState.IsValid)
-            {
-                // Update user password (hash)
-                u.Hash = hp.HashPassword(vm.New);
-                db.SaveChanges();
-
-                TempData["Info"] = "Password updated.";
-                return RedirectToAction();
-            }
-
-            return View();
-        }
-
-        // GET: Account/UpdateProfile
-        [Authorize(Roles = "Member")]
-        public IActionResult UpdateProfile()
-        {
-            // Get member record based on email (PK)
-            var m = db.Members.Find(User.Identity!.Name);
-            if (m == null) return RedirectToAction("Index", "Home");
-
-            var vm = new UpdateProfileVM
-            {
-                Email = m.Email,
-                Name = m.Name,
-                PhotoURL = m.PhotoURL,
-            };
-
-            return View(vm);
-        }
-
-        // POST: Account/UpdateProfile
-        [Authorize(Roles = "Member")]
-        [HttpPost]
-        public IActionResult UpdateProfile(UpdateProfileVM vm)
-        {
-            // Get member record based on email (PK)
-            var m = db.Members.Find(User.Identity!.Name);
-            if (m == null) return RedirectToAction("Index", "Home");
+            if (db.Users.Any(u => u.Email == vm.Email))
+                ModelState.AddModelError("Email", "Email already registered");
 
             if (vm.Photo != null)
             {
                 var err = hp.ValidatePhoto(vm.Photo);
-                if (err != "") ModelState.AddModelError("Photo", err);
+                if (!string.IsNullOrEmpty(err)) ModelState.AddModelError("Photo", err);
             }
 
             if (ModelState.IsValid)
             {
+                string? photoPath = vm.Photo != null ? hp.SavePhoto(vm.Photo, "photos") : null;
+
+                var hasher = new PasswordHasher<User>();
+                var user = new User
+                {
+                    Email = vm.Email,
+                    Name = vm.Name,
+                    PasswordHash = hasher.HashPassword(null!, vm.Password),
+                    Role = "Member",
+                    PhotoPath = photoPath
+                };
+                db.Users.Add(user);
+
+                var member = new Member
+                {
+                    Email = vm.Email,
+                    Name = vm.Name,
+                    PhotoURL = photoPath
+                };
+                db.Members.Add(member);
+
+                db.SaveChanges();
+                TempData["Info"] = "Registration successful. Please login.";
+                return RedirectToAction("Login");
+            }
+
+            return View(vm);
+        }
+        #endregion
+
+        #region Login/Logout
+        public IActionResult Login() => View();
+
+        [HttpPost]
+        public IActionResult Login(LoginVM vm)
+        {
+            var user = db.Users.FirstOrDefault(x => x.Email == vm.Email);
+            if (user == null ||
+                new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, vm.Password)
+                == PasswordVerificationResult.Failed)
+            {
+                ModelState.AddModelError("", "Invalid email or password");
+                return View(vm);
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
+            var identity = new ClaimsIdentity(claims, "Login");
+            HttpContext.SignInAsync(new ClaimsPrincipal(identity));
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            TempData["Info"] = "You have been logged out.";
+            return RedirectToAction("Login");
+        }
+        #endregion
+
+        #region Update Profile / Password
+        [Authorize(Roles = "Member")]
+        public IActionResult UpdateProfile()
+        {
+            var m = db.Members.Find(User.Identity!.Name);
+            if (m == null) return RedirectToAction("Index", "Home");
+
+            return View(new UpdateProfileVM
+            {
+                Email = m.Email,
+                Name = m.Name,
+                PhotoURL = m.PhotoURL
+            });
+        }
+
+        [Authorize(Roles = "Member")]
+        [HttpPost]
+        public IActionResult UpdateProfile(UpdateProfileVM vm)
+        {
+            var u = db.Users.Find(User.Identity!.Name);
+            var m = db.Members.Find(User.Identity!.Name);
+            if (u == null || m == null) return RedirectToAction("Index", "Home");
+
+            if (ModelState.IsValid)
+            {
+                u.Name = vm.Name;
                 m.Name = vm.Name;
 
                 if (vm.Photo != null)
                 {
+                    hp.DeletePhoto(u.PhotoPath, "photos");
                     hp.DeletePhoto(m.PhotoURL, "photos");
-                    m.PhotoURL = hp.SavePhoto(vm.Photo, "photos");
+
+                    var newPhoto = hp.SavePhoto(vm.Photo, "photos");
+                    u.PhotoPath = newPhoto;
+                    m.PhotoURL = newPhoto;
+                }
+
+                if (!string.IsNullOrEmpty(vm.CurrentPassword) && !string.IsNullOrEmpty(vm.NewPassword))
+                {
+                    var hasher = new PasswordHasher<User>();
+                    if (hasher.VerifyHashedPassword(u, u.PasswordHash, vm.CurrentPassword) == PasswordVerificationResult.Success)
+                    {
+                        u.PasswordHash = hasher.HashPassword(u, vm.NewPassword);
+                        TempData["Info"] = "Profile and password updated successfully.";
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("CurrentPassword", "Current password is incorrect.");
+                        return View(vm);
+                    }
+                }
+                else
+                {
+                    TempData["Info"] = "Profile updated successfully.";
                 }
 
                 db.SaveChanges();
-
-                TempData["Info"] = "Profile updated.";
                 return RedirectToAction();
             }
 
-            vm.Email = m.Email;
-            vm.PhotoURL = m.PhotoURL;
             return View(vm);
         }
 
-        // GET: Account/ResetPassword
-        public IActionResult ResetPassword()
+        [Authorize(Roles = "Member")]
+        public IActionResult UpdatePassword() => View();
+
+        [Authorize(Roles = "Member")]
+        [HttpPost]
+        public IActionResult UpdatePassword(UpdatePasswordVM vm)
         {
+            var u = db.Users.FirstOrDefault(x => x.Email == User.Identity!.Name);
+            if (u == null) return RedirectToAction("Index", "Home");
+
+            if (!ModelState.IsValid) return View(vm);
+
+            var hasher = new PasswordHasher<User>();
+            if (string.IsNullOrEmpty(vm.Current) ||
+                hasher.VerifyHashedPassword(u, u.PasswordHash, vm.Current) != PasswordVerificationResult.Success)
+            {
+                ModelState.AddModelError("Current", "Current password is incorrect.");
+                return View(vm);
+            }
+
+            u.PasswordHash = hasher.HashPassword(u, vm.New);
+            db.SaveChanges();
+            TempData["Info"] = "Password updated successfully.";
+            return RedirectToAction("UpdateProfile");
+        }
+        #endregion
+
+        #region Forgot / Reset Password
+        [HttpGet]
+        public IActionResult ForgotPassword() => View();
+
+        [HttpPost]
+        public IActionResult ForgotPassword(ForgotPasswordVM vm)
+        {
+            if (!ModelState.IsValid) return View(vm);
+
+            var user = db.Users.FirstOrDefault(u => u.Email == vm.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Email not found");
+                return View(vm);
+            }
+
+            // 生成 Token
+            user.ResetToken = Guid.NewGuid().ToString();
+            user.ResetTokenExpiry = DateTime.Now.AddHours(1);
+            db.SaveChanges();
+
+            // 构建重置链接
+            var resetLink = Url.Action("ResetPassword", "Accounts", new { token = user.ResetToken }, Request.Scheme);
+
+            // 发送邮件
+            SendEmail(user.Email, "Reset Your Password", $"Click this link to reset your password: <a href='{resetLink}'>Reset Password</a>");
+
+            ViewBag.Message = "Reset link sent. Check your email.";
             return View();
         }
 
-        // POST: Account/ResetPassword
+        [HttpGet]
+        public IActionResult ResetPassword(string token)
+        {
+            if (string.IsNullOrEmpty(token))
+                return RedirectToAction("Login");
+
+            var user = db.Users.FirstOrDefault(u => u.ResetToken == token && u.ResetTokenExpiry > DateTime.Now);
+            if (user == null)
+            {
+                TempData["Error"] = "Invalid or expired token.";
+                return RedirectToAction("Login");
+            }
+
+            var vm = new ResetPasswordVM { Token = token };
+            return View(vm);
+        }
+
         [HttpPost]
         public IActionResult ResetPassword(ResetPasswordVM vm)
         {
-            var u = db.Users.Find(vm.Email);
+            if (!ModelState.IsValid) return View(vm);
 
-            if (u == null)
+            var user = db.Users.FirstOrDefault(u => u.ResetToken == vm.Token && u.ResetTokenExpiry > DateTime.Now);
+            if (user == null)
             {
-                ModelState.AddModelError("Email", "Email not found.");
+                TempData["Error"] = "Invalid or expired token.";
+                return RedirectToAction("Login");
             }
 
-            if (ModelState.IsValid)
+            var hasher = new PasswordHasher<User>();
+            user.PasswordHash = hasher.HashPassword(user, vm.NewPassword);
+            user.ResetToken = null;
+            user.ResetTokenExpiry = null;
+
+            db.SaveChanges();
+
+            TempData["Info"] = "Password has been reset successfully.";
+            return RedirectToAction("Login");
+        }
+        #endregion
+
+        #region Email Sending
+        #endregion
+        private void SendEmail(string toEmail, string subject, string htmlBody)
+        {
+            var email = new MimeMessage();
+
+            // 发件人
+            email.From.Add(new MailboxAddress("Pet Grooming System", "devoneu061030@gmail.com"));
+
+            // 收件人
+            email.To.Add(new MailboxAddress("", toEmail));
+
+            email.Subject = subject;
+
+            // 这里必须用 MimeKit.TextPart
+            email.Body = new TextPart(TextFormat.Html)
             {
-                // Generate random password
-                string password = hp.RandomPassword();
+                Text = htmlBody
+            };
 
-                // Update user (admin or member) record
-                u!.Hash = hp.HashPassword(password);
-                db.SaveChanges();
-
-                // TODO: Send reset password email
-
-                TempData["Info"] = $"Password reset to <b>{password}</b>.";
-                return RedirectToAction();
+            using (var smtp = new MailKit.Net.Smtp.SmtpClient())
+            {
+                smtp.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+                smtp.Authenticate("devoneyc-wm24@student.tarc.edu.my", "pllrjpturrpzhqjj");//这个要小心不能泄露 不然别人能用我email发信息
+                smtp.Send(email);
+                smtp.Disconnect(true);
             }
-
-            return View();
         }
     }
 }
+//Install - Package MailKit 你们需要下载
+//Install - Package MimeKit
+

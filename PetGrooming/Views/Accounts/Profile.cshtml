@@ -1,0 +1,72 @@
+﻿@using PetGroomingSystem.Models.ViewModels
+@model ProfileVM
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4>Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Profile" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Name -->
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" readonly />
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" placeholder="******" readonly />
+                            <div class="mt-2">
+                                <a asp-action="UpdatePassword" class="btn btn-link p-0">Change Password</a>
+                            </div>
+                        </div>
+
+                        <!-- Existing Photo -->
+                        <div class="mb-3 text-center">
+                            <label class="form-label">Existing Photo</label>
+                            <div class="mb-2">
+                                <img id="preview"
+                                     src="@(string.IsNullOrEmpty(Model.ExistingPhoto) ? "/images/default-avatar.png" : Model.ExistingPhoto)"
+                                     class="img-thumbnail rounded-circle"
+                                     style="width:120px; height:120px; object-fit:cover;" />
+                            </div>
+                        </div>
+
+                        <!-- Upload New Photo -->
+                        <div class="mb-3">
+                            <label asp-for="Photo" class="form-label"></label>
+                            <input asp-for="Photo" type="file" class="form-control"
+                                   accept="image/jpeg,image/png"
+                                   onchange="document.getElementById('preview').src = window.URL.createObjectURL(this.files[0])" />
+                            <span asp-validation-for="Photo" class="text-danger"></span>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-success">Save</button>
+                            <button type="reset" class="btn btn-secondary">Reset</button>
+                        </div>
+                    </form>
+
+                    @if (TempData["msg"] != null)
+                    {
+                        <div class="alert alert-success mt-3">@TempData["msg"]</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
