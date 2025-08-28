@@ -46,12 +46,12 @@ namespace PetGroomingSystem.Controllers
         }
 
         // GET: Pets/Create
-        public async Task<IActionResult> Create()
+        public  IActionResult Create()
         {
             var viewModel = new PetViewModel
             {
                 Pet = new Pet { CreatedDate = DateTime.Now },
-                Doctors = new SelectList(await _context.Doctors.Where(d => d.IsActive).ToListAsync(), "Id", "Name")
+                //Doctors = new SelectList(await _context.Doctors.Where(d => d.IsActive).ToListAsync(), "Id", "Name")
             };
             return View(viewModel);
         }
@@ -69,9 +69,11 @@ namespace PetGroomingSystem.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            viewModel.Doctors = new SelectList(await _context.Doctors.Where(d => d.IsActive).ToListAsync(), "Id", "Name", viewModel.Pet.DoctorId);
+            //viewModel.Doctors = new SelectList(await _context.Doctors.Where(d => d.IsActive).ToListAsync(), "Id", "Name", viewModel.Pet.DoctorId);
             return View(viewModel);
         }
+
+       
 
         // GET: Pets/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -90,7 +92,7 @@ namespace PetGroomingSystem.Controllers
             var viewModel = new PetViewModel
             {
                 Pet = pet,
-                Doctors = new SelectList(await _context.Doctors.Where(d => d.IsActive).ToListAsync(), "Id", "Name", pet.DoctorId)
+                //Doctors = new SelectList(await _context.Doctors.Where(d => d.IsActive).ToListAsync(), "Id", "Name", pet.DoctorId)
             };
 
             return View(viewModel);
@@ -128,7 +130,7 @@ namespace PetGroomingSystem.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            viewModel.Doctors = new SelectList(await _context.Doctors.Where(d => d.IsActive).ToListAsync(), "Id", "Name", viewModel.Pet.DoctorId);
+            //viewModel.Doctors = new SelectList(await _context.Doctors.Where(d => d.IsActive).ToListAsync(), "Id", "Name", viewModel.Pet.DoctorId);
             return View(viewModel);
         }
 
@@ -157,7 +159,6 @@ namespace PetGroomingSystem.Controllers
             return View(viewModel);
         }
 
-        // POST: Pets/AssignDoctor
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignDoctor(AssignDoctorViewModel viewModel)
@@ -167,15 +168,25 @@ namespace PetGroomingSystem.Controllers
                 var pet = await _context.Pets.FindAsync(viewModel.PetId);
                 if (pet != null)
                 {
-                    pet.DoctorId = viewModel.DoctorId;
-                    _context.Update(pet);
-                    await _context.SaveChangesAsync();
-                    TempData["Success"] = "Doctor assigned successfully!";
-                    return RedirectToAction(nameof(Index));
+                    if (viewModel.DoctorId > 0) // ensure valid doctor selected
+                    {
+                        pet.DoctorId = viewModel.DoctorId;
+                        _context.Entry(pet).State = EntityState.Modified; // force update
+                        await _context.SaveChangesAsync();
+                        TempData["Success"] = "Doctor assigned successfully!";
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("DoctorId", "Please select a doctor.");
+                    }
                 }
             }
 
-            viewModel.Doctors = new SelectList(await _context.Doctors.Where(d => d.IsActive).ToListAsync(), "Id", "Name");
+            // reload doctors if validation fails
+            viewModel.Doctors = new SelectList(await _context.Doctors
+                .Where(d => d.IsActive).ToListAsync(), "Id", "Name", viewModel.DoctorId);
+
             return View(viewModel);
         }
 

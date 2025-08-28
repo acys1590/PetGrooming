@@ -20,7 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\photos\" />
+    <Folder Include="Views\Customers\" />
+    <Folder Include="Views\History\" />
+    <Folder Include="Views\Staff\" />
   </ItemGroup>
 
 </Project>

@@ -12,7 +12,7 @@
                 <h5>Pet: @Model.PetName</h5>
             </div>
             <div class="card-body">
-                <form asp-action="AssignDoctor">
+                <form asp-action="AssignDoctor" method="post">
                     <input type="hidden" asp-for="PetId" />
                     <input type="hidden" asp-for="PetName" />
 
