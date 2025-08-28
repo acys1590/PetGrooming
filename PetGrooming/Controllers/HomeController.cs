@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetGroomingSystem.Models;
+using PetGroomingSystem.Models.ViewModels;
 using System.Diagnostics;
 
 namespace PetGroomingSystem.Controllers
@@ -35,6 +36,8 @@ namespace PetGroomingSystem.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+     
+
     }
 
     public class ErrorViewModel
@@ -43,5 +46,7 @@ namespace PetGroomingSystem.Controllers
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
     }
 
-}
+   
+
+    }
 

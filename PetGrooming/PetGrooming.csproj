@@ -16,4 +16,10 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Customers\" />
+    <Folder Include="Views\History\" />
+    <Folder Include="Views\Staff\" />
+  </ItemGroup>
+
 </Project>

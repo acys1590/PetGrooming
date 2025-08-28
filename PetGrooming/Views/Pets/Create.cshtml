@@ -90,13 +90,13 @@
                         <span asp-validation-for="Pet.OwnerEmail" class="text-danger"></span>
                     </div>
 
-                    <div class="mb-3">
+               @*      <div class="mb-3">
                         <label asp-for="Pet.DoctorId" class="form-label">Assign Doctor (Optional)</label>
                         <select asp-for="Pet.DoctorId" asp-items="Model.Doctors" class="form-select">
                             <option value="">Select Doctor</option>
                         </select>
                         <span asp-validation-for="Pet.DoctorId" class="text-danger"></span>
-                    </div>
+                    </div> *@
 
                     <div class="mb-3">
                         <label asp-for="Pet.Notes" class="form-label">Notes</label>
