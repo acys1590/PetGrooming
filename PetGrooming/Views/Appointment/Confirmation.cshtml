@@ -1,0 +1,138 @@
+﻿@using PetGrooming.Models
+@model Appointment
+
+@{
+    ViewData["Title"] = "Appointment Confirmation";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <!-- Success Message -->
+            <div class="alert alert-success text-center shadow-sm" role="alert">
+                <h4 class="alert-heading">
+                    <i class="fas fa-check-circle"></i> Appointment Confirmed!
+                </h4>
+                <p class="mb-0">Thank you for booking with Pawsome Pet Grooming. We look forward to pampering @Model.PetName!</p>
+            </div>
+
+            <!-- Appointment Details Card -->
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-calendar-check"></i> Appointment Details
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="text-primary">Pet Owner Information</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Name:</strong></td>
+                                    <td>@Model.OwnerName</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Email:</strong></td>
+                                    <td>@Model.Email</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Phone:</strong></td>
+                                    <td>@Model.PhoneNumber</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-primary">Pet Information</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Pet Name:</strong></td>
+                                    <td>@Model.PetName</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Pet Type:</strong></td>
+                                    <td>@Model.PetType</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Service:</strong></td>
+                                    <td>@Model.ServiceType</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5 class="text-primary">Appointment Schedule</h5>
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-calendar-alt text-primary me-2" style="font-size: 1.5rem;"></i>
+                                <div>
+                                    <strong>Date & Time:</strong><br>
+                                    <span class="fs-5">@Model.AppointmentDate.ToString("dddd, MMMM dd, yyyy")</span><br>
+                                    <span class="fs-5">@Model.AppointmentDate.ToString("h:mm tt")</span>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(Model.Notes))
+                            {
+                                <h5 class="text-primary">Special Notes</h5>
+                                <div class="alert alert-light">
+                                    @Model.Notes
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-info-circle"></i> Important Information:</h6>
+                                <ul class="mb-0">
+                                    <li>Please arrive 10 minutes before your scheduled appointment</li>
+                                    <li>Bring your pet's vaccination records</li>
+                                    <li>We'll send you a reminder 24 hours before your appointment</li>
+                                    <li>If you need to reschedule, please call us at (555) 123-4567</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center mt-4 mb-5">
+                <a asp-controller="Main" asp-action="Index" class="btn btn-primary me-3">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+                <a href="javascript:window.print()" class="btn btn-outline-secondary">
+                    <i class="fas fa-print"></i> Print Confirmation
+                </a>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Contact Us</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <i class="fas fa-phone-alt text-primary mb-2" style="font-size: 2rem;"></i>
+                            <p><strong>Phone</strong><br>(555) 123-4567</p>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fas fa-envelope text-primary mb-2" style="font-size: 2rem;"></i>
+                            <p><strong>Email</strong><br>info@pawsomegrooming.com</p>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fas fa-map-marker-alt text-primary mb-2" style="font-size: 2rem;"></i>
+                            <p><strong>Address</strong><br>123 Pet Street<br>Pet City, PC 12345</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
