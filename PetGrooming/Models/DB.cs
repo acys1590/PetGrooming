@@ -16,6 +16,8 @@ public class DB : DbContext
     public DbSet<Doctor> Doctors { get; set; }
     public DbSet<Staff> Staffs { get; set; }
 
+    public DbSet<Appointment> Appointments { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -238,4 +240,64 @@ public class User
 
     public string? ResetToken { get; set; }
     public DateTime? ResetTokenExpiry { get; set; }
+}
+
+
+//Appointment
+
+public class Appointment
+{
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
+
+    [Required(ErrorMessage = "Pet Owner Name is required")]
+    [StringLength(100, ErrorMessage = "Owner Name cannot exceed 100 characters")]
+    [Display(Name = "Pet Owner Name")]
+    [Column(TypeName = "nvarchar(100)")]
+    public string OwnerName { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Pet Name is required")]
+    [StringLength(100, ErrorMessage = "Pet Name cannot exceed 100 characters")]
+    [Display(Name = "Pet Name")]
+    [Column(TypeName = "nvarchar(100)")]
+    public string PetName { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Pet Type is required")]
+    [StringLength(50, ErrorMessage = "Pet Type cannot exceed 50 characters")]
+    [Display(Name = "Pet Type")]
+    [Column(TypeName = "nvarchar(50)")]
+    public string PetType { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Email Address is required")]
+    [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+    [StringLength(255, ErrorMessage = "Email cannot exceed 255 characters")]
+    [Display(Name = "Email Address")]
+    [Column(TypeName = "nvarchar(255)")]
+    public string Email { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Phone Number is required")]
+    [Phone(ErrorMessage = "Please enter a valid phone number")]
+    [StringLength(20, ErrorMessage = "Phone Number cannot exceed 20 characters")]
+    [Display(Name = "Phone Number")]
+    [Column(TypeName = "nvarchar(20)")]
+    public string PhoneNumber { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Service Type is required")]
+    [StringLength(50, ErrorMessage = "Service Type cannot exceed 50 characters")]
+    [Display(Name = "Service Type")]
+    [Column(TypeName = "nvarchar(50)")]
+    public string ServiceType { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Appointment Date is required")]
+    [Display(Name = "Appointment Date")]
+    [Column(TypeName = "datetime2")]
+    public DateTime AppointmentDate { get; set; }
+
+    [StringLength(500, ErrorMessage = "Notes cannot exceed 500 characters")]
+    [Display(Name = "Special Notes")]
+    [Column(TypeName = "nvarchar(500)")]
+    public string? Notes { get; set; }
+
+    public DateTime CreatedDate { get; set; }
 }
