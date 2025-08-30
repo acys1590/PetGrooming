@@ -23,7 +23,7 @@ public class DB : DbContext
         modelBuilder.Entity<Pet>(entity =>
         {
             entity.HasKey(p => p.Id);
-            entity.Property(p => p.CreatedDate).HasDefaultValueSql("GETDATE()");
+            entity.Property(p => p.AppointmentDate).HasDefaultValueSql("GETDATE()");
             
             // Configure relationship
             entity.HasOne(p => p.Doctor)
@@ -170,6 +170,10 @@ public class Pet
     [StringLength(20)]
     public string? Gender { get; set; }
 
+    [StringLength(20)]
+    public string? Service { get; set; }
+
+
     [StringLength(100)]
     public string? OwnerName { get; set; }
 
@@ -180,9 +184,9 @@ public class Pet
     [StringLength(100)]
     public string? OwnerEmail { get; set; }
 
-    public DateTime CreatedDate { get; set; }
+    public DateTime AppointmentDate { get; set; }
 
-    public DateTime? LastGroomingDate { get; set; }
+    public DateTime AppointmentTime { get; set; }
 
     [StringLength(500)]
     public string? Notes { get; set; }

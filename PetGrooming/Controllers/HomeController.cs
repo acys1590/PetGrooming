@@ -25,7 +25,7 @@ namespace PetGroomingSystem.Controllers
 
             var recentPets = await _context.Pets
                 .Include(p => p.Doctor)
-                .OrderByDescending(p => p.CreatedDate)
+                .OrderByDescending(p => p.AppointmentDate)
                 .Take(5)
                 .ToListAsync();
 

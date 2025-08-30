@@ -50,7 +50,7 @@ namespace PetGroomingSystem.Controllers
         {
             var viewModel = new PetViewModel
             {
-                Pet = new Pet { CreatedDate = DateTime.Now },
+                Pet = new Pet { AppointmentDate = DateTime.Now },
                 //Doctors = new SelectList(await _context.Doctors.Where(d => d.IsActive).ToListAsync(), "Id", "Name")
             };
             return View(viewModel);
@@ -163,7 +163,7 @@ namespace PetGroomingSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignDoctor(AssignDoctorViewModel viewModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 var pet = await _context.Pets.FindAsync(viewModel.PetId);
                 if (pet != null)

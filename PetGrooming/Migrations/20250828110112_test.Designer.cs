@@ -7,26 +7,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PetGrooming.Models;
 
-
 #nullable disable
 
 namespace PetGrooming.Migrations
 {
     [DbContext(typeof(DB))]
-    [Migration("20250822101647_DbCreate")]
-    partial class DbCreate
+    [Migration("20250828110112_test")]
+    partial class test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("ProductVersion", "9.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("PetGroomingSystem.Models.Doctor", b =>
+            modelBuilder.Entity("PetGrooming.Models.Doctor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -100,7 +99,7 @@ namespace PetGrooming.Migrations
                         });
                 });
 
-            modelBuilder.Entity("PetGroomingSystem.Models.Member", b =>
+            modelBuilder.Entity("PetGrooming.Models.Member", b =>
                 {
                     b.Property<string>("Email")
                         .HasMaxLength(100)
@@ -120,7 +119,7 @@ namespace PetGrooming.Migrations
                     b.ToTable("Members");
                 });
 
-            modelBuilder.Entity("PetGroomingSystem.Models.Pet", b =>
+            modelBuilder.Entity("PetGrooming.Models.Pet", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -131,14 +130,17 @@ namespace PetGrooming.Migrations
                     b.Property<int?>("Age")
                         .HasColumnType("int");
 
-                    b.Property<string>("Breed")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("AppointmentDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<DateTime>("AppointmentTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Breed")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int?>("DoctorId")
                         .HasColumnType("int");
@@ -146,9 +148,6 @@ namespace PetGrooming.Migrations
                     b.Property<string>("Gender")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
-
-                    b.Property<DateTime?>("LastGroomingDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -171,10 +170,18 @@ namespace PetGrooming.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
+                    b.Property<string>("Service")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<string>("Species")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Test")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -183,30 +190,44 @@ namespace PetGrooming.Migrations
                     b.ToTable("Pets");
                 });
 
-            modelBuilder.Entity("PetGroomingSystem.Models.User", b =>
+            modelBuilder.Entity("PetGrooming.Models.User", b =>
                 {
                     b.Property<string>("Email")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Hash")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Hash");
+
+                    b.Property<string>("PhotoPath")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ResetToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ResetTokenExpiry")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Email");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("PetGroomingSystem.Models.Pet", b =>
+            modelBuilder.Entity("PetGrooming.Models.Pet", b =>
                 {
-                    b.HasOne("PetGroomingSystem.Models.Doctor", "Doctor")
+                    b.HasOne("PetGrooming.Models.Doctor", "Doctor")
                         .WithMany("Pets")
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -214,7 +235,7 @@ namespace PetGrooming.Migrations
                     b.Navigation("Doctor");
                 });
 
-            modelBuilder.Entity("PetGroomingSystem.Models.Doctor", b =>
+            modelBuilder.Entity("PetGrooming.Models.Doctor", b =>
                 {
                     b.Navigation("Pets");
                 });

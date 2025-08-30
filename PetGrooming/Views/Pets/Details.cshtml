@@ -47,19 +47,15 @@
                         }
                     </dd>
 
-                    <dt class="col-sm-3">Created Date:</dt>
-                    <dd class="col-sm-9">@Model.CreatedDate.ToString("MMMM dd, yyyy")</dd>
+                    <dt class="col-sm-3">Appointment Date:</dt>
+                    <dd class="col-sm-9">@Model.AppointmentDate.ToString("MMMM dd, yyyy")</dd>
 
-                    <dt class="col-sm-3">Last Grooming:</dt>
+                    <dt class="col-sm-3">Appointment Time:</dt>
                     <dd class="col-sm-9">
-                        @if (Model.LastGroomingDate.HasValue)
-                        {
-                            @Model.LastGroomingDate.Value.ToString("MMMM dd, yyyy")
-                        }
-                        else
-                        {
-                            <span class="text-muted">Not groomed yet</span>
-                        }
+                       
+                        
+                            @Model.AppointmentTime.ToString("hh:mm tt")
+                      
                     </dd>
 
                     <dt class="col-sm-3">Notes:</dt>
