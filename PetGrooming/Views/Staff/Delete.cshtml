@@ -1,13 +1,12 @@
 ﻿@using PetGrooming.Models
-@using PetGroomingSystem.Models
-@model Doctor
+@model Staff
 @{
-    ViewData["Title"] = "Delete Doctor";
+    ViewData["Title"] = "Delete Staff";
 }
 
 <div class="row">
     <div class="col-md-8">
-        <h1 class="text-danger"><i class="fas fa-trash"></i> Delete Doctor</h1>
+        <h1 class="text-danger"><i class="fas fa-trash"></i> Delete Staff</h1>
 
         <div class="alert alert-warning">
             <i class="fas fa-exclamation-triangle"></i>
@@ -19,9 +18,6 @@
                 <dl class="row">
                     <dt class="col-sm-3">Name:</dt>
                     <dd class="col-sm-9">@Model.Name</dd>
-
-                    <dt class="col-sm-3">Specialization:</dt>
-                    <dd class="col-sm-9">@Model.Specialization</dd>
 
                     <dt class="col-sm-3">Phone:</dt>
                     <dd class="col-sm-9">@Model.Phone</dd>

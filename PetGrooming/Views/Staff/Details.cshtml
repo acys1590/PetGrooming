@@ -1,22 +1,19 @@
 ﻿@using PetGrooming.Models
 <!-- Views/Doctors/Details.cshtml -->
-@model Doctor
+@model Staff
 @{
-    ViewData["Title"] = "Doctor Details";
+    ViewData["Title"] = "Staff Details";
 }
 
 <div class="row">
     <div class="col-md-8">
-        <h1><i class="fas fa-user-md"></i> Doctor Details</h1>
+        <h1><i class="fas fa-user-md"></i> Staff Details</h1>
         
         <div class="card">
             <div class="card-body">
                 <dl class="row">
                     <dt class="col-sm-3">Name:</dt>
-                    <dd class="col-sm-9">@Model.Name</dd>
-                    
-                    <dt class="col-sm-3">Specialization:</dt>
-                    <dd class="col-sm-9">@Model.Specialization</dd>
+                    <dd class="col-sm-9">@Model.Name</dd
                     
                     <dt class="col-sm-3">Phone:</dt>
                     <dd class="col-sm-9">@Model.Phone</dd>

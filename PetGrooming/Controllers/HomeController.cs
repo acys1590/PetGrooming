@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PetGroomingSystem.Models;
-using PetGroomingSystem.Models.ViewModels;
 using PetGrooming.Models;
 using System.Diagnostics;
 
-namespace PetGroomingSystem.Controllers
+namespace PetGrooming.Controllers
 {
     public class HomeController : Controller
     {
@@ -20,6 +18,7 @@ namespace PetGroomingSystem.Controllers
         {
             ViewBag.TotalPets = await _context.Pets.CountAsync();
             ViewBag.TotalDoctors = await _context.Doctors.CountAsync(d => d.IsActive);
+            ViewBag.TotalStaff = await _context.Staffs.CountAsync(s => s.IsActive);
             ViewBag.PetsWithDoctors = await _context.Pets.CountAsync(p => p.DoctorId != null);
             ViewBag.PetsWithoutDoctors = await _context.Pets.CountAsync(p => p.DoctorId == null);
 

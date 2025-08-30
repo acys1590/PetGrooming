@@ -14,6 +14,7 @@ public class DB : DbContext
     public DbSet<Member> Members { get; set; } = null!;
     public DbSet<Pet> Pets { get; set; } 
     public DbSet<Doctor> Doctors { get; set; }
+    public DbSet<Staff> Staffs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -146,6 +147,8 @@ public class Staff
 
     [StringLength(500)]
     public string? Notes { get; set; }
+
+    public virtual ICollection<Pet> Pets { get; set; } = new List<Pet>();
 
 }
 

@@ -1,13 +1,13 @@
 ﻿@using PetGrooming.Models
 @using PetGroomingSystem.Models
-@model Doctor
+@model Staff
 @{
-    ViewData["Title"] = "Add New Doctor";
+    ViewData["Title"] = "Add New Staff";
 }
 
 <div class="row">
     <div class="col-md-8">
-        <h1><i class="fas fa-plus"></i> Add New Doctor</h1>
+        <h1><i class="fas fa-plus"></i> Add New Staff</h1>
 
         <div class="card">
             <div class="card-body">
@@ -22,23 +22,7 @@
                                 <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label asp-for="Specialization" class="form-label">Specialization</label>
-                                <select asp-for="Specialization" class="form-select">
-                                    <option value="">Select Specialization</option>
-                                    <option value="Small Animals">Small Animals</option>
-                                    <option value="Large Animals">Large Animals</option>
-                                    <option value="Exotic Animals">Exotic Animals</option>
-                                    <option value="General Practice">General Practice</option>
-                                    <option value="Surgery">Surgery</option>
-                                    <option value="Dermatology">Dermatology</option>
-                                </select>
-                                <span asp-validation-for="Specialization" class="text-danger"></span>
-                            </div>
-                        </div>
-                    </div>
-
+                        
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -75,7 +59,7 @@
 
                     <div class="mb-3">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Save Doctor
+                            <i class="fas fa-save"></i> Save Staff
                         </button>
                         <a asp-action="Index" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Back to List

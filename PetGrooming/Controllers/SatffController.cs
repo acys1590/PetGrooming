@@ -16,11 +16,11 @@ namespace PetGroomingSystem.Controllers
         // GET: Doctors
         public async Task<IActionResult> Index()
         {
-            var doctors = await _context.Doctors
+            var staffs = await _context.Staffs
                 .Include(d => d.Pets)
                 .OrderBy(d => d.Name)
                 .ToListAsync();
-            return View(doctors);
+            return View(staffs);
         }
 
         // GET: Doctors/Details/5
@@ -31,38 +31,38 @@ namespace PetGroomingSystem.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctors
+            var staff = await _context.Staffs
                 .Include(d => d.Pets)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (doctor == null)
+            if (staff == null)
             {
                 return NotFound();
             }
 
-            return View(doctor);
+            return View(staff);
         }
 
         // GET: Doctors/Create
         public IActionResult Create()
         {
-            var doctor = new Doctor();
-            return View(doctor);
+            var staff = new Staff();
+            return View(staff);
         }
 
         // POST: Doctors/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Doctor doctor)
+        public async Task<IActionResult> Create(Staff staff)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(doctor);
+                _context.Add(staff);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Doctor created successfully!";
+                TempData["Success"] = "Staff created successfully!";
                 return RedirectToAction(nameof(Index));
             }
-            return View(doctor);
+            return View(staff);
         }
 
         // GET: Doctors/Edit/5
@@ -73,20 +73,20 @@ namespace PetGroomingSystem.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctors.FindAsync(id);
-            if (doctor == null)
+            var staff = await _context.Staffs.FindAsync(id);
+            if (staff == null)
             {
                 return NotFound();
             }
-            return View(doctor);
+            return View(staff);
         }
 
         // POST: Doctors/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Doctor doctor)
+        public async Task<IActionResult> Edit(int id, Staff staff)
         {
-            if (id != doctor.Id)
+            if (id != staff.Id)
             {
                 return NotFound();
             }
@@ -95,13 +95,13 @@ namespace PetGroomingSystem.Controllers
             {
                 try
                 {
-                    _context.Update(doctor);
+                    _context.Update(staff);
                     await _context.SaveChangesAsync();
-                    TempData["Success"] = "Doctor updated successfully!";
+                    TempData["Success"] = "Staff updated successfully!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DoctorExists(doctor.Id))
+                    if (!StaffExists(staff.Id))
                     {
                         return NotFound();
                     }
@@ -112,7 +112,7 @@ namespace PetGroomingSystem.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(doctor);
+            return View(staff);
         }
 
         // GET: Doctors/Delete/5
@@ -123,16 +123,16 @@ namespace PetGroomingSystem.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctors
+            var staff = await _context.Doctors
                 .Include(d => d.Pets)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (doctor == null)
+            if (staff == null)
             {
                 return NotFound();
             }
 
-            return View(doctor);
+            return View(staff);
         }
 
         // POST: Doctors/Delete/5
@@ -140,12 +140,12 @@ namespace PetGroomingSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var doctor = await _context.Doctors.FindAsync(id);
-            if (doctor != null)
+            var staff = await _context.Staffs.FindAsync(id);
+            if (staff != null)
             {
-                _context.Doctors.Remove(doctor);
+                _context.Staffs.Remove(staff);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Doctor deleted successfully!";
+                TempData["Success"] = "Staff deleted successfully!";
             }
             return RedirectToAction(nameof(Index));
         }
@@ -153,20 +153,20 @@ namespace PetGroomingSystem.Controllers
         // GET: Doctors/ToggleStatus/5
         public async Task<IActionResult> ToggleStatus(int id)
         {
-            var doctor = await _context.Doctors.FindAsync(id);
-            if (doctor != null)
+            var staff = await _context.Doctors.FindAsync(id);
+            if (staff != null)
             {
-                doctor.IsActive = !doctor.IsActive;
-                _context.Update(doctor);
+                staff.IsActive = !staff.IsActive;
+                _context.Update(staff);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = $"Doctor status changed to {(doctor.IsActive ? "Active" : "Inactive")}!";
+                TempData["Success"] = $"Doctor status changed to {(staff.IsActive ? "Active" : "Inactive")}!";
             }
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DoctorExists(int id)
+        private bool StaffExists(int id)
         {
-            return _context.Doctors.Any(e => e.Id == id);
+            return _context.Staffs.Any(e => e.Id == id);
         }
     }
 }
