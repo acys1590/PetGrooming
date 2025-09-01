@@ -15,15 +15,15 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label asp-for="Pet.Name" class="form-label">Pet Name</label>
-                                <input asp-for="Pet.Name" class="form-control" />
-                                <span asp-validation-for="Pet.Name" class="text-danger"></span>
+                                <label asp-for="Pet.PetName" class="form-label">Pet Name</label>
+                                <input asp-for="Pet.PetName" class="form-control" />
+                                <span asp-validation-for="Pet.PetName" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label asp-for="Pet.Species" class="form-label">Species</label>
-                                <select asp-for="Pet.Species" class="form-select">
+                                <label asp-for="Pet.PetType" class="form-label">Species</label>
+                                <select asp-for="Pet.PetType" class="form-select">
                                     <option value="">Select Species</option>
                                     <option value="Dog">Dog</option>
                                     <option value="Cat">Cat</option>
@@ -31,7 +31,7 @@
                                     <option value="Rabbit">Rabbit</option>
                                     <option value="Other">Other</option>
                                 </select>
-                                <span asp-validation-for="Pet.Species" class="text-danger"></span>
+                                <span asp-validation-for="Pet.PetType" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
@@ -39,9 +39,9 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label asp-for="Pet.Breed" class="form-label">Breed</label>
-                                <input asp-for="Pet.Breed" class="form-control" />
-                                <span asp-validation-for="Pet.Breed" class="text-danger"></span>
+                                <label asp-for="Pet.PetBreed" class="form-label">Breed</label>
+                                <input asp-for="Pet.PetBreed" class="form-control" />
+                                <span asp-validation-for="Pet.PetBreed" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -77,17 +77,17 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label asp-for="Pet.OwnerPhone" class="form-label">Phone Number</label>
-                                <input asp-for="Pet.OwnerPhone" class="form-control" />
-                                <span asp-validation-for="Pet.OwnerPhone" class="text-danger"></span>
+                                <label asp-for="Pet.PhoneNumber" class="form-label">Phone Number</label>
+                                <input asp-for="Pet.PhoneNumber" class="form-control" />
+                                <span asp-validation-for="Pet.PhoneNumber" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Pet.OwnerEmail" class="form-label">Email Address</label>
-                        <input asp-for="Pet.OwnerEmail" class="form-control" type="email" />
-                        <span asp-validation-for="Pet.OwnerEmail" class="text-danger"></span>
+                        <label asp-for="Pet.Email" class="form-label">Email Address</label>
+                        <input asp-for="Pet.Email" class="form-control" type="email" />
+                        <span asp-validation-for="Pet.Email" class="text-danger"></span>
                     </div>
 
                @*      <div class="mb-3">

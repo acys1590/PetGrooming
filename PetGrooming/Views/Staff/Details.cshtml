@@ -67,8 +67,8 @@
                         @foreach (var pet in Model.Pets)
                         {
                             <div class="list-group-item">
-                                <strong>@pet.Name</strong>
-                                <small class="text-muted d-block">@pet.Species - @pet.OwnerName</small>
+                                <strong>@pet.PetName</strong>
+                                <small class="text-muted d-block">@pet.PetType - @pet.OwnerName</small>
                             </div>
                         }
                     </div>

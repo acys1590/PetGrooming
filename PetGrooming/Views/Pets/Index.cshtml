@@ -1,5 +1,5 @@
 ﻿@using PetGrooming.Models
-@model IEnumerable<Pet>
+@model IEnumerable<Appointment>
 @{
     ViewData["Title"] = "Pets Management";
 }
@@ -37,19 +37,19 @@
                         {
                             <tr>
                                 <td>
-                                    <strong>@pet.Name</strong>
+                                    <strong>@pet.PetName</strong>
                                     <small class="text-muted d-block">@pet.Gender</small>
                                 </td>
                                 <td>
-                                    @pet.Species
-                                    @if (!string.IsNullOrEmpty(pet.Breed))
+                                    @pet.PetType
+                                    @if (!string.IsNullOrEmpty(pet.PetBreed))
                                     {
-                                        <small class="text-muted d-block">@pet.Breed</small>
+                                        <small class="text-muted d-block">@pet.PetBreed</small>
                                     }
                                 </td>
                                 <td>@pet.Age years</td>
                                 <td>@pet.OwnerName</td>
-                                <td>@pet.OwnerPhone</td>
+                                <td>@pet.PhoneNumber</td>
                                 <td>
                                     @if (pet.Doctor != null)
                                     {

@@ -1,5 +1,5 @@
 ﻿@using PetGrooming.Models
-@model Pet
+@model Appointment
 @{
     ViewData["Title"] = "Pet Details";
 }
@@ -12,13 +12,13 @@
             <div class="card-body">
                 <dl class="row">
                     <dt class="col-sm-3">Name:</dt>
-                    <dd class="col-sm-9">@Model.Name</dd>
+                    <dd class="col-sm-9">@Model.PetName</dd>
 
                     <dt class="col-sm-3">Species:</dt>
-                    <dd class="col-sm-9">@Model.Species</dd>
+                    <dd class="col-sm-9">@Model.PetType</dd>
 
                     <dt class="col-sm-3">Breed:</dt>
-                    <dd class="col-sm-9">@Model.Breed</dd>
+                    <dd class="col-sm-9">@Model.PetBreed</dd>
 
                     <dt class="col-sm-3">Age:</dt>
                     <dd class="col-sm-9">@Model.Age years</dd>
@@ -30,10 +30,12 @@
                     <dd class="col-sm-9">@Model.OwnerName</dd>
 
                     <dt class="col-sm-3">Phone:</dt>
-                    <dd class="col-sm-9">@Model.OwnerPhone</dd>
+                    <dd class="col-sm-9">@Model.PhoneNumber</dd>
 
                     <dt class="col-sm-3">Email:</dt>
-                    <dd class="col-sm-9">@Model.OwnerEmail</dd>
+                    <dd class="col-sm-9">@Model.Email</dd>
+
+                    
 
                     <dt class="col-sm-3">Assigned Doctor:</dt>
                     <dd class="col-sm-9">
@@ -50,13 +52,13 @@
                     <dt class="col-sm-3">Appointment Date:</dt>
                     <dd class="col-sm-9">@Model.AppointmentDate.ToString("MMMM dd, yyyy")</dd>
 
-                    <dt class="col-sm-3">Appointment Time:</dt>
+                  @*   <dt class="col-sm-3">Appointment Time:</dt>
                     <dd class="col-sm-9">
                        
                         
                             @Model.AppointmentTime.ToString("hh:mm tt")
                       
-                    </dd>
+                    </dd> *@
 
                     <dt class="col-sm-3">Notes:</dt>
                     <dd class="col-sm-9">@Model.Notes</dd>

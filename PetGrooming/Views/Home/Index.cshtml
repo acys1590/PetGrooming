@@ -1,6 +1,6 @@
 @using PetGrooming.Models
 @using PetGroomingSystem.Models
-@model IEnumerable<Pet>
+@model IEnumerable<Appointment>
 
 @{
     ViewData["Title"] = "Dashboard";
@@ -103,8 +103,8 @@
                                 @foreach (var pet in Model)
                                 {
                                     <tr>
-                                        <td>@pet.Name</td>
-                                        <td>@pet.Species</td>
+                                        <td>@pet.PetName</td>
+                                        <td>@pet.PetType</td>
                                         <td>@pet.OwnerName</td>
                                         <td>
                                             @if (pet.Doctor != null)

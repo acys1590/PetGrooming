@@ -7,7 +7,7 @@ namespace PetGroomingSystem.Models.ViewModels
 {
     public class PetViewModel
     {
-        public required Pet Pet { get; set; }
+        public required Appointment Pet { get; set; }
         //public required SelectList Doctors { get; set; }
     }
 

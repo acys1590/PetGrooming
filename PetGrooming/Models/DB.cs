@@ -12,7 +12,7 @@ public class DB : DbContext
     // Define database tables
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Member> Members { get; set; } = null!;
-    public DbSet<Pet> Pets { get; set; } 
+    //public DbSet<Pet> Pets { get; set; } 
     public DbSet<Doctor> Doctors { get; set; }
     public DbSet<Staff> Staffs { get; set; }
 
@@ -23,7 +23,7 @@ public class DB : DbContext
         base.OnModelCreating(modelBuilder);
 
         // Configure Pet entity
-        modelBuilder.Entity<Pet>(entity =>
+        modelBuilder.Entity<Appointment>(entity =>
         {
             entity.HasKey(p => p.Id);
             entity.Property(p => p.AppointmentDate).HasDefaultValueSql("GETDATE()");
@@ -121,7 +121,7 @@ public class Doctor
     public string? Notes { get; set; }
 
     // Navigation property
-    public virtual ICollection<Pet> Pets { get; set; } = new List<Pet>();
+    public virtual ICollection<Appointment> Pets { get; set; } = new List<Appointment>();
 }
 
 public class Staff
@@ -150,58 +150,58 @@ public class Staff
     [StringLength(500)]
     public string? Notes { get; set; }
 
-    public virtual ICollection<Pet> Pets { get; set; } = new List<Pet>();
+    public virtual ICollection<Appointment> Pets { get; set; } = new List<Appointment>();
 
 }
 
 // Pet model
-public class Pet
-{
-    public int Id { get; set; }
+//public class Pet
+//{
+//    public int Id { get; set; }
 
-    [Required]
-    [StringLength(100)]
-    public string Name { get; set; } = string.Empty;
+//    [Required]
+//    [StringLength(100)]
+//    public string Name { get; set; } = string.Empty;
 
-    [Required]
-    [StringLength(50)]
-    public string Species { get; set; } = string.Empty;
+//    [Required]
+//    [StringLength(50)]
+//    public string Species { get; set; } = string.Empty;
 
-    [StringLength(50)]
-    public string? Breed { get; set; }
+//    [StringLength(50)]
+//    public string? Breed { get; set; }
 
-    public int? Age { get; set; }
+//    public int? Age { get; set; }
 
-    [StringLength(20)]
-    public string? Gender { get; set; }
+//    [StringLength(20)]
+//    public string? Gender { get; set; }
 
-    [StringLength(20)]
-    public string? Service { get; set; }
+//    [StringLength(20)]
+//    public string? Service { get; set; }
 
 
-    [StringLength(100)]
-    public string? OwnerName { get; set; }
+//    [StringLength(100)]
+//    public string? OwnerName { get; set; }
 
-    [StringLength(15)]
-    public string? OwnerPhone { get; set; }
+//    [StringLength(15)]
+//    public string? OwnerPhone { get; set; }
 
-    [EmailAddress]
-    [StringLength(100)]
-    public string? OwnerEmail { get; set; }
+//    [EmailAddress]
+//    [StringLength(100)]
+//    public string? OwnerEmail { get; set; }
 
-    public DateTime AppointmentDate { get; set; }
+//    public DateTime AppointmentDate { get; set; }
 
-    public DateTime AppointmentTime { get; set; }
+//    public DateTime AppointmentTime { get; set; }
 
-    [StringLength(500)]
-    public string? Notes { get; set; }
+//    [StringLength(500)]
+//    public string? Notes { get; set; }
 
-    // Foreign Key
-    public int? DoctorId { get; set; }
+//    // Foreign Key
+//    public int? DoctorId { get; set; }
 
-    // Navigation Property
-    public virtual Doctor? Doctor { get; set; }
-}
+//    // Navigation Property
+//    public virtual Doctor? Doctor { get; set; }
+//}
 
 // Member model
 public class Member
@@ -269,6 +269,13 @@ public class Appointment
     [Column(TypeName = "nvarchar(50)")]
     public string PetType { get; set; } = string.Empty;
 
+    public string PetBreed { get; set; } = string.Empty;
+
+     public int? Age { get; set; }
+
+    [StringLength(20)]
+    public string? Gender { get; set; }
+
     [Required(ErrorMessage = "Email Address is required")]
     [EmailAddress(ErrorMessage = "Please enter a valid email address")]
     [StringLength(255, ErrorMessage = "Email cannot exceed 255 characters")]
@@ -300,4 +307,10 @@ public class Appointment
     public string? Notes { get; set; }
 
     public DateTime CreatedDate { get; set; }
+
+    // Foreign Key
+    public int? DoctorId { get; set; }
+
+    // Navigation Property
+    public virtual Doctor? Doctor { get; set; }
 }

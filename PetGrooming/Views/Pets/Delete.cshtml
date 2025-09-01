@@ -1,5 +1,5 @@
 ﻿@using PetGrooming.Models
-@model Pet
+@model Appointment
 @{
     ViewData["Title"] = "Delete Pet";
 }
@@ -17,13 +17,13 @@
             <div class="card-body">
                 <dl class="row">
                     <dt class="col-sm-3">Name:</dt>
-                    <dd class="col-sm-9">@Model.Name</dd>
+                    <dd class="col-sm-9">@Model.PetName</dd>
 
                     <dt class="col-sm-3">Species:</dt>
-                    <dd class="col-sm-9">@Model.Species</dd>
+                    <dd class="col-sm-9">@Model.PetType</dd>
 
                     <dt class="col-sm-3">Breed:</dt>
-                    <dd class="col-sm-9">@Model.Breed</dd>
+                    <dd class="col-sm-9">@Model.PetBreed</dd>
 
                     <dt class="col-sm-3">Owner:</dt>
                     <dd class="col-sm-9">@Model.OwnerName</dd>

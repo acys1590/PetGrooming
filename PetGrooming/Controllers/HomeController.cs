@@ -16,13 +16,13 @@ namespace PetGrooming.Controllers
 
         public async Task<IActionResult> Index()
         {
-            ViewBag.TotalPets = await _context.Pets.CountAsync();
+            ViewBag.TotalPets = await _context.Appointments.CountAsync();
             ViewBag.TotalDoctors = await _context.Doctors.CountAsync(d => d.IsActive);
             ViewBag.TotalStaff = await _context.Staffs.CountAsync(s => s.IsActive);
-            ViewBag.PetsWithDoctors = await _context.Pets.CountAsync(p => p.DoctorId != null);
-            ViewBag.PetsWithoutDoctors = await _context.Pets.CountAsync(p => p.DoctorId == null);
+            ViewBag.PetsWithDoctors = await _context.Appointments.CountAsync(p => p.DoctorId != null);
+            ViewBag.PetsWithoutDoctors = await _context.Appointments.CountAsync(p => p.DoctorId == null);
 
-            var recentPets = await _context.Pets
+            var recentPets = await _context.Appointments
                 .Include(p => p.Doctor)
                 .OrderByDescending(p => p.AppointmentDate)
                 .Take(5)
