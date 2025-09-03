@@ -2,17 +2,22 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PetGrooming.Models;
+using PetGrooming.Services;
 using PetGroomingSystem.Models.ViewModels;
+using System.Net;
+using System.Net.Mail;
 
 namespace PetGroomingSystem.Controllers
 {
     public class PetsController : Controller
     {
         private readonly DB _context;
+        
 
         public PetsController(DB context)
         {
             _context = context;
+           
         }
 
         // GET: Pets
@@ -51,7 +56,7 @@ namespace PetGroomingSystem.Controllers
             var viewModel = new PetViewModel
             {
                 Pet = new Appointment { AppointmentDate = DateTime.Now },
-                //Doctors = new SelectList(await _context.Doctors.Where(d => d.IsActive).ToListAsync(), "Id", "Name")
+              
             };
             return View(viewModel);
         }
@@ -69,7 +74,7 @@ namespace PetGroomingSystem.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            //viewModel.Doctors = new SelectList(await _context.Doctors.Where(d => d.IsActive).ToListAsync(), "Id", "Name", viewModel.Pet.DoctorId);
+            
             return View(viewModel);
         }
 
@@ -92,7 +97,7 @@ namespace PetGroomingSystem.Controllers
             var viewModel = new PetViewModel
             {
                 Pet = pet,
-                //Doctors = new SelectList(await _context.Doctors.Where(d => d.IsActive).ToListAsync(), "Id", "Name", pet.DoctorId)
+              
             };
 
             return View(viewModel);
@@ -108,7 +113,7 @@ namespace PetGroomingSystem.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 try
                 {
@@ -130,7 +135,7 @@ namespace PetGroomingSystem.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            //viewModel.Doctors = new SelectList(await _context.Doctors.Where(d => d.IsActive).ToListAsync(), "Id", "Name", viewModel.Pet.DoctorId);
+   
             return View(viewModel);
         }
 
@@ -229,5 +234,11 @@ namespace PetGroomingSystem.Controllers
         {
             return _context.Appointments.Any(e => e.Id == id);
         }
+
+
+
     }
+
 }
+
+

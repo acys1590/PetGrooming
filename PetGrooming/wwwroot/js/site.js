@@ -30,10 +30,8 @@
         var species = $(this).val();
         var breedInput = $('#Pet_Breed');
 
-        // Clear current value
         breedInput.val('');
 
-        // Add placeholder based on species
         switch (species) {
             case 'Dog':
                 breedInput.attr('placeholder', 'e.g., Golden Retriever, Labrador, German Shepherd');
@@ -51,7 +49,8 @@
                 breedInput.attr('placeholder', 'Enter breed');
         }
     });
-});
+
+
 
 // Utility functions
 function formatDate(dateString) {
@@ -78,9 +77,9 @@ function showNotification(message, type = 'info') {
 
     $('.container > main').prepend(alert);
 
-    // Auto-hide after 5 seconds
     setTimeout(function () {
         $('.alert').first().fadeOut('slow', function () {
             $(this).remove();
         });
     }, 5000);
+}

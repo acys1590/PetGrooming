@@ -154,54 +154,6 @@ public class Staff
 
 }
 
-// Pet model
-//public class Pet
-//{
-//    public int Id { get; set; }
-
-//    [Required]
-//    [StringLength(100)]
-//    public string Name { get; set; } = string.Empty;
-
-//    [Required]
-//    [StringLength(50)]
-//    public string Species { get; set; } = string.Empty;
-
-//    [StringLength(50)]
-//    public string? Breed { get; set; }
-
-//    public int? Age { get; set; }
-
-//    [StringLength(20)]
-//    public string? Gender { get; set; }
-
-//    [StringLength(20)]
-//    public string? Service { get; set; }
-
-
-//    [StringLength(100)]
-//    public string? OwnerName { get; set; }
-
-//    [StringLength(15)]
-//    public string? OwnerPhone { get; set; }
-
-//    [EmailAddress]
-//    [StringLength(100)]
-//    public string? OwnerEmail { get; set; }
-
-//    public DateTime AppointmentDate { get; set; }
-
-//    public DateTime AppointmentTime { get; set; }
-
-//    [StringLength(500)]
-//    public string? Notes { get; set; }
-
-//    // Foreign Key
-//    public int? DoctorId { get; set; }
-
-//    // Navigation Property
-//    public virtual Doctor? Doctor { get; set; }
-//}
 
  //Member model
 public class Member
@@ -313,5 +265,8 @@ public class Appointment
 
     // Navigation Property
     public virtual Doctor? Doctor { get; set; }
+
+    public bool IsApproved { get; set; }
+
 
 }
