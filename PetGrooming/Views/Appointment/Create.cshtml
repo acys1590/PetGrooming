@@ -64,9 +64,12 @@
 
                         <div class="mb-3">
                             <label asp-for="AppointmentDate" class="form-label"></label>
-                            <input asp-for="AppointmentDate" class="form-control" type="datetime-local" />
+                            <!-- step=900 = 15 minutes -->
+                            <input asp-for="AppointmentDate" class="form-control" type="datetime-local" step="900" />
                             <span asp-validation-for="AppointmentDate" class="text-danger"></span>
-                            <div class="form-text">Please select a date and time that works for you.</div>
+                            <div class="form-text" style="color: #FF0000;">
+                                Appointments are only available in 15-minute slots (:00, :15, :30, :45).
+                            </div>
                         </div>
 
                         <div class="mb-4">
@@ -123,14 +126,44 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        // Set minimum date to today
-        document.addEventListener('DOMContentLoaded', function() {
+        // Round a Date to the next 15-minute mark
+        function roundToNextQuarter(d) {
+            const ms = 1000 * 60 * 15;
+            return new Date(Math.ceil(d.getTime() / ms) * ms);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
             const dateInput = document.querySelector('input[type="datetime-local"]');
-            if (dateInput) {
-                const now = new Date();
-                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-                dateInput.min = now.toISOString().slice(0, 16);
+            if (!dateInput) return;
+
+            // Set min = now
+            const now = new Date();
+            const minLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+            dateInput.min = minLocal.toISOString().slice(0, 16);
+
+            // If empty, set to next quarter hour
+            if (!dateInput.value) {
+                const nextQ = roundToNextQuarter(new Date());
+                const nextQLocal = new Date(nextQ.getTime() - (nextQ.getTimezoneOffset() * 60000));
+                dateInput.value = nextQLocal.toISOString().slice(0, 16);
             }
+
+            // Validate user input
+            dateInput.addEventListener('change', function () {
+                if (!dateInput.value) return;
+                const picked = new Date(dateInput.value);
+                const minutes = picked.getMinutes();
+
+                // If not aligned to :00/:15/:30/:45
+                if (minutes % 15 !== 0) {
+                    alert("Appointments are only available in 15-minute slots (:00, :15, :30, :45). " +
+                          "We have adjusted your time to the nearest slot.");
+
+                    const aligned = roundToNextQuarter(picked);
+                    const alignedLocal = new Date(aligned.getTime() - (aligned.getTimezoneOffset() * 60000));
+                    dateInput.value = alignedLocal.toISOString().slice(0, 16);
+                }
+            });
         });
     </script>
 }
