@@ -1,8 +1,4 @@
-﻿@{
-    Layout = "Main_Layout";
-}
-
-@model PetGrooming.Models.Appointment
+﻿@model PetGrooming.Models.Appointment
 
 @{
     ViewData["Title"] = "Book Appointment";
@@ -18,7 +14,7 @@
                     </h2>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted mb-4">Please fill out the form below to schedule your pet's grooming/doctor appointment.</p>
+                    <p class="text-muted mb-4">Please fill out the form below to schedule your pet's grooming appointment.</p>
 
                     <form asp-action="Create" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -36,7 +32,7 @@
                             </div>
                         </div>
 
-                        <!-- Pet Info -->
+                        <!-- New Pet Info Section -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="PetBreed" class="form-label"></label>
@@ -67,22 +63,13 @@
                                 </select>
                                 <span asp-validation-for="PetType" class="text-danger"></span>
                             </div>
-
-                            <!-- KEEP THIS ONE (top) -->
                             <div class="col-md-6 mb-3">
                                 <label asp-for="ServiceType" class="form-label"></label>
-                                <select asp-for="ServiceType" class="form-select" asp-items="ViewBag.ServiceTypes" id="ServiceType">
+                                <select asp-for="ServiceType" class="form-select" asp-items="ViewBag.ServiceTypes">
                                     <option value="">-- Select Service --</option>
                                 </select>
                                 <span asp-validation-for="ServiceType" class="text-danger"></span>
-
-                                <!-- Shown only when 'Other' is chosen -->
-                                <div id="otherHelp" class="alert alert-info mt-2 d-none" role="alert">
-                                    You selected <strong>Other / Custom Request</strong>. Please describe your needs
-                                    in <em>Special Notes</em> (minimum 10 characters).
-                                </div>
                             </div>
-                            <!-- END top Service Type -->
                         </div>
 
                         <div class="row">
@@ -107,15 +94,9 @@
                             </div>
                         </div>
 
-                        <!-- Notes (used for Other/Custom too) -->
                         <div class="mb-4">
-                            <label asp-for="Notes" class="form-label">Special Notes</label>
-                            <textarea asp-for="Notes" class="form-control" rows="3"
-                                      placeholder="Describe special needs, e.g. sensitive skin shampoo, medicated bath, specific handling, etc."
-                                      id="Notes" maxlength="500"></textarea>
-                            <div class="form-text">
-                                <span id="notesCounter">0</span> / 500 characters
-                            </div>
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Any special instructions or notes about your pet (allergies, behavioral notes, etc.)"></textarea>
                             <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
 
@@ -173,72 +154,37 @@
             return new Date(Math.ceil(d.getTime() / ms) * ms);
         }
 
-        function setNotesRequirement(isRequired) {
-            const notes = document.getElementById('Notes');
-            if (!notes) return;
-            if (isRequired) {
-                notes.setAttribute('required', 'required');
-                notes.setAttribute('minlength', '10');
-            } else {
-                notes.removeAttribute('required');
-                notes.removeAttribute('minlength');
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', function () {
             const dateInput = document.querySelector('input[type="datetime-local"]');
-            if (dateInput) {
-                // Set min = now (local)
-                const now = new Date();
-                const minLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
-                dateInput.min = minLocal.toISOString().slice(0, 16);
+            if (!dateInput) return;
 
-                // If empty, set to next quarter hour
-                if (!dateInput.value) {
-                    const nextQ = roundToNextQuarter(new Date());
-                    const nextQLocal = new Date(nextQ.getTime() - (nextQ.getTimezoneOffset() * 60000));
-                    dateInput.value = nextQLocal.toISOString().slice(0, 16);
+            // Set min = now
+            const now = new Date();
+            const minLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+            dateInput.min = minLocal.toISOString().slice(0, 16);
+
+            // If empty, set to next quarter hour
+            if (!dateInput.value) {
+                const nextQ = roundToNextQuarter(new Date());
+                const nextQLocal = new Date(nextQ.getTime() - (nextQ.getTimezoneOffset() * 60000));
+                dateInput.value = nextQLocal.toISOString().slice(0, 16);
+            }
+
+            // Validate user input
+            dateInput.addEventListener('change', function () {
+                if (!dateInput.value) return;
+                const picked = new Date(dateInput.value);
+                const minutes = picked.getMinutes();
+
+                if (minutes % 15 !== 0) {
+                    alert("Appointments are only available in 15-minute slots (:00, :15, :30, :45). " +
+                          "We have adjusted your time to the nearest slot.");
+
+                    const aligned = roundToNextQuarter(picked);
+                    const alignedLocal = new Date(aligned.getTime() - (aligned.getTimezoneOffset() * 60000));
+                    dateInput.value = alignedLocal.toISOString().slice(0, 16);
                 }
-
-                // Validate user input for 15-min slots
-                dateInput.addEventListener('change', function () {
-                    if (!dateInput.value) return;
-                    const picked = new Date(dateInput.value);
-                    const minutes = picked.getMinutes();
-
-                    if (minutes % 15 !== 0) {
-                        alert("Appointments are only available in 15-minute slots (:00, :15, :30, :45). We adjusted your time to the nearest slot.");
-                        const aligned = roundToNextQuarter(picked);
-                        const alignedLocal = new Date(aligned.getTime() - (aligned.getTimezoneOffset() * 60000));
-                        dateInput.value = alignedLocal.toISOString().slice(0, 16);
-                    }
-                });
-            }
-
-            // "Other / Custom Request" UI
-            const serviceSelect = document.getElementById('ServiceType');
-            const otherHelp = document.getElementById('otherHelp');
-            const notes = document.getElementById('Notes');
-            const notesCounter = document.getElementById('notesCounter');
-
-            function updateOtherUI() {
-                const isOther = serviceSelect && serviceSelect.value === 'Other';
-                if (otherHelp) otherHelp.classList.toggle('d-none', !isOther);
-                setNotesRequirement(isOther);
-            }
-
-            if (serviceSelect) {
-                serviceSelect.addEventListener('change', updateOtherUI);
-                updateOtherUI(); // initialize on load
-            }
-
-            if (notes && notesCounter) {
-                const max = 500;
-                notes.addEventListener('input', () => {
-                    notesCounter.textContent = Math.min(notes.value.length, max);
-                });
-                notesCounter.textContent = Math.min(notes.value.length, max);
-            }
+            });
         });
     </script>
 }
