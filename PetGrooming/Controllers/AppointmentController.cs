@@ -52,7 +52,7 @@ namespace PetGroomingSystem.Controllers
         // POST: Appointment/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OwnerName,PetName,PetType,Email,PhoneNumber,ServiceType,AppointmentDate,Notes")] Appointment appointment)
+        public async Task<IActionResult> Create([Bind("OwnerName,PetName,PetType,PetBreed,Email,PhoneNumber,ServiceType,AppointmentDate,Notes")] Appointment appointment)
         {
             if (ModelState.IsValid)
             {

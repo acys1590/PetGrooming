@@ -271,8 +271,6 @@ public class Appointment
 
     public string PetBreed { get; set; } = string.Empty;
 
-    public string Breed { get; set; } = string.Empty;
-
     public int? Age { get; set; }
 
     [StringLength(20)]

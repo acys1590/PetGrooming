@@ -28,8 +28,10 @@
                             <th>Age</th>
                             <th>Owner</th>
                             <th>Phone</th>
+                            <th>Appointment Date</th>
                             <th>Assigned Doctor</th>
                             <th>Actions</th>
+                            <th>Approval</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -50,6 +52,7 @@
                                 <td>@pet.Age years</td>
                                 <td>@pet.OwnerName</td>
                                 <td>@pet.PhoneNumber</td>
+                                <td>@pet.AppointmentDate</td>
                                 <td>
                                     @if (pet.Doctor != null)
                                     {

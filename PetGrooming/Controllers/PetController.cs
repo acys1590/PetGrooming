@@ -61,7 +61,7 @@ namespace PetGroomingSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PetViewModel viewModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _context.Add(viewModel.Pet);
                 await _context.SaveChangesAsync();
