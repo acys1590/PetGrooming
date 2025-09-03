@@ -271,7 +271,9 @@ public class Appointment
 
     public string PetBreed { get; set; } = string.Empty;
 
-     public int? Age { get; set; }
+    public string Breed { get; set; } = string.Empty;
+
+    public int? Age { get; set; }
 
     [StringLength(20)]
     public string? Gender { get; set; }
@@ -313,4 +315,5 @@ public class Appointment
 
     // Navigation Property
     public virtual Doctor? Doctor { get; set; }
+
 }

@@ -32,6 +32,29 @@
                             </div>
                         </div>
 
+                        <!-- New Pet Info Section -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Breed" class="form-label"></label>
+                                <input asp-for="Breed" class="form-control" placeholder="Enter your pet's breed" />
+                                <span asp-validation-for="Breed" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label asp-for="Age" class="form-label"></label>
+                                <input asp-for="Age" class="form-control" type="number" min="0" placeholder="Age in years" />
+                                <span asp-validation-for="Age" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label asp-for="Gender" class="form-label"></label>
+                                <select asp-for="Gender" class="form-select">
+                                    <option value="">-- Select Gender --</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                                <span asp-validation-for="Gender" class="text-danger"></span>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="PetType" class="form-label"></label>
@@ -64,10 +87,9 @@
 
                         <div class="mb-3">
                             <label asp-for="AppointmentDate" class="form-label"></label>
-                            <!-- step=900 = 15 minutes -->
                             <input asp-for="AppointmentDate" class="form-control" type="datetime-local" step="900" />
                             <span asp-validation-for="AppointmentDate" class="text-danger"></span>
-                            <div class="form-text" style="color: #FF0000;">
+                            <div class="form-text text-warning">
                                 Appointments are only available in 15-minute slots (:00, :15, :30, :45).
                             </div>
                         </div>
@@ -154,7 +176,6 @@
                 const picked = new Date(dateInput.value);
                 const minutes = picked.getMinutes();
 
-                // If not aligned to :00/:15/:30/:45
                 if (minutes % 15 !== 0) {
                     alert("Appointments are only available in 15-minute slots (:00, :15, :30, :45). " +
                           "We have adjusted your time to the nearest slot.");
