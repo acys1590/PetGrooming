@@ -84,6 +84,9 @@ namespace PetGroomingSystem.Models.ViewModels
 
         [DataType(DataType.Password)]
         public string? NewPassword { get; set; }
+        public string? Address { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public int? Age { get; set; }
     }
 
 
@@ -115,23 +118,27 @@ namespace PetGroomingSystem.Models.ViewModels
     }
 
 
-    public class ProfileVM
-    {
-        [Required, MaxLength(100)]
-        public string Name { get; set; }
+    //public class ProfileVM
+    //{
+    //    [Required, MaxLength(100)]
+    //    public string Name { get; set; }
 
-        [Required, EmailAddress]
-        public string Email { get; set; }
+    //    [Required, EmailAddress]
+    //    public string Email { get; set; }
 
-        [DataType(DataType.Password)]
-        public string? Password { get; set; }   // 允许为空，不改就不填
+    //    [DataType(DataType.Password)]
+    //    public string? Password { get; set; }   // 允许为空，不改就不填
 
-        [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "密码不一致")]
-        public string? Confirm { get; set; }
+    //    [DataType(DataType.Password)]
+    //    [Compare("Password", ErrorMessage = "密码不一致")]
+    //    public string? Confirm { get; set; }
 
-        public IFormFile? Photo { get; set; }
+    //    public IFormFile? Photo { get; set; }
 
-        public string? ExistingPhoto { get; set; } // 显示当前照片用
-    }
+    //    public string? ExistingPhoto { get; set; } // 显示当前照片用
+
+    //    public string? Address { get; set; }
+    //    public DateTime? DateOfBirth { get; set; }
+    //    public int? Age { get; set; }
+    //}
 }

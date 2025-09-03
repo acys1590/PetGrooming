@@ -1,4 +1,4 @@
-﻿@using PetGroomingSystem.Models.ViewModels
+﻿@* @using PetGroomingSystem.Models.ViewModels
 @model ProfileVM
 
 <div class="container mt-4">
@@ -40,7 +40,7 @@
                             <div class="mb-2">
                                 <img id="preview"
                                      src="@(string.IsNullOrEmpty(Model.ExistingPhoto) ? "/images/default-avatar.png" : Model.ExistingPhoto)"
-                                     class="img-thumbnail rounded-circle"
+                                     class="img-thumbnail rounded-circle shadow-sm border"
                                      style="width:120px; height:120px; object-fit:cover;" />
                             </div>
                         </div>
@@ -54,10 +54,31 @@
                             <span asp-validation-for="Photo" class="text-danger"></span>
                         </div>
 
+                        <!-- Address (Optional) -->
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label"></label>
+                            <input asp-for="Address" class="form-control" placeholder="Enter your address (optional)" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <!-- Date of Birth (Optional) -->
+                        <div class="mb-3">
+                            <label asp-for="DateOfBirth" class="form-label"></label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                        </div>
+
+                        <!-- Age (Optional) -->
+                        <div class="mb-3">
+                            <label asp-for="Age" class="form-label"></label>
+                            <input asp-for="Age" type="number" class="form-control" min="0" placeholder="Enter your age (optional)" />
+                            <span asp-validation-for="Age" class="text-danger"></span>
+                        </div>
+
                         <!-- Submit -->
                         <div class="d-flex justify-content-between">
-                            <button type="submit" class="btn btn-success">Save</button>
-                            <button type="reset" class="btn btn-secondary">Reset</button>
+                            <button type="submit" class="btn btn-success px-4">Save</button>
+                            <button type="reset" class="btn btn-secondary px-4">Reset</button>
                         </div>
                     </form>
 
@@ -69,4 +90,4 @@
             </div>
         </div>
     </div>
-</div>
+</div> *@

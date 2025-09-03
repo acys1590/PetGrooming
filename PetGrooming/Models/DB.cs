@@ -43,7 +43,7 @@ public class DB : DbContext
             entity.Property(d => d.IsActive).HasDefaultValue(true);
         });
 
-        // Configure Member entity
+        //Configure Member entity
         modelBuilder.Entity<Member>(entity =>
         {
             entity.HasKey(m => m.Email); // Using Email as primary key
@@ -203,7 +203,7 @@ public class Staff
 //    public virtual Doctor? Doctor { get; set; }
 //}
 
-// Member model
+ //Member model
 public class Member
 {
     [Key]
