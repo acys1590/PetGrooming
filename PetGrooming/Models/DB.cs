@@ -169,6 +169,9 @@ public class Member
     [Required]
     [StringLength(100)]
     public string Name { get; set; } = string.Empty;
+    public string? Address { get; internal set; }
+    public DateTime? DateOfBirth { get; internal set; }
+    public int? Age { get; internal set; }
 }
 
 public class User
@@ -192,6 +195,10 @@ public class User
 
     public string? ResetToken { get; set; }
     public DateTime? ResetTokenExpiry { get; set; }
+
+    public string? Address { get; set; }
+    public DateTime? DateOfBirth { get; set; }
+    public int? Age { get; set; }
 }
 
 

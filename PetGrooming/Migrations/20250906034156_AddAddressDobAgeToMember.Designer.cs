@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PetGrooming.Models;
 
@@ -11,9 +12,11 @@ using PetGrooming.Models;
 namespace PetGrooming.Migrations
 {
     [DbContext(typeof(DB))]
-    partial class DBModelSnapshot : ModelSnapshot
+    [Migration("20250906034156_AddAddressDobAgeToMember")]
+    partial class AddAddressDobAgeToMember
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,9 +55,6 @@ namespace PetGrooming.Migrations
                     b.Property<string>("Gender")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
@@ -295,13 +295,11 @@ namespace PetGrooming.Migrations
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("PetGrooming.Models.Staff", "Staff")
+                    b.HasOne("PetGrooming.Models.Staff", null)
                         .WithMany("Pets")
                         .HasForeignKey("StaffId");
 
                     b.Navigation("Doctor");
-
-                    b.Navigation("Staff");
                 });
 
             modelBuilder.Entity("PetGrooming.Models.Doctor", b =>

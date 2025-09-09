@@ -97,7 +97,7 @@ namespace PetGroomingSystem.Controllers
             var identity = new ClaimsIdentity(claims, "Login");
             HttpContext.SignInAsync(new ClaimsPrincipal(identity));
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Main");
         }
 
         [Authorize]
@@ -114,13 +114,16 @@ namespace PetGroomingSystem.Controllers
         public IActionResult UpdateProfile()
         {
             var m = db.Members.Find(User.Identity!.Name);
-            if (m == null) return RedirectToAction("Index", "Home");
+            if (m == null) return RedirectToAction("Index", "Main");
 
             return View(new UpdateProfileVM
             {
                 Email = m.Email,
                 Name = m.Name,
-                PhotoURL = m.PhotoURL
+                PhotoURL = m.PhotoURL,
+                Address = m.Address,
+                DateOfBirth = m.DateOfBirth,
+                Age = m.Age
             });
         }
 
@@ -130,13 +133,18 @@ namespace PetGroomingSystem.Controllers
         {
             var u = db.Users.Find(User.Identity!.Name);
             var m = db.Members.Find(User.Identity!.Name);
-            if (u == null || m == null) return RedirectToAction("Index", "Home");
+            if (u == null || m == null) return RedirectToAction("Index", "Main");
 
             if (ModelState.IsValid)
             {
                 u.Name = vm.Name;
                 m.Name = vm.Name;
 
+                m.Address = vm.Address;
+                m.DateOfBirth = vm.DateOfBirth;
+                m.Age = vm.Age;
+
+                // 更新头像
                 if (vm.Photo != null)
                 {
                     hp.DeletePhoto(u.PhotoPath, "photos");
@@ -147,6 +155,7 @@ namespace PetGroomingSystem.Controllers
                     m.PhotoURL = newPhoto;
                 }
 
+                // 修改密码（如果用户输入了）
                 if (!string.IsNullOrEmpty(vm.CurrentPassword) && !string.IsNullOrEmpty(vm.NewPassword))
                 {
                     var hasher = new PasswordHasher<User>();
@@ -167,7 +176,7 @@ namespace PetGroomingSystem.Controllers
                 }
 
                 db.SaveChanges();
-                return RedirectToAction();
+                return RedirectToAction("Index", "Main");
             }
 
             return View(vm);
@@ -199,6 +208,7 @@ namespace PetGroomingSystem.Controllers
             return RedirectToAction("UpdateProfile");
         }
         #endregion
+
 
         #region Forgot / Reset Password
         [HttpGet]
