@@ -1,5 +1,6 @@
 ﻿@using PetGrooming.Models
-@model Staff
+@model PetGrooming.Models.Staff
+
 @{
     ViewData["Title"] = "Delete Staff";
 }
@@ -10,7 +11,7 @@
 
         <div class="alert alert-warning">
             <i class="fas fa-exclamation-triangle"></i>
-            Are you sure you want to delete this doctor?
+            Are you sure you want to delete @Model.Name?
         </div>
 
         <div class="card">

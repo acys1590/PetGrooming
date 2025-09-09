@@ -26,18 +26,16 @@
                     <dt class="col-sm-3">Gender:</dt>
                     <dd class="col-sm-9">@Model.Gender</dd>
 
+                    <dt class="col-sm-3">Service Type:</dt>
+                    <dd class="col-sm-9">@Model.ServiceType</dd>
+
                     <dt class="col-sm-3">Owner:</dt>
                     <dd class="col-sm-9">@Model.OwnerName</dd>
 
                     <dt class="col-sm-3">Phone:</dt>
                     <dd class="col-sm-9">@Model.PhoneNumber</dd>
 
-                    <dt class="col-sm-3">Email:</dt>
-                    <dd class="col-sm-9">@Model.Email</dd>
-
-                    
-
-                    <dt class="col-sm-3">Assigned Doctor:</dt>
+                    <dt class="col-sm-3">Assigned Doctor/Staff:</dt>
                     <dd class="col-sm-9">
                         @if (Model.Doctor != null)
                         {
@@ -52,14 +50,7 @@
                     <dt class="col-sm-3">Appointment Date:</dt>
                     <dd class="col-sm-9">@Model.AppointmentDate.ToString("MMMM dd, yyyy")</dd>
 
-                  @*   <dt class="col-sm-3">Appointment Time:</dt>
-                    <dd class="col-sm-9">
-                       
-                        
-                            @Model.AppointmentTime.ToString("hh:mm tt")
-                      
-                    </dd> *@
-
+                   
                     <dt class="col-sm-3">Notes:</dt>
                     <dd class="col-sm-9">@Model.Notes</dd>
                 </dl>

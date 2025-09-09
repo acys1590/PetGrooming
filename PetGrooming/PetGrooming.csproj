@@ -18,10 +18,12 @@
     <PackageReference Include="MimeKit" Version="4.13.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
     <PackageReference Include="Twilio" Version="7.12.2" />
+    <PackageReference Include="Vonage" Version="8.7.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="obj\" />
     <Folder Include="Views\Customers\" />
     <Folder Include="Views\History\" />
     <Folder Include="Views\Staff\" />

@@ -13,7 +13,11 @@
                 <form asp-action="Edit">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <input type="hidden" asp-for="Pet.Id" />
-                    <input type="hidden" asp-for="Pet.AppointmentDate" />
+                    <input type="hidden" asp-for="Pet.DoctorId" />
+                    <input type="hidden" asp-for="Pet.StaffId" />
+                    <input type="hidden" asp-for="Pet.IsApproved" />
+
+                    
 
                     <div class="row">
                         <div class="col-md-6">
@@ -30,8 +34,8 @@
                                     <option value="">Select Species</option>
                                     <option value="Dog">Dog</option>
                                     <option value="Cat">Cat</option>
-                                    <option value="Bird">Bird</option>
                                     <option value="Rabbit">Rabbit</option>
+                                    <option value="Guinea Pig">Guinea Pig</option>
                                     <option value="Other">Other</option>
                                 </select>
                                 <span asp-validation-for="Pet.PetType" class="text-danger"></span>
@@ -65,6 +69,27 @@
                                 <span asp-validation-for="Pet.Gender" class="text-danger"></span>
                             </div>
                         </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Pet.ServiceType" class="form-label">Service Type</label>
+                                <select asp-for="Pet.ServiceType" asp-items="Model.ServiceTypes" class="form-select">
+                                    <option value="">-- Select Service --</option>
+                                </select>
+                                <span asp-validation-for="Pet.ServiceType" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Pet.AppointmentDate" class="form-label">Appointment Date & Time</label>
+                                <input asp-for="Pet.AppointmentDate" class="form-control" type="datetime-local"
+                                       value="@Model.Pet.AppointmentDate.ToString("yyyy-MM-ddTHH:mm")" />
+                                <span asp-validation-for="Pet.AppointmentDate" class="text-danger"></span>
+                            </div>
+
+                        </div>
+
                     </div>
 
                     <hr />
@@ -92,14 +117,6 @@
                         <input asp-for="Pet.Email" class="form-control" type="email" />
                         <span asp-validation-for="Pet.Email" class="text-danger"></span>
                     </div>
-@* 
-                    <div class="mb-3">
-                        <label asp-for="Pet.DoctorId" class="form-label">Assign Doctor</label>
-                        <select asp-for="Pet.DoctorId" asp-items="Model.Doctors" class="form-select">
-                            <option value="">Select Doctor</option>
-                        </select>
-                        <span asp-validation-for="Pet.DoctorId" class="text-danger"></span>
-                    </div> *@
 
                     <div class="mb-3">
                         <label asp-for="Pet.Notes" class="form-label">Notes</label>

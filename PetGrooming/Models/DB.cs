@@ -113,7 +113,7 @@ public class Doctor
     [StringLength(200)]
     public string? Address { get; set; }
 
-    public DateTime JoinDate { get; set; }
+    public DateTime JoinDate { get; set;} = DateTime.Now;
 
     public bool IsActive { get; set; }
 
@@ -143,7 +143,7 @@ public class Staff
     [StringLength(200)]
     public string? Address { get; set; }
 
-    public DateTime JoinDate { get; set; }
+    public DateTime JoinDate { get; set; } = DateTime.Now;
 
     public bool IsActive { get; set; }
 
@@ -265,6 +265,10 @@ public class Appointment
 
     // Navigation Property
     public virtual Doctor? Doctor { get; set; }
+
+    // Staff Foreign Key
+    public int? StaffId { get; set; }
+    public virtual Staff? Staff { get; set; }
 
     public bool IsApproved { get; set; }
 

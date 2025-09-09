@@ -27,9 +27,9 @@
                             <th>Species/Breed</th>
                             <th>Age</th>
                             <th>Owner</th>
-                            <th>Phone</th>
+                            <th>Service</th>
                             <th>Appointment Date</th>
-                            <th>Assigned Doctor</th>
+                            <th>Assigned Doctor/Staff</th>
                             <th>Actions</th>
                             <th>Approval</th>
                         </tr>
@@ -51,18 +51,23 @@
                                 </td>
                                 <td>@pet.Age years</td>
                                 <td>@pet.OwnerName</td>
-                                <td>@pet.PhoneNumber</td>
+                                <td>@pet.ServiceType</td>
                                 <td>@pet.AppointmentDate</td>
                                 <td>
                                     @if (pet.Doctor != null)
                                     {
-                                        <span class="badge bg-success">@pet.Doctor.Name</span>
+                                        <span class="badge bg-success">@pet.Doctor.Name (Doctor)</span>
+                                    }
+                                    else if (pet.Staff != null)
+                                    {
+                                        <span class="badge bg-primary">@pet.Staff.Name (Staff)</span>
                                     }
                                     else
                                     {
                                         <span class="badge bg-warning">Not Assigned</span>
                                     }
                                 </td>
+
                                 <td>
                                     <div class="btn-group" role="group">
                                         <a asp-action="Details" asp-route-id="@pet.Id" class="btn btn-sm btn-info" title="Details">
@@ -80,8 +85,19 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <input type="checkbox" class="approval-checkbox" data-id="@pet.Id" @(pet.IsApproved ? "checked" : "") />
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox"
+                                               class="form-check-input approval-checkbox"
+                                               id="approve-@pet.Id"
+                                               data-id="@pet.Id"
+                                               @(pet.IsApproved ? "checked" : "") />
+                                        <label class="form-check-label" for="approve-@pet.Id">
+                                            @(pet.IsApproved ? "Approved" : "Pending")
+                                        </label>
+                                    </div>
+
                                 </td>
+
 
 
                             </tr>

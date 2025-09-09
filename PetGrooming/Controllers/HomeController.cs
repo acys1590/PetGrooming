@@ -20,15 +20,38 @@ namespace PetGrooming.Controllers
             ViewBag.TotalEmployees = await _context.Doctors.CountAsync(d => d.IsActive) +
                             await _context.Staffs.CountAsync(s => s.IsActive);
             ViewBag.PetsWithDoctors = await _context.Appointments.CountAsync(p => p.DoctorId != null);
-            ViewBag.PetsWithoutDoctors = await _context.Appointments.CountAsync(p => p.DoctorId == null);
+            var petsWithEmployees = _context.Appointments
+            .Count(a => a.DoctorId != null || a.StaffId != null);
 
-            var recentPets = await _context.Appointments
-                .Include(p => p.Doctor)
-                .OrderByDescending(p => p.AppointmentDate)
-                .Take(5)
-                .ToListAsync();
+            var petsWithoutEmployees = _context.Appointments
+                .Count(a => a.DoctorId == null && a.StaffId == null);
 
-            return View(recentPets);
+            ViewBag.PetsWithEmployees = petsWithEmployees;
+            ViewBag.PetsWithoutEmployees = petsWithoutEmployees;
+
+            ViewBag.TotalPets = _context.Appointments.Count();
+            ViewBag.TotalEmployees = _context.Doctors.Count(d => d.IsActive) + _context.Staffs.Count(s => s.IsActive);
+
+            var appointments = await _context.Appointments
+            .Include(a => a.Doctor)
+            .Include(a => a.Staff)
+            .ToListAsync();
+
+            // Group pets handled by Doctor/Staff
+            var handledPets = appointments
+                .GroupBy(a => a.Doctor != null ? $"Dr. {a.Doctor.Name}" :
+                              a.Staff != null ? $"Staff {a.Staff.Name}" :
+                              "Unassigned")
+                .Select(g => new
+                {
+                    Handler = g.Key,
+                    Count = g.Count()
+                }).ToList();
+
+            ViewBag.Handlers = handledPets.Select(h => h.Handler).ToList();
+            ViewBag.Counts = handledPets.Select(h => h.Count).ToList();
+
+            return View(appointments);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

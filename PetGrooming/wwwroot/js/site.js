@@ -4,12 +4,12 @@
         $('.alert').fadeOut('slow');
     }, 5000);
 
-    // Confirm delete actions
-    $('a[href*="Delete"]').click(function (e) {
-        if (!confirm('Are you sure you want to delete this item?')) {
-            e.preventDefault();
-        }
-    });
+    //// Confirm delete actions
+    //$('a[href*="Delete"]').click(function (e) {
+    //    if (!confirm('Are you sure you want to delete this item?')) {
+    //        e.preventDefault();
+    //    }
+    //});
 
     // Form validation enhancements
     $('form').submit(function () {
@@ -50,7 +50,44 @@
         }
     });
 
+    // ✅ Approval checkbox toggle with confirm on unapprove
+    $('.approval-checkbox').change(function () {
+        var checkbox = $(this);
+        var petId = checkbox.data('id');
+        var approved = checkbox.is(':checked');
 
+        // If user is UNCHECKING (disapproving), confirm first
+        if (!approved) {
+            if (!confirm("⚠️ Are you sure you want to unapprove this appointment?")) {
+                // ❌ Cancel -> revert checkbox back to checked
+                checkbox.prop('checked', true);
+                return;
+            }
+        }
+
+        // ⏳ disable checkbox while waiting
+        checkbox.prop('disabled', true);
+
+        $.ajax({
+            url: '/Pets/ToggleApproval',
+            type: 'POST',
+            data: { id: petId, approved: approved },
+            success: function (response) {
+                showNotification(response.message, "success");
+            },
+            error: function () {
+                showNotification("❌ Something went wrong. Try again.", "danger");
+                checkbox.prop('checked', !approved); // revert if failed
+            },
+            complete: function () {
+                // ✅ re-enable after request finishes
+                checkbox.prop('disabled', false);
+            }
+        });
+    });
+
+
+});
 
 // Utility functions
 function formatDate(dateString) {

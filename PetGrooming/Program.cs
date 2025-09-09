@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using PetGrooming.Models;
-using PetGrooming.Services;
+
 using PetGroomingSystem;
+using PetGroomingSystem.Services;
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -23,8 +24,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 
-builder.Services.AddHttpClient<IWhatsAppService, WhatsAppService>();
-
+builder.Services.AddScoped<IEmailSender, EmailSender>();
 
 
 var app = builder.Build();

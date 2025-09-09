@@ -57,6 +57,7 @@ namespace PetGroomingSystem.Controllers
         {
             if (ModelState.IsValid)
             {
+                doctor.JoinDate = DateTime.Now;
                 _context.Add(doctor);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Doctor created successfully!";
@@ -153,16 +154,32 @@ namespace PetGroomingSystem.Controllers
         // GET: Doctors/ToggleStatus/5
         public async Task<IActionResult> ToggleStatus(int id)
         {
-            var doctor = await _context.Doctors.FindAsync(id);
+            var doctor = await _context.Doctors
+                .Include(d => d.Pets) // ✅ include pets
+                .FirstOrDefaultAsync(d => d.Id == id);
+
             if (doctor != null)
             {
                 doctor.IsActive = !doctor.IsActive;
+
+                // ✅ If doctor becomes inactive, unassign pets
+                if (!doctor.IsActive && doctor.Pets.Any())
+                {
+                    foreach (var pet in doctor.Pets)
+                    {
+                        pet.DoctorId = null;
+                    }
+                }
+
                 _context.Update(doctor);
                 await _context.SaveChangesAsync();
+
                 TempData["Success"] = $"Doctor status changed to {(doctor.IsActive ? "Active" : "Inactive")}!";
             }
+
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool DoctorExists(int id)
         {

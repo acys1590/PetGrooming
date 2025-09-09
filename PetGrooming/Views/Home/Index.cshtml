@@ -43,97 +43,83 @@
             </div>
         </div>
     </div>
- 
-    <div class="col-md-3">
-        <div class="card text-white bg-warning">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="card-title">@ViewBag.PetsWithDoctors</h4>
-                        <p class="card-text">Assigned Pets</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-check fa-2x"></i>
-                    </div>
+ <div class="col-md-3">
+    <div class="card text-white bg-warning">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4 class="card-title">@ViewBag.PetsWithEmployees</h4>
+                    <p class="card-text">Assigned Pets</p>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-danger">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="card-title">@ViewBag.PetsWithoutDoctors</h4>
-                        <p class="card-text">Unassigned Pets</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-times fa-2x"></i>
-                    </div>
+                <div class="align-self-center">
+                    <i class="fas fa-check fa-2x"></i>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-
+<div class="col-md-3">
+    <div class="card text-white bg-danger">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4 class="card-title">@ViewBag.PetsWithoutEmployees</h4>
+                    <p class="card-text">Unassigned Pets</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-times fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+ </div>
+</div>
 
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-6 offset-md-3">
         <div class="card">
             <div class="card-header">
-                <h5><i class="fas fa-clock"></i> Recent Pets</h5>
+                <h5><i class="fas fa-chart-pie"></i> Pets Handled by Doctor/Staff</h5>
             </div>
-            <div class="card-body">
-                @if (Model.Any())
-                {
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Pet Name</th>
-                                    <th>Species</th>
-                                    <th>Owner</th>
-                                    <th>Assigned Doctor</th>
-                                    <th>Created Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var pet in Model)
-                                {
-                                    <tr>
-                                        <td>@pet.PetName</td>
-                                        <td>@pet.PetType</td>
-                                        <td>@pet.OwnerName</td>
-                                        <td>
-                                            @if (pet.Doctor != null)
-                                            {
-                                                <span class="badge bg-success">@pet.Doctor.Name</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-warning">Not Assigned</span>
-                                            }
-                                        </td>
-                                        <td>@pet.AppointmentDate.ToString("MMM dd, yyyy")</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-                else
-                {
-                    <p class="text-muted">No pets registered yet.</p>
-                }
-                <div class="mt-3">
-                    <a asp-controller="Pets" asp-action="Index" class="btn btn-primary">
-                        <i class="fas fa-list"></i> View All Pets
-                    </a>
-                </div>
+            <div class="card-body text-center">
+                <canvas id="petsPieChart" style="max-width:500px; max-height:500px; margin:auto;"></canvas>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var ctx = document.getElementById('petsPieChart').getContext('2d');
+        var petsPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: @Html.Raw(Json.Serialize(ViewBag.Handlers)),
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(ViewBag.Counts)),
+                    backgroundColor: [
+                        '#007bff', '#28a745', '#ffc107', '#dc3545',
+                        '#6f42c1', '#20c997', '#fd7e14'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 20, padding: 15 }
+                    }
+                }
+            }
+        });
+    </script>
+}
+
+
+
+
 
