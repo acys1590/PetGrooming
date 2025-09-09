@@ -72,6 +72,29 @@ namespace PetGroomingSystem.Controllers
                 return RedirectToAction(nameof(Confirmation), new { id = appointment.Id });
             }
 
+            // Validate appointment date is in the future
+            if (appointment.AppointmentDate <= DateTime.Now)
+            {
+                ModelState.AddModelError("AppointmentDate", "Appointment date must be in the future.");
+            }
+
+            // NEW: If "Other", require Notes (>= 10 chars)
+            if (string.Equals(appointment.ServiceType, "Other", StringComparison.OrdinalIgnoreCase))
+            {
+                if (string.IsNullOrWhiteSpace(appointment.Notes) || appointment.Notes!.Trim().Length < 10)
+                {
+                    ModelState.AddModelError("Notes",
+                        "Please describe your custom request (at least 10 characters).");
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ViewData["ServiceTypes"] = GetServiceTypeSelectList();
+                ViewData["PetTypes"] = GetPetTypeSelectList();
+                return View(appointment);
+            }
+
             ViewData["ServiceTypes"] = GetServiceTypeSelectList();
             ViewData["PetTypes"] = GetPetTypeSelectList();
             return View(appointment);
@@ -98,14 +121,24 @@ namespace PetGroomingSystem.Controllers
         private SelectList GetServiceTypeSelectList()
         {
             var serviceTypes = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "Basic Grooming", Text = "Basic Grooming ($40)" },
-                new SelectListItem { Value = "Full Grooming", Text = "Full Grooming ($80)" },
-                new SelectListItem { Value = "Bath Only", Text = "Bath Only ($25)" },
-                new SelectListItem { Value = "Nail Trim", Text = "Nail Trim ($15)" },
-                new SelectListItem { Value = "Flea Treatment", Text = "Flea Treatment ($35)" },
-                new SelectListItem { Value = "Dental Care", Text = "Dental Care ($50)" }
-            };
+    {
+        // Grooming
+        new SelectListItem { Value = "Basic Grooming", Text = "Basic Grooming (RM40)" },
+        new SelectListItem { Value = "Full Grooming", Text = "Full Grooming (RM80)" },
+        new SelectListItem { Value = "Bath Only", Text = "Bath Only (RM25)" },
+        new SelectListItem { Value = "Nail Trim", Text = "Nail Trim (RM15)" },
+        // Doctor
+        new SelectListItem { Value = "Vet Consultation", Text = "Vet Consultation (RM60)" },
+        new SelectListItem { Value = "General Health Check", Text = "General Health Check (RM80)" },
+        new SelectListItem { Value = "Vaccination", Text = "Vaccination (RM70)" },
+        new SelectListItem { Value = "Flea/Tick Treatment", Text = "Flea/Tick Treatment (RM50)" },
+        new SelectListItem { Value = "Minor Wound Care", Text = "Minor Wound Care (RM90)" },
+        new SelectListItem { Value = "Blood Test (Basic)", Text = "Blood Test (Basic) (RM120)" },
+        new SelectListItem { Value = "Spay/Neuter", Text = "Spay/Neuter (from RM250)" },
+        new SelectListItem { Value = "Dental Care", Text = "Dental Care (RM50)" },
+        new SelectListItem { Value = "Other", Text = "Other / Custom Request" }
+        };
+
             return new SelectList(serviceTypes, "Value", "Text");
         }
 

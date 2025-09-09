@@ -79,6 +79,11 @@
                                         </a>
                                     </div>
                                 </td>
+                                <td>
+                                    <input type="checkbox" class="approval-checkbox" data-id="@pet.Id" @(pet.IsApproved ? "checked" : "") />
+                                </td>
+
+
                             </tr>
                         }
                     </tbody>
