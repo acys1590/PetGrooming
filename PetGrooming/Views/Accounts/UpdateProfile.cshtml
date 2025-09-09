@@ -2,6 +2,10 @@
 @model UpdateProfileVM
 
 @{
+    Layout = "Main_Layout";
+}
+
+@{
     ViewBag.Title = "Profile";
 }
 
@@ -29,6 +33,27 @@
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
+                        <!-- Age (Optional) -->
+                        <div class="mb-3">
+                            <label asp-for="Age" class="form-label"></label>
+                            <input asp-for="Age" type="number" class="form-control" min="0" placeholder="Enter your age (optional)" />
+                            <span asp-validation-for="Age" class="text-danger"></span>
+                        </div>
+
+                        <!-- Date of Birth (Optional) -->
+                        <div class="mb-3">
+                            <label asp-for="DateOfBirth" class="form-label"></label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                        </div>
+
+                        <!-- Address (Optional) -->
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label"></label>
+                            <input asp-for="Address" class="form-control" placeholder="Enter your address (optional)" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
                         <!-- Password -->
                         <div class="mb-3">
                             <label class="form-label">Password</label>
@@ -50,27 +75,6 @@
                                    accept="image/jpeg,image/png"
                                    onchange="document.getElementById('preview').src = window.URL.createObjectURL(this.files[0])" />
                             <span asp-validation-for="Photo" class="text-danger"></span>
-                        </div>
-
-                        <!-- Address (Optional) -->
-                        <div class="mb-3">
-                            <label asp-for="Address" class="form-label"></label>
-                            <input asp-for="Address" class="form-control" placeholder="Enter your address (optional)" />
-                            <span asp-validation-for="Address" class="text-danger"></span>
-                        </div>
-
-                        <!-- Date of Birth (Optional) -->
-                        <div class="mb-3">
-                            <label asp-for="DateOfBirth" class="form-label"></label>
-                            <input asp-for="DateOfBirth" type="date" class="form-control" />
-                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
-                        </div>
-
-                        <!-- Age (Optional) -->
-                        <div class="mb-3">
-                            <label asp-for="Age" class="form-label"></label>
-                            <input asp-for="Age" type="number" class="form-control" min="0" placeholder="Enter your age (optional)" />
-                            <span asp-validation-for="Age" class="text-danger"></span>
                         </div>
 
                         <!-- Buttons -->
