@@ -18,7 +18,12 @@ namespace PetGroomingSystem.Models.ViewModels
         public string Password { get; set; }
 
         public bool RememberMe { get; set; }
+
+        // ✅ 假的 "I'm not a robot" checkbox
+        [Required(ErrorMessage = "Please confirm you are not a robot.")]
+        public bool NotRobot { get; set; }
     }
+
 
     public class RegisterVM
     {
@@ -42,6 +47,11 @@ namespace PetGroomingSystem.Models.ViewModels
 
         // 上传文件用
         public IFormFile Photo { get; set; }
+
+        [Required]
+        public string Role { get; set; }  // Admin or Member
+
+        public string? AdminSecret { get; set; } 
     }
 
 

@@ -3,9 +3,6 @@
 
 @{
     Layout = "Main_Layout";
-}
-
-@{
     ViewBag.Title = "Account | Login";
 }
 
@@ -16,7 +13,8 @@
                 <div class="card-body p-4">
                     <h3 class="text-center mb-4 fw-bold">Welcome Back</h3>
 
-                    <form class="needs-validation" method="post" novalidate>
+                    <!-- ✅ 加上 asp-action="Login" -->
+                    <form asp-action="Login" method="post" class="needs-validation" novalidate>
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <!-- Email -->
@@ -33,17 +31,16 @@
                             <span asp-validation-for="Password" class="text-danger small"></span>
                         </div>
 
-                        <!-- Remember Me -->
-                        <div class="form-check mb-3">
-                            <input asp-for="RememberMe" class="form-check-input" id="rememberMeCheck" />
-                            <label class="form-check-label" for="rememberMeCheck">
-                                Remember Me
-                            </label>
+                        <!-- Fake reCAPTCHA (绑定到 LoginVM.NotRobot) -->
+                        <div class="mb-3 form-check">
+                            <input asp-for="NotRobot" class="form-check-input" id="notRobot" />
+                            <label class="form-check-label" for="notRobot">I'm not a robot</label>
+                            <span asp-validation-for="NotRobot" class="text-danger small"></span>
                         </div>
 
                         <!-- Buttons -->
                         <div class="d-grid gap-2">
-                            <button class="btn btn-primary rounded-pill">Login</button>
+                            <button type="submit" class="btn btn-primary rounded-pill">Login</button>
                             <button type="reset" class="btn btn-outline-secondary rounded-pill">Reset</button>
                         </div>
                     </form>

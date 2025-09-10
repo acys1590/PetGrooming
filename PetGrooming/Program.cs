@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PetGrooming.Models;
-
 using PetGroomingSystem;
-using PetGroomingSystem.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSqlServer<DB>(builder.Configuration.GetConnectionString("DefaultConnection"));
+builder.Services.AddSqlServer<DB>($@"
+ Data Source=(LocalDB)\MSSQLLocalDB;
+ AttachDbFilename={builder.Environment.ContentRootPath}\Db.mdf;
+");
 // 注册 HttpContextAccessor（给 Helper 用）
 builder.Services.AddHttpContextAccessor();
 // 如果 Helper / Controller 要用 Session，这里也要启用
@@ -22,11 +23,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/Accounts/Logout";           // 登出路径
         options.AccessDeniedPath = "/Accounts/AccessDenied"; // 无权限跳转
     });
-
-
-builder.Services.AddScoped<IEmailSender, EmailSender>();
-
-
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
@@ -39,10 +35,6 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
-
-
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
