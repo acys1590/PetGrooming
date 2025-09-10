@@ -23,6 +23,17 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/Accounts/Logout";           // 登出路径
         options.AccessDeniedPath = "/Accounts/AccessDenied"; // 无权限跳转
     });
+
+
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+
+
+
+
+
+
+
+
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
@@ -43,5 +54,5 @@ app.UseAuthorization();
 app.UseSession();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Main}/{action=Index}/{id?}");
 app.Run();
