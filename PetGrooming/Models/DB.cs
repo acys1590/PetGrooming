@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PetGrooming.Models;
 
-// DbContext class - moved PhotoURL property out of here as it doesn't belong
+// DbContext class
 public class DB : DbContext
 {
     public DB(DbContextOptions options) : base(options) { }
@@ -12,27 +12,38 @@ public class DB : DbContext
     // Define database tables
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Member> Members { get; set; } = null!;
-    //public DbSet<Pet> Pets { get; set; } 
     public DbSet<Doctor> Doctors { get; set; }
     public DbSet<Staff> Staffs { get; set; }
-
     public DbSet<Appointment> Appointments { get; set; } = null!;
+    public DbSet<Service> Services { get; set; } = null!;   // NEW
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // Configure Pet entity
+        // Configure Appointment entity
         modelBuilder.Entity<Appointment>(entity =>
         {
             entity.HasKey(p => p.Id);
             entity.Property(p => p.AppointmentDate).HasDefaultValueSql("GETDATE()");
-            
-            // Configure relationship
+
+            // Doctor relationship
             entity.HasOne(p => p.Doctor)
                   .WithMany(d => d.Pets)
                   .HasForeignKey(p => p.DoctorId)
                   .OnDelete(DeleteBehavior.SetNull);
+
+            // Staff relationship
+            entity.HasOne(p => p.Staff)
+                  .WithMany(s => s.Pets)
+                  .HasForeignKey(p => p.StaffId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            // Service relationship
+            entity.HasOne(p => p.Service)
+                  .WithMany()
+                  .HasForeignKey(p => p.ServiceId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         // Configure Doctor entity
@@ -43,7 +54,7 @@ public class DB : DbContext
             entity.Property(d => d.IsActive).HasDefaultValue(true);
         });
 
-        //Configure Member entity
+        // Configure Member entity
         modelBuilder.Entity<Member>(entity =>
         {
             entity.HasKey(m => m.Email); // Using Email as primary key
@@ -61,6 +72,7 @@ public class DB : DbContext
 
     private void SeedData(ModelBuilder modelBuilder)
     {
+        // Doctors
         modelBuilder.Entity<Doctor>().HasData(
             new Doctor
             {
@@ -86,6 +98,28 @@ public class DB : DbContext
                 IsActive = true,
                 Notes = "Expert in large breed dogs and exotic animals"
             }
+        );
+
+        // Services (full list)
+        modelBuilder.Entity<Service>().HasData(
+            // Grooming
+            new Service { Id = 1, Name = "Basic Grooming", Price = 40m, DurationMinutes = 60, IsActive = true },
+            new Service { Id = 2, Name = "Full Grooming", Price = 80m, DurationMinutes = 90, IsActive = true },
+            new Service { Id = 3, Name = "Bath Only", Price = 25m, DurationMinutes = 30, IsActive = true },
+            new Service { Id = 4, Name = "Nail Trim", Price = 15m, DurationMinutes = 15, IsActive = true },
+
+            // Doctor
+            new Service { Id = 5, Name = "Vet Consultation", Price = 60m, DurationMinutes = 30, IsActive = true },
+            new Service { Id = 6, Name = "General Health Check", Price = 80m, DurationMinutes = 45, IsActive = true },
+            new Service { Id = 7, Name = "Vaccination", Price = 70m, DurationMinutes = 20, IsActive = true },
+            new Service { Id = 8, Name = "Flea/Tick Treatment", Price = 50m, DurationMinutes = 30, IsActive = true },
+            new Service { Id = 9, Name = "Minor Wound Care", Price = 90m, DurationMinutes = 45, IsActive = true },
+            new Service { Id = 10, Name = "Blood Test (Basic)", Price = 120m, DurationMinutes = 45, IsActive = true },
+            new Service { Id = 11, Name = "Spay/Neuter", Price = 250m, DurationMinutes = 120, IsActive = true, Description = "Base price; final amount may vary" },
+            new Service { Id = 12, Name = "Dental Care", Price = 50m, DurationMinutes = 30, IsActive = true },
+
+            // Custom
+            new Service { Id = 13, Name = "Other / Custom Request", Price = 0m, DurationMinutes = 60, IsActive = true, Description = "Describe in Special Notes" }
         );
     }
 }
@@ -148,7 +182,6 @@ public class Staff
 
     [DataType(DataType.Date)]
     public DateTime JoinDate { get; set; } = DateTime.Now;
-
     public bool IsActive { get; set; }
 
     [StringLength(500, ErrorMessage = "Notes cannot exceed 500 characters")]
@@ -163,38 +196,33 @@ public class Staff
 //Member model
 public class Member
 {
-    [Key]
-    [EmailAddress]
-    [StringLength(100)]
+    [Key, EmailAddress, StringLength(100)]
     public string Email { get; set; } = string.Empty;
 
     [MaxLength(100)]
     public string? PhotoURL { get; set; }
 
-    [Required]
-    [StringLength(100)]
+    [Required, StringLength(100)]
     public string Name { get; set; } = string.Empty;
-    public string? Address { get; internal set; }
-    public DateTime? DateOfBirth { get; internal set; }
-    public int? Age { get; internal set; }
+
+    public string? Address { get; set; }
+    public DateTime? DateOfBirth { get; set; }
+    public int? Age { get; set; }
 }
 
+// User model
 public class User
 {
-    [Key]
-    [EmailAddress]
-    [StringLength(100)]
+    [Key, EmailAddress, StringLength(100)]
     public string Email { get; set; } = string.Empty;
 
     [Required, MaxLength(100)]
     public string Name { get; set; } = string.Empty;
 
-    [Required]
-    [Column("Hash")]
+    [Required, Column("Hash")]
     public string PasswordHash { get; set; } = string.Empty;
 
     public string Role { get; set; } = "Member";
-
     [MaxLength(200)]
     public string? PhotoPath { get; set; }
 
@@ -206,85 +234,81 @@ public class User
     public int? Age { get; set; }
 }
 
-
-//Appointment
-
+// Appointment model
 public class Appointment
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     [Required(ErrorMessage = "Pet Owner Name is required")]
     [StringLength(100, ErrorMessage = "Owner Name cannot exceed 100 characters")]
     [RegularExpression(@"^[^\d]*$", ErrorMessage = "Name cannot contain numbers")]
     [Display(Name = "Pet Owner Name")]
-    [Column(TypeName = "nvarchar(100)")]
     public string OwnerName { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Pet Name is required")]
     [StringLength(100, ErrorMessage = "Pet Name cannot exceed 100 characters")]
     [RegularExpression(@"^[^\d]*$", ErrorMessage = "Name cannot contain numbers")]
     [Display(Name = "Pet Name")]
-    [Column(TypeName = "nvarchar(100)")]
     public string PetName { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Pet Type is required")]
-    [StringLength(50, ErrorMessage = "Pet Type cannot exceed 50 characters")]
+    [Required, StringLength(50)]
     [Display(Name = "Pet Type")]
-    [Column(TypeName = "nvarchar(50)")]
     public string PetType { get; set; } = string.Empty;
 
     public string PetBreed { get; set; } = string.Empty;
-
     public int? Age { get; set; }
-
-    [StringLength(20)]
     public string? Gender { get; set; }
 
-    [Required(ErrorMessage = "Email Address is required")]
-    [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-    [StringLength(255, ErrorMessage = "Email cannot exceed 255 characters")]
+    [Required, EmailAddress, StringLength(255)]
     [Display(Name = "Email Address")]
-    [Column(TypeName = "nvarchar(255)")]
     public string Email { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Phone Number is required")]
-    [Phone(ErrorMessage = "Please enter a valid phone number")]
-    [StringLength(20, ErrorMessage = "Phone Number cannot exceed 20 characters")]
+    [Required, Phone, StringLength(20)]
     [Display(Name = "Phone Number")]
-    [Column(TypeName = "nvarchar(20)")]
     public string PhoneNumber { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Service Type is required")]
-    [StringLength(50, ErrorMessage = "Service Type cannot exceed 50 characters")]
+    [StringLength(50)]
     [Display(Name = "Service Type")]
-    [Column(TypeName = "nvarchar(50)")]
-    public string ServiceType { get; set; } = string.Empty;
+    public string? ServiceType { get; set; }   // Legacy string
 
-    [Required(ErrorMessage = "Appointment Date is required")]
-    [Display(Name = "Appointment Date")]
-    [Column(TypeName = "datetime2")]
+    [Required]
+    public int ServiceId { get; set; }         // FK to Service
+    public virtual Service? Service { get; set; }
+
+    [Required, Display(Name = "Appointment Date")]
     public DateTime AppointmentDate { get; set; }
 
-    [StringLength(500, ErrorMessage = "Notes cannot exceed 500 characters")]
+    [StringLength(500)]
     [Display(Name = "Special Notes")]
-    [Column(TypeName = "nvarchar(500)")]
     public string? Notes { get; set; }
 
     public DateTime CreatedDate { get; set; }
 
-    // Foreign Key
     public int? DoctorId { get; set; }
-
-    // Navigation Property
     public virtual Doctor? Doctor { get; set; }
 
-    // Staff Foreign Key
     public int? StaffId { get; set; }
     public virtual Staff? Staff { get; set; }
 
     public bool IsApproved { get; set; }
+}
 
+// Service model
+public class Service
+{
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
 
+    [Required, MaxLength(100)]
+    public string Name { get; set; } = string.Empty;
+
+    [MaxLength(500)]
+    public string? Description { get; set; }
+
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal Price { get; set; } = 0m;
+
+    public int DurationMinutes { get; set; } = 60;
+    public bool IsActive { get; set; } = true;
 }

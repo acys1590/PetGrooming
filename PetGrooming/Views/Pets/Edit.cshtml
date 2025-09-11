@@ -1,44 +1,38 @@
-﻿@using PetGroomingSystem.Models.ViewModels
-@model PetViewModel
+﻿@using PetGrooming.Models
+@model Appointment
+
 @{
-    ViewData["Title"] = "Edit Pet";
+    ViewData["Title"] = "Edit Appointment";
 }
 
 <div class="row">
     <div class="col-md-8">
-        <h1><i class="fas fa-edit"></i> Edit Pet</h1>
+        <h1><i class="fas fa-edit"></i> Edit Appointment</h1>
 
         <div class="card">
             <div class="card-body">
                 <form asp-action="Edit">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <input type="hidden" asp-for="Pet.Id" />
-                    <input type="hidden" asp-for="Pet.DoctorId" />
-                    <input type="hidden" asp-for="Pet.StaffId" />
-                    <input type="hidden" asp-for="Pet.IsApproved" />
-
-                    
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="DoctorId" />
+                    <input type="hidden" asp-for="StaffId" />
+                    <input type="hidden" asp-for="IsApproved" />
 
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label asp-for="Pet.PetName" class="form-label">Pet Name</label>
-                                <input asp-for="Pet.PetName" class="form-control" />
-                                <span asp-validation-for="Pet.PetName" class="text-danger"></span>
+                                <label asp-for="PetName" class="form-label">Pet Name</label>
+                                <input asp-for="PetName" class="form-control" />
+                                <span asp-validation-for="PetName" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label asp-for="Pet.PetType" class="form-label">Species</label>
-                                <select asp-for="Pet.PetType" class="form-select">
+                                <label asp-for="PetType" class="form-label">Species</label>
+                                <select asp-for="PetType" class="form-select" asp-items="ViewBag.PetTypes">
                                     <option value="">Select Species</option>
-                                    <option value="Dog">Dog</option>
-                                    <option value="Cat">Cat</option>
-                                    <option value="Rabbit">Rabbit</option>
-                                    <option value="Guinea Pig">Guinea Pig</option>
-                                    <option value="Other">Other</option>
                                 </select>
-                                <span asp-validation-for="Pet.PetType" class="text-danger"></span>
+                                <span asp-validation-for="PetType" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
@@ -46,50 +40,49 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label asp-for="Pet.PetBreed" class="form-label">Breed</label>
-                                <input asp-for="Pet.PetBreed" class="form-control" />
-                                <span asp-validation-for="Pet.PetBreed" class="text-danger"></span>
+                                <label asp-for="PetBreed" class="form-label">Breed</label>
+                                <input asp-for="PetBreed" class="form-control" />
+                                <span asp-validation-for="PetBreed" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="mb-3">
-                                <label asp-for="Pet.Age" class="form-label">Age (years)</label>
-                                <input asp-for="Pet.Age" class="form-control" type="number" min="0" max="30" />
-                                <span asp-validation-for="Pet.Age" class="text-danger"></span>
+                                <label asp-for="Age" class="form-label">Age (years)</label>
+                                <input asp-for="Age" class="form-control" type="number" min="0" max="30" />
+                                <span asp-validation-for="Age" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="mb-3">
-                                <label asp-for="Pet.Gender" class="form-label">Gender</label>
-                                <select asp-for="Pet.Gender" class="form-select">
+                                <label asp-for="Gender" class="form-label">Gender</label>
+                                <select asp-for="Gender" class="form-select">
                                     <option value="">Select Gender</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                 </select>
-                                <span asp-validation-for="Pet.Gender" class="text-danger"></span>
+                                <span asp-validation-for="Gender" class="text-danger"></span>
                             </div>
                         </div>
 
+                        <!-- UPDATED: Services dropdown from DB -->
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label asp-for="Pet.ServiceType" class="form-label">Service Type</label>
-                                <select asp-for="Pet.ServiceType" asp-items="Model.ServiceTypes" class="form-select">
+                                <label asp-for="ServiceId" class="form-label">Service</label>
+                                <select asp-for="ServiceId" class="form-select" asp-items="ViewBag.ServiceId">
                                     <option value="">-- Select Service --</option>
                                 </select>
-                                <span asp-validation-for="Pet.ServiceType" class="text-danger"></span>
+                                <span asp-validation-for="ServiceId" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label asp-for="Pet.AppointmentDate" class="form-label">Appointment Date & Time</label>
-                                <input asp-for="Pet.AppointmentDate" class="form-control" type="datetime-local"
-                                       value="@Model.Pet.AppointmentDate.ToString("yyyy-MM-ddTHH:mm")" />
-                                <span asp-validation-for="Pet.AppointmentDate" class="text-danger"></span>
+                                <label asp-for="AppointmentDate" class="form-label">Appointment Date & Time</label>
+                                <input asp-for="AppointmentDate" class="form-control" type="datetime-local"
+                                       value="@Model.AppointmentDate.ToString("yyyy-MM-ddTHH:mm")" />
+                                <span asp-validation-for="AppointmentDate" class="text-danger"></span>
                             </div>
-
                         </div>
-
                     </div>
 
                     <hr />
@@ -98,35 +91,35 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label asp-for="Pet.OwnerName" class="form-label">Owner Name</label>
-                                <input asp-for="Pet.OwnerName" class="form-control" />
-                                <span asp-validation-for="Pet.OwnerName" class="text-danger"></span>
+                                <label asp-for="OwnerName" class="form-label">Owner Name</label>
+                                <input asp-for="OwnerName" class="form-control" />
+                                <span asp-validation-for="OwnerName" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label asp-for="Pet.PhoneNumber" class="form-label">Phone Number</label>
-                                <input asp-for="Pet.PhoneNumber" class="form-control" />
-                                <span asp-validation-for="Pet.PhoneNumber" class="text-danger"></span>
+                                <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                                <input asp-for="PhoneNumber" class="form-control" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Pet.Email" class="form-label">Email Address</label>
-                        <input asp-for="Pet.Email" class="form-control" type="email" />
-                        <span asp-validation-for="Pet.Email" class="text-danger"></span>
+                        <label asp-for="Email" class="form-label">Email Address</label>
+                        <input asp-for="Email" class="form-control" type="email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Pet.Notes" class="form-label">Notes</label>
-                        <textarea asp-for="Pet.Notes" class="form-control" rows="3"></textarea>
-                        <span asp-validation-for="Pet.Notes" class="text-danger"></span>
+                        <label asp-for="Notes" class="form-label">Notes</label>
+                        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Update Pet
+                            <i class="fas fa-save"></i> Update Appointment
                         </button>
                         <a asp-action="Index" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Back to List

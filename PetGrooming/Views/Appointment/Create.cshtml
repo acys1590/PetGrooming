@@ -18,7 +18,9 @@
                     </h2>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted mb-4">Please fill out the form below to schedule your pet's grooming/doctor appointment.</p>
+                    <p class="text-muted mb-4">
+                        Please fill out the form below to schedule your pet's grooming/doctor appointment.
+                    </p>
 
                     <form asp-action="Create" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -68,13 +70,13 @@
                                 <span asp-validation-for="PetType" class="text-danger"></span>
                             </div>
 
-                            <!-- KEEP THIS ONE (top) -->
+                            <!-- UPDATED: Services dropdown from DB -->
                             <div class="col-md-6 mb-3">
-                                <label asp-for="ServiceType" class="form-label"></label>
-                                <select asp-for="ServiceType" class="form-select" asp-items="ViewBag.ServiceTypes" id="ServiceType">
+                                <label asp-for="ServiceId" class="form-label">Service</label>
+                                <select asp-for="ServiceId" class="form-select" asp-items="ViewBag.ServiceId" id="ServiceId">
                                     <option value="">-- Select Service --</option>
                                 </select>
-                                <span asp-validation-for="ServiceType" class="text-danger"></span>
+                                <span asp-validation-for="ServiceId" class="text-danger"></span>
 
                                 <!-- Shown only when 'Other' is chosen -->
                                 <div id="otherHelp" class="alert alert-info mt-2 d-none" role="alert">
@@ -82,7 +84,6 @@
                                     in <em>Special Notes</em> (minimum 10 characters).
                                 </div>
                             </div>
-                            <!-- END top Service Type -->
                         </div>
 
                         <div class="row">
@@ -107,7 +108,7 @@
                             </div>
                         </div>
 
-                        <!-- Notes (used for Other/Custom too) -->
+                        <!-- Notes -->
                         <div class="mb-4">
                             <label asp-for="Notes" class="form-label">Special Notes</label>
                             <textarea asp-for="Notes" class="form-control" rows="3"
@@ -188,19 +189,16 @@
         document.addEventListener('DOMContentLoaded', function () {
             const dateInput = document.querySelector('input[type="datetime-local"]');
             if (dateInput) {
-                // Set min = now (local)
                 const now = new Date();
                 const minLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
                 dateInput.min = minLocal.toISOString().slice(0, 16);
 
-                // If empty, set to next quarter hour
                 if (!dateInput.value) {
                     const nextQ = roundToNextQuarter(new Date());
                     const nextQLocal = new Date(nextQ.getTime() - (nextQ.getTimezoneOffset() * 60000));
                     dateInput.value = nextQLocal.toISOString().slice(0, 16);
                 }
 
-                // Validate user input for 15-min slots
                 dateInput.addEventListener('change', function () {
                     if (!dateInput.value) return;
                     const picked = new Date(dateInput.value);
@@ -216,20 +214,22 @@
             }
 
             // "Other / Custom Request" UI
-            const serviceSelect = document.getElementById('ServiceType');
+            const serviceSelect = document.getElementById('ServiceId');
             const otherHelp = document.getElementById('otherHelp');
             const notes = document.getElementById('Notes');
             const notesCounter = document.getElementById('notesCounter');
 
             function updateOtherUI() {
-                const isOther = serviceSelect && serviceSelect.value === 'Other';
+                if (!serviceSelect) return;
+                const selectedText = serviceSelect.options[serviceSelect.selectedIndex]?.text || "";
+                const isOther = selectedText.includes("Other");
                 if (otherHelp) otherHelp.classList.toggle('d-none', !isOther);
                 setNotesRequirement(isOther);
             }
 
             if (serviceSelect) {
                 serviceSelect.addEventListener('change', updateOtherUI);
-                updateOtherUI(); // initialize on load
+                updateOtherUI();
             }
 
             if (notes && notesCounter) {

@@ -26,8 +26,31 @@
                     <dt class="col-sm-3">Gender:</dt>
                     <dd class="col-sm-9">@Model.Gender</dd>
 
-                    <dt class="col-sm-3">Service Type:</dt>
-                    <dd class="col-sm-9">@Model.ServiceType</dd>
+                    <!-- Service -->
+                    <dt class="col-sm-3">Service:</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.Service != null)
+                        {
+                            <span>@Model.Service.Name</span>
+                            @if (Model.Service.Price > 0)
+                            {
+                                <small class="text-muted d-block">Price: @Model.Service.Price.ToString("C")</small>
+                            }
+                            @if (Model.Service.DurationMinutes > 0)
+                            {
+                                <small class="text-muted d-block">Duration: @Model.Service.DurationMinutes minutes</small>
+                            }
+                        }
+                        else if (!string.IsNullOrWhiteSpace(Model.ServiceType))
+                        {
+                            <span>@Model.ServiceType</span>
+                            <small class="badge bg-info ms-1">legacy</small>
+                        }
+                        else
+                        {
+                            <span class="text-muted">—</span>
+                        }
+                    </dd>
 
                     <dt class="col-sm-3">Owner:</dt>
                     <dd class="col-sm-9">@Model.OwnerName</dd>
@@ -39,7 +62,11 @@
                     <dd class="col-sm-9">
                         @if (Model.Doctor != null)
                         {
-                            <span class="badge bg-success">@Model.Doctor.Name</span>
+                            <span class="badge bg-success">@Model.Doctor.Name (Doctor)</span>
+                        }
+                        else if (Model.Staff != null)
+                        {
+                            <span class="badge bg-primary">@Model.Staff.Name (Staff)</span>
                         }
                         else
                         {
@@ -48,9 +75,8 @@
                     </dd>
 
                     <dt class="col-sm-3">Appointment Date:</dt>
-                    <dd class="col-sm-9">@Model.AppointmentDate.ToString("MMMM dd, yyyy")</dd>
+                    <dd class="col-sm-9">@Model.AppointmentDate.ToString("MMMM dd, yyyy hh:mm tt")</dd>
 
-                   
                     <dt class="col-sm-3">Notes:</dt>
                     <dd class="col-sm-9">@Model.Notes</dd>
                 </dl>
