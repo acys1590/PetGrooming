@@ -8,9 +8,17 @@ namespace PetGroomingSystem.ServiceRoleHelpers
         // Map of service type → required role
         private static readonly Dictionary<string, string> ServiceRoleMap = new()
         {
-            { "Flea Treatment", "Doctor" },
+            { "Flea/Tick Treatment", "Doctor" },
             { "Vaccination", "Doctor" },
             { "Dental Care", "Doctor" },
+            { "Vet Consultation", "Doctor" },
+            { "General Health Check", "Doctor" },
+            { "Minor Wound Care", "Doctor" },
+            { "Blood Test (Basic)", "Doctor" },
+            { "Spay/Neuter", "Doctor" },
+            { "Dental Care", "Doctor" },
+            { "Other", "Doctor" },
+
             { "Basic Grooming", "Staff" },
             { "Full Grooming", "Staff" },
             { "Bath Only", "Staff" },

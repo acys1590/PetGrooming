@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 using PetGrooming.Models;
 using PetGroomingSystem;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using PetGroomingSystem.Services;
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -23,6 +24,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/Accounts/Logout";           // 登出路径
         options.AccessDeniedPath = "/Accounts/AccessDenied"; // 无权限跳转
     });
+
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {

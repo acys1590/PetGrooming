@@ -27,7 +27,7 @@ public class DB : DbContext
         {
             entity.HasKey(p => p.Id);
             entity.Property(p => p.AppointmentDate).HasDefaultValueSql("GETDATE()");
-            
+
             // Configure relationship
             entity.HasOne(p => p.Doctor)
                   .WithMany(d => d.Pets)
