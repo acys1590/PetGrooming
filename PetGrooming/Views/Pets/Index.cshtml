@@ -49,10 +49,32 @@
                                         <small class="text-muted d-block">@pet.PetBreed</small>
                                     }
                                 </td>
-                                <td>@pet.Age years</td>
+                                <td>@(pet.Age?.ToString() ?? "-") years</td>
                                 <td>@pet.OwnerName</td>
-                                <td>@pet.ServiceType</td>
-                                <td>@pet.AppointmentDate</td>
+
+                                <!-- UPDATED: Service from DB; fallback to legacy string -->
+                                <td>
+                                    @if (pet.Service != null)
+                                    {
+                                        <span>@pet.Service.Name</span>
+                                        @if (pet.Service.Price > 0)
+                                        {
+                                            <small class="text-muted d-block">@pet.Service.Price.ToString("C")</small>
+                                        }
+                                    }
+                                    else if (!string.IsNullOrWhiteSpace(pet.ServiceType))
+                                    {
+                                        <span>@pet.ServiceType</span>
+                                        <small class="badge bg-info ms-1">legacy</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+
+                                <td>@pet.AppointmentDate.ToString("yyyy-MM-dd HH:mm")</td>
+
                                 <td>
                                     @if (pet.Doctor != null)
                                     {
@@ -84,6 +106,7 @@
                                         </a>
                                     </div>
                                 </td>
+
                                 <td>
                                     <div class="form-check form-switch">
                                         <input type="checkbox"
@@ -95,11 +118,7 @@
                                             @(pet.IsApproved ? "Approved" : "Pending")
                                         </label>
                                     </div>
-
                                 </td>
-
-
-
                             </tr>
                         }
                     </tbody>
