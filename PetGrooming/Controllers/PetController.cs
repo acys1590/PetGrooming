@@ -56,13 +56,13 @@ namespace PetGroomingSystem.Controllers
         }
 
         // GET: Pets/Create
-        public  IActionResult Create()
+        public IActionResult Create()
         {
             var viewModel = new PetViewModel
             {
                 Pet = new Appointment { AppointmentDate = DateTime.Now.AddDays(1) },
                 ServiceTypes = ServiceHelper.GetServiceTypeSelectList()
-               
+
 
             };
             return View(viewModel);
@@ -88,7 +88,7 @@ namespace PetGroomingSystem.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            
+
             return View(viewModel);
         }
 
@@ -375,7 +375,7 @@ namespace PetGroomingSystem.Controllers
 }
 
 
-    
+
 
 
 
