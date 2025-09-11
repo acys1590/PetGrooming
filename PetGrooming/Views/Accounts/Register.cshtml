@@ -14,37 +14,71 @@
 <form asp-action="Register" enctype="multipart/form-data" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+    <!-- Role -->
+    <div class="form-group mb-3">
+        <label asp-for="Role" class="form-label">Register As</label>
+        <select asp-for="Role" class="form-control" id="roleSelect">
+            <option value="Member">Member</option>
+            <option value="Admin">Admin</option>
+        </select>
+        <span asp-validation-for="Role" class="text-danger"></span>
+    </div>
+
+    <!-- Email -->
     <div class="form-group mb-3">
         <label asp-for="Email" class="form-label"></label>
         <input asp-for="Email" class="form-control" />
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
 
+    <!-- Name -->
     <div class="form-group mb-3">
         <label asp-for="Name" class="form-label"></label>
         <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
+    <!-- Password -->
     <div class="form-group mb-3">
         <label asp-for="Password" class="form-label"></label>
         <input asp-for="Password" type="password" class="form-control" />
         <span asp-validation-for="Password" class="text-danger"></span>
-        <small class="form-text text-muted">Remember insert password!</small>
     </div>
 
+    <!-- Confirm -->
     <div class="form-group mb-3">
         <label asp-for="Confirm" class="form-label"></label>
         <input asp-for="Confirm" type="password" class="form-control" />
         <span asp-validation-for="Confirm" class="text-danger"></span>
     </div>
 
+    <!-- Photo -->
     <div class="form-group mb-3">
         <label asp-for="Photo" class="form-label"></label>
         <input asp-for="Photo" type="file" class="form-control" />
         <span asp-validation-for="Photo" class="text-danger"></span>
-        <small class="form-text text-muted">Remeber select picture!</small>
+    </div>
+
+    <!-- Admin Secret (hidden by default) -->
+    <div class="form-group mb-3" id="adminSecretDiv" style="display:none;">
+        <label asp-for="AdminSecret" class="form-label">Admin Secret Password</label>
+        <input asp-for="AdminSecret" type="password" class="form-control" />
+        <span asp-validation-for="AdminSecret" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Register</button>
 </form>
+
+@section Scripts {
+    <script>
+        document.getElementById("roleSelect").addEventListener("change", function () {
+            var adminDiv = document.getElementById("adminSecretDiv");
+            if (this.value === "Admin") {
+                adminDiv.style.display = "block";
+            } else {
+                adminDiv.style.display = "none";
+            }
+        });
+    </script>
+}
+

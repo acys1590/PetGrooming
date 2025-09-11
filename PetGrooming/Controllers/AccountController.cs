@@ -39,7 +39,17 @@ namespace PetGroomingSystem.Controllers
             if (vm.Photo != null)
             {
                 var err = hp.ValidatePhoto(vm.Photo);
-                if (!string.IsNullOrEmpty(err)) ModelState.AddModelError("Photo", err);
+                if (!string.IsNullOrEmpty(err))
+                    ModelState.AddModelError("Photo", err);
+            }
+
+            // ===== 如果选择 Admin，需要验证专属密码 =====
+            if (vm.Role == "Admin")
+            {
+                if (vm.AdminSecret != "ADMIN12345") // 固定密码
+                {
+                    ModelState.AddModelError("AdminSecret", "Invalid Admin Secret Password");
+                }
             }
 
             if (ModelState.IsValid)
@@ -52,18 +62,22 @@ namespace PetGroomingSystem.Controllers
                     Email = vm.Email,
                     Name = vm.Name,
                     PasswordHash = hasher.HashPassword(null!, vm.Password),
-                    Role = "Member",
+                    Role = vm.Role,  // 存 Admin 或 Member
                     PhotoPath = photoPath
                 };
                 db.Users.Add(user);
 
-                var member = new Member
+                // Member 额外存进 Members 表
+                if (vm.Role == "Member")
                 {
-                    Email = vm.Email,
-                    Name = vm.Name,
-                    PhotoURL = photoPath
-                };
-                db.Members.Add(member);
+                    var member = new Member
+                    {
+                        Email = vm.Email,
+                        Name = vm.Name,
+                        PhotoURL = photoPath
+                    };
+                    db.Members.Add(member);
+                }
 
                 db.SaveChanges();
                 TempData["Info"] = "Registration successful. Please login.";
@@ -74,30 +88,66 @@ namespace PetGroomingSystem.Controllers
         }
         #endregion
 
+
+
         #region Login/Logout
+
+        [HttpGet]
         public IActionResult Login() => View();
 
         [HttpPost]
-        public IActionResult Login(LoginVM vm)
+        public async Task<IActionResult> Login(LoginVM vm)
         {
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            // ✅ 验证 fake "I'm not a robot"
+            if (!vm.NotRobot)
+            {
+                ModelState.AddModelError("", "Please confirm you are not a robot.");
+                return View(vm);
+            }
+
+            // 查找用户
             var user = db.Users.FirstOrDefault(x => x.Email == vm.Email);
-            if (user == null ||
-                new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, vm.Password)
-                == PasswordVerificationResult.Failed)
+            if (user == null)
             {
                 ModelState.AddModelError("", "Invalid email or password");
                 return View(vm);
             }
 
-            var claims = new List<Claim>
+            // 验证密码
+            var hasher = new PasswordHasher<User>();
+            var result = hasher.VerifyHashedPassword(user, user.PasswordHash, vm.Password);
+            if (result == PasswordVerificationResult.Failed)
             {
-                new Claim(ClaimTypes.Name, user.Email),
-                new Claim(ClaimTypes.Role, user.Role)
-            };
-            var identity = new ClaimsIdentity(claims, "Login");
-            HttpContext.SignInAsync(new ClaimsPrincipal(identity));
+                ModelState.AddModelError("", "Invalid email or password");
+                return View(vm);
+            }
 
-            return RedirectToAction("Index", "Main");
+            // 建立 Claims
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, user.Email),
+        new Claim(ClaimTypes.Role, user.Role)
+    };
+
+            var identity = new ClaimsIdentity(claims, "Login");
+            var principal = new ClaimsPrincipal(identity);
+
+            // 登录
+            await HttpContext.SignInAsync(principal);
+
+            // 根据角色跳转
+            switch (user.Role)
+            {
+                case "Admin":
+                    return RedirectToAction("Index", "Admin");   // 管理员
+                case "Member":
+                    return RedirectToAction("Index", "Member");  // 会员
+                default:
+                    return RedirectToAction("Index", "Home");    // 默认
+            }
         }
 
         [Authorize]
@@ -107,7 +157,10 @@ namespace PetGroomingSystem.Controllers
             TempData["Info"] = "You have been logged out.";
             return RedirectToAction("Login");
         }
+
         #endregion
+
+
 
         #region Update Profile / Password
         [Authorize(Roles = "Member")]
