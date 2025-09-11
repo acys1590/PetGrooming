@@ -104,7 +104,7 @@ public class DB : DbContext
         modelBuilder.Entity<Service>().HasData(
             // Grooming
             new Service { Id = 1, Name = "Basic Grooming", Price = 40m, DurationMinutes = 60, IsActive = true },
-            new Service { Id = 2, Name = "Full Grooming", Price = 80m, DurationMinutes = 90, IsActive = true },
+            new Service { Id = 2 , Name = "Full Grooming", Price = 80m, DurationMinutes = 90, IsActive = true },
             new Service { Id = 3, Name = "Bath Only", Price = 25m, DurationMinutes = 30, IsActive = true },
             new Service { Id = 4, Name = "Nail Trim", Price = 15m, DurationMinutes = 15, IsActive = true },
 
@@ -122,7 +122,7 @@ public class DB : DbContext
             new Service { Id = 13, Name = "Other / Custom Request", Price = 0m, DurationMinutes = 60, IsActive = true, Description = "Describe in Special Notes" }
         );
     }
-}
+} 
 
 public class Doctor
 {
