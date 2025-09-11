@@ -155,28 +155,24 @@ namespace PetGroomingSystem.Controllers
         public async Task<IActionResult> ToggleStatus(int id)
         {
             var doctor = await _context.Doctors
-                .Include(d => d.Pets) // ✅ include pets
+                .Include(d => d.Pets) // load assigned pets
                 .FirstOrDefaultAsync(d => d.Id == id);
 
-            if (doctor != null)
+            if (doctor == null)
+                return NotFound();
+
+            if (doctor.IsActive && doctor.Pets.Any())
             {
-                doctor.IsActive = !doctor.IsActive;
-
-                // ✅ If doctor becomes inactive, unassign pets
-                if (!doctor.IsActive && doctor.Pets.Any())
-                {
-                    foreach (var pet in doctor.Pets)
-                    {
-                        pet.DoctorId = null;
-                    }
-                }
-
-                _context.Update(doctor);
-                await _context.SaveChangesAsync();
-
-                TempData["Success"] = $"Doctor status changed to {(doctor.IsActive ? "Active" : "Inactive")}!";
+                // doctor still has pets assigned → show warning
+                TempData["Warning"] = $"Doctor {doctor.Name} still has {doctor.Pets.Count} pets assigned. Please unassign them before deactivating.";
+                return RedirectToAction(nameof(Index));
             }
 
+            doctor.IsActive = !doctor.IsActive;
+            _context.Update(doctor);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = $"Doctor status changed to {(doctor.IsActive ? "Active" : "Inactive")}!";
             return RedirectToAction(nameof(Index));
         }
 

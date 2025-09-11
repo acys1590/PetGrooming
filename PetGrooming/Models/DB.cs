@@ -90,72 +90,77 @@ public class DB : DbContext
     }
 }
 
-// Doctor model
 public class Doctor
 {
     public int Id { get; set; }
 
-    [Required]
-    [StringLength(100)]
+    [Required(ErrorMessage = "Doctor name is required")]
+    [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters")]
+    [RegularExpression(@"^[^\d]*$", ErrorMessage = "Name cannot contain numbers")]
     public string Name { get; set; } = string.Empty;
 
-    [StringLength(100)]
+    [StringLength(100, ErrorMessage = "Specialization cannot exceed 100 characters")]
     public string? Specialization { get; set; }
 
-    [Phone]
-    [StringLength(20)]
+    [Phone(ErrorMessage = "Invalid phone number format")]
+    [StringLength(20, ErrorMessage = "Phone number cannot exceed 20 characters")]
     public string? Phone { get; set; }
 
-    [EmailAddress]
-    [StringLength(100)]
+    [EmailAddress(ErrorMessage = "Invalid email address")]
+    [StringLength(100, ErrorMessage = "Email cannot exceed 100 characters")]
     public string? Email { get; set; }
 
-    [StringLength(200)]
+    [StringLength(200, ErrorMessage = "Address cannot exceed 200 characters")]
     public string? Address { get; set; }
 
-    public DateTime JoinDate { get; set;} = DateTime.Now;
+    [DataType(DataType.Date)]
+    public DateTime JoinDate { get; set; } = DateTime.Now;
 
     public bool IsActive { get; set; }
 
-    [StringLength(500)]
+    [StringLength(500, ErrorMessage = "Notes cannot exceed 500 characters")]
     public string? Notes { get; set; }
 
     // Navigation property
     public virtual ICollection<Appointment> Pets { get; set; } = new List<Appointment>();
 }
 
+
 public class Staff
 {
     public int Id { get; set; }
 
-    [Required]
-    [StringLength(100)]
+    [Required(ErrorMessage = "Staff name is required")]
+    [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters")]
+    [RegularExpression(@"^[^\d]*$", ErrorMessage = "Name cannot contain numbers")]
     public string Name { get; set; } = string.Empty;
 
-    [Phone]
-    [StringLength(20)]
+    [Phone(ErrorMessage = "Invalid phone number format")]
+    [StringLength(20, ErrorMessage = "Phone number cannot exceed 20 characters")]
     public string? Phone { get; set; }
 
-    [EmailAddress]
-    [StringLength(100)]
+    [EmailAddress(ErrorMessage = "Invalid email address")]
+    [StringLength(100, ErrorMessage = "Email cannot exceed 100 characters")]
     public string? Email { get; set; }
 
-    [StringLength(200)]
+    [StringLength(200, ErrorMessage = "Address cannot exceed 200 characters")]
     public string? Address { get; set; }
 
+    [DataType(DataType.Date)]
     public DateTime JoinDate { get; set; } = DateTime.Now;
 
     public bool IsActive { get; set; }
 
-    [StringLength(500)]
+    [StringLength(500, ErrorMessage = "Notes cannot exceed 500 characters")]
     public string? Notes { get; set; }
 
+    // Navigation property
     public virtual ICollection<Appointment> Pets { get; set; } = new List<Appointment>();
-
 }
 
 
- //Member model
+
+//Member model
 public class Member
 {
     [Key]
@@ -212,12 +217,14 @@ public class Appointment
 
     [Required(ErrorMessage = "Pet Owner Name is required")]
     [StringLength(100, ErrorMessage = "Owner Name cannot exceed 100 characters")]
+    [RegularExpression(@"^[^\d]*$", ErrorMessage = "Name cannot contain numbers")]
     [Display(Name = "Pet Owner Name")]
     [Column(TypeName = "nvarchar(100)")]
     public string OwnerName { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Pet Name is required")]
     [StringLength(100, ErrorMessage = "Pet Name cannot exceed 100 characters")]
+    [RegularExpression(@"^[^\d]*$", ErrorMessage = "Name cannot contain numbers")]
     [Display(Name = "Pet Name")]
     [Column(TypeName = "nvarchar(100)")]
     public string PetName { get; set; } = string.Empty;
