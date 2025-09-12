@@ -29,6 +29,7 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
+                        <!-- Owner -->
                         <div class="col-md-6">
                             <h5 class="text-primary">Pet Owner Information</h5>
                             <table class="table table-borderless">
@@ -46,6 +47,8 @@
                                 </tr>
                             </table>
                         </div>
+
+                        <!-- Pet -->
                         <div class="col-md-6">
                             <h5 class="text-primary">Pet Information</h5>
                             <table class="table table-borderless">
@@ -59,22 +62,49 @@
                                 </tr>
                                 <tr>
                                     <td><strong>Service:</strong></td>
-                                    <td>@Model.ServiceType</td>
+                                    <td>
+                                        @if (Model.Service != null)
+                                        {
+                                            <div>
+                                                <span>@Model.Service.Name</span>
+                                                @if (Model.Service.Price > 0)
+                                                {
+                                                    <small class="text-muted d-block">Price: @Model.Service.Price.ToString("C")</small>
+                                                }
+                                                @if (Model.Service.DurationMinutes > 0)
+                                                {
+                                                    <small class="text-muted d-block">Duration: @Model.Service.DurationMinutes minutes</small>
+                                                }
+                                            </div>
+                                        }
+                                        else if (!string.IsNullOrWhiteSpace(Model.ServiceType))
+                                        {
+                                            <div>
+                                                <span>@Model.ServiceType</span>
+                                                <small class="badge bg-info ms-1">legacy</small>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">—</span>
+                                        }
+                                    </td>
                                 </tr>
                             </table>
                         </div>
                     </div>
 
-                    <hr>
+                    <hr />
 
+                    <!-- Schedule -->
                     <div class="row">
                         <div class="col-md-12">
                             <h5 class="text-primary">Appointment Schedule</h5>
                             <div class="d-flex align-items-center mb-3">
                                 <i class="fas fa-calendar-alt text-primary me-2" style="font-size: 1.5rem;"></i>
                                 <div>
-                                    <strong>Date & Time:</strong><br>
-                                    <span class="fs-5">@Model.AppointmentDate.ToString("dddd, MMMM dd, yyyy")</span><br>
+                                    <strong>Date & Time:</strong><br />
+                                    <span class="fs-5">@Model.AppointmentDate.ToString("dddd, MMMM dd, yyyy")</span><br />
                                     <span class="fs-5">@Model.AppointmentDate.ToString("h:mm tt")</span>
                                 </div>
                             </div>
@@ -89,19 +119,17 @@
                         </div>
                     </div>
 
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <div class="alert alert-info">
-                                <h6><i class="fas fa-info-circle"></i> Important Information:</h6>
-                                <ul class="mb-0">
-                                    <li>Please arrive 10 minutes before your scheduled appointment</li>
-                                    <li>Bring your pet's vaccination records</li>
-                                    <li>We'll send you a reminder 24 hours before your appointment</li>
-                                    <li>If you need to reschedule, please call us at (555) 123-4567</li>
-                                </ul>
+                    @if (Model.Service != null && Model.Service.Price > 0)
+                    {
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="alert alert-secondary">
+                                    <strong>Estimated Amount:</strong>
+                                    <span class="ms-2">@Model.Service.Price.ToString("C")</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 </div>
             </div>
 
@@ -124,15 +152,15 @@
                     <div class="row text-center">
                         <div class="col-md-4">
                             <i class="fas fa-phone-alt text-primary mb-2" style="font-size: 2rem;"></i>
-                            <p><strong>Phone</strong><br>(555) 123-4567</p>
+                            <p><strong>Phone</strong><br />(555) 123-4567</p>
                         </div>
                         <div class="col-md-4">
                             <i class="fas fa-envelope text-primary mb-2" style="font-size: 2rem;"></i>
-                            <p><strong>Email</strong><br>info@pawsomegrooming.com</p>
+                            <p><strong>Email</strong><br />info@pawsomegrooming.com</p>
                         </div>
                         <div class="col-md-4">
                             <i class="fas fa-map-marker-alt text-primary mb-2" style="font-size: 2rem;"></i>
-                            <p><strong>Address</strong><br>123 Pet Street<br>Pet City, PC 12345</p>
+                            <p><strong>Address</strong><br />123 Pet Street<br />Pet City, PC 12345</p>
                         </div>
                     </div>
                 </div>

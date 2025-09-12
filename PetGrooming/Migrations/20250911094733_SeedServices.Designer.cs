@@ -12,8 +12,8 @@ using PetGrooming.Models;
 namespace PetGrooming.Migrations
 {
     [DbContext(typeof(DB))]
-    [Migration("20250830070032_add-appointment")]
-    partial class addappointment
+    [Migration("20250911094733_SeedServices")]
+    partial class SeedServices
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,16 +33,30 @@ namespace PetGrooming.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("Age")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("AppointmentDate")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("DoctorId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
@@ -52,6 +66,10 @@ namespace PetGrooming.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PetBreed")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PetName")
                         .IsRequired()
@@ -68,12 +86,23 @@ namespace PetGrooming.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ServiceType")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int?>("StaffId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.HasIndex("StaffId");
 
                     b.ToTable("Appointments");
                 });
@@ -158,6 +187,15 @@ namespace PetGrooming.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -172,7 +210,7 @@ namespace PetGrooming.Migrations
                     b.ToTable("Members");
                 });
 
-            modelBuilder.Entity("PetGrooming.Models.Pet", b =>
+            modelBuilder.Entity("PetGrooming.Models.Service", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -180,68 +218,135 @@ namespace PetGrooming.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("Age")
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("DurationMinutes")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("AppointmentDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("AppointmentTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Breed")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("DoctorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Gender")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("OwnerEmail")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("OwnerName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("OwnerPhone")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<string>("Service")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("Species")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("StaffId")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DoctorId");
+                    b.ToTable("Services");
 
-                    b.HasIndex("StaffId");
-
-                    b.ToTable("Pets");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "Basic Grooming",
+                            Price = 40m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DurationMinutes = 90,
+                            IsActive = true,
+                            Name = "Full Grooming",
+                            Price = 80m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DurationMinutes = 30,
+                            IsActive = true,
+                            Name = "Bath Only",
+                            Price = 25m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DurationMinutes = 15,
+                            IsActive = true,
+                            Name = "Nail Trim",
+                            Price = 15m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            DurationMinutes = 30,
+                            IsActive = true,
+                            Name = "Vet Consultation",
+                            Price = 60m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            DurationMinutes = 45,
+                            IsActive = true,
+                            Name = "General Health Check",
+                            Price = 80m
+                        },
+                        new
+                        {
+                            Id = 7,
+                            DurationMinutes = 20,
+                            IsActive = true,
+                            Name = "Vaccination",
+                            Price = 70m
+                        },
+                        new
+                        {
+                            Id = 8,
+                            DurationMinutes = 30,
+                            IsActive = true,
+                            Name = "Flea/Tick Treatment",
+                            Price = 50m
+                        },
+                        new
+                        {
+                            Id = 9,
+                            DurationMinutes = 45,
+                            IsActive = true,
+                            Name = "Minor Wound Care",
+                            Price = 90m
+                        },
+                        new
+                        {
+                            Id = 10,
+                            DurationMinutes = 45,
+                            IsActive = true,
+                            Name = "Blood Test (Basic)",
+                            Price = 120m
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Description = "Base price; final amount may vary",
+                            DurationMinutes = 120,
+                            IsActive = true,
+                            Name = "Spay/Neuter",
+                            Price = 250m
+                        },
+                        new
+                        {
+                            Id = 12,
+                            DurationMinutes = 30,
+                            IsActive = true,
+                            Name = "Dental Care",
+                            Price = 50m
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Description = "Describe in Special Notes",
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "Other / Custom Request",
+                            Price = 0m
+                        });
                 });
 
             modelBuilder.Entity("PetGrooming.Models.Staff", b =>
@@ -290,6 +395,15 @@ namespace PetGrooming.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -319,18 +433,29 @@ namespace PetGrooming.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("PetGrooming.Models.Pet", b =>
+            modelBuilder.Entity("PetGrooming.Models.Appointment", b =>
                 {
                     b.HasOne("PetGrooming.Models.Doctor", "Doctor")
                         .WithMany("Pets")
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("PetGrooming.Models.Staff", null)
+                    b.HasOne("PetGrooming.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PetGrooming.Models.Staff", "Staff")
                         .WithMany("Pets")
-                        .HasForeignKey("StaffId");
+                        .HasForeignKey("StaffId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Doctor");
+
+                    b.Navigation("Service");
+
+                    b.Navigation("Staff");
                 });
 
             modelBuilder.Entity("PetGrooming.Models.Doctor", b =>

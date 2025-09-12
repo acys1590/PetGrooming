@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PetGrooming.Models;
@@ -18,6 +21,7 @@ namespace PetGroomingSystem.Controllers
         public async Task<IActionResult> Index()
         {
             var appointments = await _context.Appointments
+                .Include(a => a.Service)
                 .OrderByDescending(a => a.AppointmentDate)
                 .ToListAsync();
             return View(appointments);
@@ -26,25 +30,23 @@ namespace PetGroomingSystem.Controllers
         // GET: Appointment/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var appointment = await _context.Appointments
+                .Include(a => a.Service)
+                .Include(a => a.Doctor)
+                .Include(a => a.Staff)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (appointment == null)
-            {
-                return NotFound();
-            }
+
+            if (appointment == null) return NotFound();
 
             return View(appointment);
         }
 
         // GET: Appointment/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["ServiceTypes"] = GetServiceTypeSelectList();
+            await LoadServicesDropDown();
             ViewData["PetTypes"] = GetPetTypeSelectList();
             return View();
         }
@@ -52,7 +54,7 @@ namespace PetGroomingSystem.Controllers
         // POST: Appointment/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OwnerName,PetName,PetType,PetBreed,Email,PhoneNumber,ServiceType,AppointmentDate,Notes")] Appointment appointment)
+        public async Task<IActionResult> Create([Bind("OwnerName,PetName,PetType,PetBreed,Age,Gender,Email,PhoneNumber,ServiceId,ServiceType,AppointmentDate,Notes")] Appointment appointment)
         {
             if (ModelState.IsValid)
             {
@@ -60,42 +62,33 @@ namespace PetGroomingSystem.Controllers
                 if (appointment.AppointmentDate <= DateTime.Now)
                 {
                     ModelState.AddModelError("AppointmentDate", "Appointment date must be in the future.");
-                    ViewData["ServiceTypes"] = GetServiceTypeSelectList();
+                    await LoadServicesDropDown(appointment.ServiceId);
                     ViewData["PetTypes"] = GetPetTypeSelectList();
                     return View(appointment);
+                }
+
+                // If service is "Other", require Notes
+                var chosenService = await _context.Services.FindAsync(appointment.ServiceId);
+                if (chosenService != null && chosenService.Name == "Other / Custom Request")
+                {
+                    if (string.IsNullOrWhiteSpace(appointment.Notes) || appointment.Notes.Trim().Length < 10)
+                    {
+                        ModelState.AddModelError("Notes", "Please describe your custom request (at least 10 characters).");
+                        await LoadServicesDropDown(appointment.ServiceId);
+                        ViewData["PetTypes"] = GetPetTypeSelectList();
+                        return View(appointment);
+                    }
                 }
 
                 appointment.CreatedDate = DateTime.Now;
                 _context.Add(appointment);
                 await _context.SaveChangesAsync();
+
                 TempData["Success"] = "Appointment booked successfully!";
                 return RedirectToAction(nameof(Confirmation), new { id = appointment.Id });
             }
 
-            // Validate appointment date is in the future
-            if (appointment.AppointmentDate <= DateTime.Now)
-            {
-                ModelState.AddModelError("AppointmentDate", "Appointment date must be in the future.");
-            }
-
-            // NEW: If "Other", require Notes (>= 10 chars)
-            if (string.Equals(appointment.ServiceType, "Other", StringComparison.OrdinalIgnoreCase))
-            {
-                if (string.IsNullOrWhiteSpace(appointment.Notes) || appointment.Notes!.Trim().Length < 10)
-                {
-                    ModelState.AddModelError("Notes",
-                        "Please describe your custom request (at least 10 characters).");
-                }
-            }
-
-            if (!ModelState.IsValid)
-            {
-                ViewData["ServiceTypes"] = GetServiceTypeSelectList();
-                ViewData["PetTypes"] = GetPetTypeSelectList();
-                return View(appointment);
-            }
-
-            ViewData["ServiceTypes"] = GetServiceTypeSelectList();
+            await LoadServicesDropDown(appointment.ServiceId);
             ViewData["PetTypes"] = GetPetTypeSelectList();
             return View(appointment);
         }
@@ -103,48 +96,44 @@ namespace PetGroomingSystem.Controllers
         // GET: Appointment/Confirmation/5
         public async Task<IActionResult> Confirmation(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var appointment = await _context.Appointments
+                .Include(a => a.Service)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (appointment == null)
-            {
-                return NotFound();
-            }
+
+            if (appointment == null) return NotFound();
 
             return View(appointment);
         }
 
-        private SelectList GetServiceTypeSelectList()
-        {
-            var serviceTypes = new List<SelectListItem>
-    {
-        // Grooming
-        new SelectListItem { Value = "Basic Grooming", Text = "Basic Grooming (RM40)" },
-        new SelectListItem { Value = "Full Grooming", Text = "Full Grooming (RM80)" },
-        new SelectListItem { Value = "Bath Only", Text = "Bath Only (RM25)" },
-        new SelectListItem { Value = "Nail Trim", Text = "Nail Trim (RM15)" },
-        // Doctor
-        new SelectListItem { Value = "Vet Consultation", Text = "Vet Consultation (RM60)" },
-        new SelectListItem { Value = "General Health Check", Text = "General Health Check (RM80)" },
-        new SelectListItem { Value = "Vaccination", Text = "Vaccination (RM70)" },
-        new SelectListItem { Value = "Flea/Tick Treatment", Text = "Flea/Tick Treatment (RM50)" },
-        new SelectListItem { Value = "Minor Wound Care", Text = "Minor Wound Care (RM90)" },
-        new SelectListItem { Value = "Blood Test (Basic)", Text = "Blood Test (Basic) (RM120)" },
-        new SelectListItem { Value = "Spay/Neuter", Text = "Spay/Neuter (from RM250)" },
-        new SelectListItem { Value = "Dental Care", Text = "Dental Care (RM50)" },
-        new SelectListItem { Value = "Other", Text = "Other / Custom Request" }
-        };
+        // -------------------------
+        // Helpers
+        // -------------------------
 
-            return new SelectList(serviceTypes, "Value", "Text");
+        private async Task LoadServicesDropDown(int? selectedId = null)
+        {
+            var services = await _context.Services
+                .Where(s => s.IsActive)
+                .ToListAsync();
+
+            var items = services
+                .OrderBy(s => s.Name == "Other / Custom Request" ? 1 : 0) // put "Other" last
+                .ThenBy(s => s.Name)                                      // sort the rest alphabetically
+                .Select(s => new SelectListItem
+                {
+                    Value = s.Id.ToString(),
+                    Text = $"{s.Name} (RM{s.Price:0.00})"
+                })
+                .ToList();
+
+            ViewBag.ServiceId = new SelectList(items, "Value", "Text", selectedId?.ToString());
         }
+
 
         private SelectList GetPetTypeSelectList()
         {
-            var petTypes = new List<SelectListItem>
+            var petTypes = new[]
             {
                 new SelectListItem { Value = "Dog", Text = "Dog" },
                 new SelectListItem { Value = "Cat", Text = "Cat" },
