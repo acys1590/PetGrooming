@@ -8,7 +8,7 @@
     ViewData["Title"] = "Book Appointment";
 }
 
-<div class="container">
+<div class="container mt-5 mb-4">
     <div class="row">
         <div class="col-md-8 mx-auto">
             <div class="card shadow">
@@ -22,18 +22,18 @@
                         Please fill out the form below to schedule your pet's grooming/doctor appointment.
                     </p>
 
-                    <form asp-action="Create" method="post">
+                    <form asp-action="Create" method="post" autocomplete="off">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="OwnerName" class="form-label"></label>
-                                <input asp-for="OwnerName" class="form-control" placeholder="Enter your full name" />
+                                <input asp-for="OwnerName" class="form-control" placeholder="Enter your full name" autocomplete="off" />
                                 <span asp-validation-for="OwnerName" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label asp-for="PetName" class="form-label"></label>
-                                <input asp-for="PetName" class="form-control" placeholder="Enter your pet's name" />
+                                <input asp-for="PetName" class="form-control" placeholder="Enter your pet's name" autocomplete="off" />
                                 <span asp-validation-for="PetName" class="text-danger"></span>
                             </div>
                         </div>
@@ -42,12 +42,12 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="PetBreed" class="form-label"></label>
-                                <input asp-for="PetBreed" class="form-control" placeholder="Enter your pet's breed" />
+                                <input asp-for="PetBreed" class="form-control" placeholder="Enter your pet's breed" autocomplete="off"/>
                                 <span asp-validation-for="PetBreed" class="text-danger"></span>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label asp-for="Age" class="form-label"></label>
-                                <input asp-for="Age" class="form-control" type="number" min="0" placeholder="Age in years" />
+                                <input asp-for="Age" class="form-control" type="number" min="0" placeholder="Age in years" autocomplete="off"/>
                                 <span asp-validation-for="Age" class="text-danger"></span>
                             </div>
                             <div class="col-md-3 mb-3">
@@ -94,7 +94,11 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label asp-for="PhoneNumber" class="form-label"></label>
-                                <input asp-for="PhoneNumber" class="form-control" type="tel" placeholder="(555) 123-4567" />
+                                <!-- ✅ Updated with phone regex -->
+                                <input asp-for="PhoneNumber" class="form-control" type="tel"
+                                       placeholder="e.g. 0123456789"
+                                       pattern="01\d{8,9}"
+                                       title="Must start with 01 and contain 10–11 digits" />
                                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
                         </div>

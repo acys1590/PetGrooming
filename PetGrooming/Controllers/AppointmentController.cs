@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PetGrooming.Models;
+using System.Text.RegularExpressions;
 
 namespace PetGroomingSystem.Controllers
 {
@@ -58,24 +59,46 @@ namespace PetGroomingSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Validate appointment date is in the future
-                if (appointment.AppointmentDate <= DateTime.Now)
+                // (A) Mobile number: starts with 01 and 10–11 digits total
+                if (!Regex.IsMatch(appointment.PhoneNumber ?? string.Empty, @"^01\d{8,9}$"))
                 {
-                    ModelState.AddModelError("AppointmentDate", "Appointment date must be in the future.");
-                    await LoadServicesDropDown(appointment.ServiceId);
-                    ViewData["PetTypes"] = GetPetTypeSelectList();
+                    ModelState.AddModelError("PhoneNumber", "Please enter a valid mobile number (starts with 01, 10–11 digits).");
+                    await LoadAndReturn(appointment);
                     return View(appointment);
                 }
 
-                // If service is "Other", require Notes
+                // (B) Future date/time only
+                if (appointment.AppointmentDate <= DateTime.Now)
+                {
+                    ModelState.AddModelError("AppointmentDate", "Appointment date must be in the future.");
+                    await LoadAndReturn(appointment);
+                    return View(appointment);
+                }
+
+                // (C) 15-minute slots only (:00, :15, :30, :45)
+                if ((appointment.AppointmentDate.Minute % 15) != 0 || appointment.AppointmentDate.Second != 0)
+                {
+                    ModelState.AddModelError("AppointmentDate", "Appointments are only available in 15-minute slots (:00, :15, :30, :45).");
+                    await LoadAndReturn(appointment);
+                    return View(appointment);
+                }
+
+                // (D) Business hours only
+                if (!IsWithinBusinessHours(appointment.AppointmentDate, out var hoursError))
+                {
+                    ModelState.AddModelError("AppointmentDate", hoursError);
+                    await LoadAndReturn(appointment);
+                    return View(appointment);
+                }
+
+                // (E) If service is "Other / Custom Request", require ≥ 10 chars in Notes
                 var chosenService = await _context.Services.FindAsync(appointment.ServiceId);
                 if (chosenService != null && chosenService.Name == "Other / Custom Request")
                 {
                     if (string.IsNullOrWhiteSpace(appointment.Notes) || appointment.Notes.Trim().Length < 10)
                     {
                         ModelState.AddModelError("Notes", "Please describe your custom request (at least 10 characters).");
-                        await LoadServicesDropDown(appointment.ServiceId);
-                        ViewData["PetTypes"] = GetPetTypeSelectList();
+                        await LoadAndReturn(appointment);
                         return View(appointment);
                     }
                 }
@@ -88,8 +111,7 @@ namespace PetGroomingSystem.Controllers
                 return RedirectToAction(nameof(Confirmation), new { id = appointment.Id });
             }
 
-            await LoadServicesDropDown(appointment.ServiceId);
-            ViewData["PetTypes"] = GetPetTypeSelectList();
+            await LoadAndReturn(appointment);
             return View(appointment);
         }
 
@@ -111,15 +133,22 @@ namespace PetGroomingSystem.Controllers
         // Helpers
         // -------------------------
 
+        private async Task LoadAndReturn(Appointment appointment)
+        {
+            await LoadServicesDropDown(appointment?.ServiceId);
+            ViewData["PetTypes"] = GetPetTypeSelectList();
+        }
+
         private async Task LoadServicesDropDown(int? selectedId = null)
         {
             var services = await _context.Services
+                .AsNoTracking()
                 .Where(s => s.IsActive)
                 .ToListAsync();
 
             var items = services
-                .OrderBy(s => s.Name == "Other / Custom Request" ? 1 : 0) // put "Other" last
-                .ThenBy(s => s.Name)                                      // sort the rest alphabetically
+                .OrderBy(s => s.Name == "Other / Custom Request" ? 1 : 0) // "Other" last
+                .ThenBy(s => s.Name)
                 .Select(s => new SelectListItem
                 {
                     Value = s.Id.ToString(),
@@ -130,6 +159,45 @@ namespace PetGroomingSystem.Controllers
             ViewBag.ServiceId = new SelectList(items, "Value", "Text", selectedId?.ToString());
         }
 
+        private static bool IsWithinBusinessHours(DateTime localDateTime, out string error)
+        {
+            // Business hours (local):
+            // Mon–Fri: 08:00–18:00
+            // Sat:     09:00–16:00
+            // Sun:     Closed
+            error = string.Empty;
+
+            var dow = localDateTime.DayOfWeek;
+            var t = localDateTime.TimeOfDay;
+
+            TimeSpan open, close;
+
+            switch (dow)
+            {
+                case DayOfWeek.Saturday:
+                    open = new TimeSpan(9, 0, 0);
+                    close = new TimeSpan(16, 0, 0);
+                    break;
+                case DayOfWeek.Sunday:
+                    error = "We’re closed on Sundays. Please pick Monday–Saturday during business hours.";
+                    return false;
+                default: // Mon–Fri
+                    open = new TimeSpan(8, 0, 0);
+                    close = new TimeSpan(18, 0, 0);
+                    break;
+            }
+
+            // Start inclusive, end exclusive
+            if (t < open || t >= close)
+            {
+                error = (dow == DayOfWeek.Saturday)
+                    ? "Saturday hours are 9:00 AM – 4:00 PM. Please pick a time within that range."
+                    : "Weekday hours are 8:00 AM – 6:00 PM (Mon–Fri). Please pick a time within that range.";
+                return false;
+            }
+
+            return true;
+        }
 
         private SelectList GetPetTypeSelectList()
         {
