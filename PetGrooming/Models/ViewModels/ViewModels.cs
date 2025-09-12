@@ -47,12 +47,8 @@ namespace PetGroomingSystem.Models.ViewModels
 
         // 上传文件用
         public IFormFile Photo { get; set; }
-
-        [Required]
-        public string Role { get; set; }  // Admin or Member
-
-        public string? AdminSecret { get; set; } 
     }
+
 
 
     public class UpdatePasswordVM
@@ -84,7 +80,8 @@ namespace PetGroomingSystem.Models.ViewModels
         [Required, MaxLength(100)]
         public string Name { get; set; } = string.Empty;
 
-        public IFormFile? Photo { get; set; }
+        // ⚡ 改为 string? 来接收 Base64
+        public string? Photo { get; set; }
 
         public string? PhotoURL { get; set; }
 
@@ -98,6 +95,7 @@ namespace PetGroomingSystem.Models.ViewModels
         public DateTime? DateOfBirth { get; set; }
         public int? Age { get; set; }
     }
+
 
 
 

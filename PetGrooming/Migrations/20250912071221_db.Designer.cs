@@ -12,8 +12,8 @@ using PetGrooming.Models;
 namespace PetGrooming.Migrations
 {
     [DbContext(typeof(DB))]
-    [Migration("20250911082507_admin")]
-    partial class admin
+    [Migration("20250912071221_db")]
+    partial class db
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,8 +53,7 @@ namespace PetGrooming.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Gender")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
@@ -87,8 +86,10 @@ namespace PetGrooming.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ServiceType")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -98,6 +99,8 @@ namespace PetGrooming.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DoctorId");
+
+                    b.HasIndex("ServiceId");
 
                     b.HasIndex("StaffId");
 
@@ -207,6 +210,145 @@ namespace PetGrooming.Migrations
                     b.ToTable("Members");
                 });
 
+            modelBuilder.Entity("PetGrooming.Models.Service", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Services");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "Basic Grooming",
+                            Price = 40m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "Full Grooming",
+                            Price = 80m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "Bath Only",
+                            Price = 25m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "Nail Trim",
+                            Price = 15m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "Vet Consultation",
+                            Price = 60m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "General Health Check",
+                            Price = 80m
+                        },
+                        new
+                        {
+                            Id = 7,
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "Vaccination",
+                            Price = 70m
+                        },
+                        new
+                        {
+                            Id = 8,
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "Flea/Tick Treatment",
+                            Price = 50m
+                        },
+                        new
+                        {
+                            Id = 9,
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "Minor Wound Care",
+                            Price = 90m
+                        },
+                        new
+                        {
+                            Id = 10,
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "Blood Test (Basic)",
+                            Price = 120m
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Description = "Base price; final amount may vary",
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "Spay/Neuter",
+                            Price = 250m
+                        },
+                        new
+                        {
+                            Id = 12,
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "Dental Care",
+                            Price = 50m
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Description = "Describe in Special Notes",
+                            DurationMinutes = 60,
+                            IsActive = true,
+                            Name = "Other / Custom Request",
+                            Price = 0m
+                        });
+                });
+
             modelBuilder.Entity("PetGrooming.Models.Staff", b =>
                 {
                     b.Property<int>("Id")
@@ -298,11 +440,20 @@ namespace PetGrooming.Migrations
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("PetGrooming.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("PetGrooming.Models.Staff", "Staff")
                         .WithMany("Pets")
-                        .HasForeignKey("StaffId");
+                        .HasForeignKey("StaffId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Doctor");
+
+                    b.Navigation("Service");
 
                     b.Navigation("Staff");
                 });
