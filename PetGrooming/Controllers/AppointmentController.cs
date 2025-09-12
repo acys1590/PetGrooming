@@ -12,9 +12,11 @@ namespace PetGroomingSystem.Controllers
     {
         private readonly DB _context;
 
+        public object ServiceId { get; private set; }
+
         public AppointmentController(DB context)
         {
-            _context = context;
+            DB _context = context;
         }
 
         // GET: Appointment
@@ -85,9 +87,12 @@ namespace PetGroomingSystem.Controllers
                 await _context.SaveChangesAsync();
 
                 TempData["Success"] = "Appointment booked successfully!";
-                return RedirectToAction(nameof(Confirmation), new { id = appointment.Id });
+                return RedirectToAction("Index", "Payment", new { serviceId = appointment.ServiceId });
             }
 
+            await LoadServicesDropDown(appointment.ServiceId);
+        }
+                
             await LoadServicesDropDown(appointment.ServiceId);
             ViewData["PetTypes"] = GetPetTypeSelectList();
             return View(appointment);
