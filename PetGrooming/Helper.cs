@@ -60,6 +60,31 @@ public class HelperBase
         return $"/{folder}/{fileName}";
     }
 
+    // ✅ 新增：支持 Base64 保存裁剪后的图片
+    internal string SavePhoto(string base64Photo, string folder)
+    {
+        if (string.IsNullOrEmpty(base64Photo)) return "";
+
+        var match = Regex.Match(base64Photo, @"data:image/(?<type>.+?);base64,(?<data>.+)");
+        if (!match.Success) return "";
+
+        string ext = match.Groups["type"].Value.ToLower();
+        string data = match.Groups["data"].Value;
+
+        byte[] bytes = Convert.FromBase64String(data);
+
+        string uploadPath = Path.Combine(en.WebRootPath, folder);
+        if (!Directory.Exists(uploadPath))
+            Directory.CreateDirectory(uploadPath);
+
+        string fileName = Guid.NewGuid().ToString() + "." + ext;
+        string filePath = Path.Combine(uploadPath, fileName);
+
+        File.WriteAllBytes(filePath, bytes);
+
+        return $"/{folder}/{fileName}";
+    }
+
     internal void DeletePhoto(string photoURL, string folder)
     {
         if (string.IsNullOrEmpty(photoURL)) return;
@@ -84,7 +109,6 @@ public class HelperBase
         return result == PasswordVerificationResult.Success;
     }
 
-    // ✅ 修复 SignIn：明确指定 CookieAuthenticationDefaults.AuthenticationScheme
     internal async Task SignIn(string email, string role, bool rememberMe)
     {
         var claims = new List<Claim>
@@ -106,7 +130,6 @@ public class HelperBase
             });
     }
 
-    // ✅ 修复 SignOut：同样指定 scheme
     internal async Task SignOut()
     {
         await ct.HttpContext!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -115,10 +138,5 @@ public class HelperBase
     internal string RandomPassword()
     {
         return Guid.NewGuid().ToString("N").Substring(0, 8);
-    }
-
-    internal bool VerifyPassword(object hash, string current)
-    {
-        throw new NotImplementedException();
     }
 }
