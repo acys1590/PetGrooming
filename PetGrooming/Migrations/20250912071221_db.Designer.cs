@@ -469,5 +469,17 @@ namespace PetGrooming.Migrations
                 });
 #pragma warning restore 612, 618
         }
+
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            // No operations needed in designer file.
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            // No operations needed in designer file.
+        }
     }
 }

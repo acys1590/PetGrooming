@@ -266,7 +266,7 @@ public class Appointment
 
     [Required, Phone, StringLength(20)]
     [Display(Name = "Phone Number")]
-    [RegularExpression(@"^01\d{8,9}$", ErrorMessage = "Please enter a valid mobile number (starts with 01, 10–11 digits).")]
+    [RegularExpression(@"^01(?:[\s-]?\d){8,9}", ErrorMessage = "Please enter a valid mobile number (starts with 01, 10–11 digits)")]
     public string PhoneNumber { get; set; } = string.Empty;
 
 
@@ -313,4 +313,5 @@ public class Service
 
     public int DurationMinutes { get; set; } = 60;
     public bool IsActive { get; set; } = true;
+
 }

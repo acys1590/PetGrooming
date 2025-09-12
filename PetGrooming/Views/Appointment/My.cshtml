@@ -1,0 +1,192 @@
+﻿@model PetGroomingSystem.Models.ViewModels.AppointmentListVM
+@using PetGrooming.Models
+
+@{
+    Layout = "Main_Layout";
+    ViewData["Title"] = "My Appointments";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h2 class="mb-0"><i class="fas fa-list-alt"></i> My Appointments</h2>
+                <span class="text-muted">
+                    Signed in as <strong>@Model.Email</strong>
+                </span>
+            </div>
+
+            <!-- UPCOMING -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <i class="fas fa-calendar-day me-2"></i>
+                    <h5 class="mb-0">Upcoming</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Upcoming.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Pet</th>
+                                        <th>Service</th>
+                                        <th>Date &amp; Time</th>
+                                        <th>Assigned</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var a in Model.Upcoming)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold">@a.PetName</div>
+                                                <small class="text-muted">@a.PetType @if(!string.IsNullOrEmpty(a.PetBreed)){
+                                                <text>• @a.PetBreed</text>
+                                            }
+    </small>
+                                        </td>
+                                        <td>@(a.Service?.Name ?? a.ServiceType)</td>
+                                        <td>
+                                            <div>@a.AppointmentDate.ToString("dddd, dd MMM yyyy")</div>
+                                            <small class="text-muted">@a.AppointmentDate.ToString("h:mm tt")</small>
+                                        </td>
+                                        <td>
+                                            @if (a.Doctor != null)
+                                            {
+                                                <span class="badge bg-success">@a.Doctor.Name (Doctor)</span>
+                                            }
+                                            else if (a.Staff != null)
+                                            {
+                                                <span class="badge bg-primary">@a.Staff.Name (Staff)</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark">Not assigned</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (a.IsApproved)
+                                            {
+                                                <span class="badge bg-success">Approved</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Pending</span>
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            @if (a.Service != null)
+                                            {
+                                                <span class="fw-semibold">RM @a.Service.Price.ToString("0.00")</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">—</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                                        }
+                                        else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar-plus fa-2x text-muted mb-2"></i>
+                            <div class="text-muted">No upcoming appointments.</div>
+                            <a asp-controller="Appointment" asp-action="Create" class="btn btn-primary btn-sm mt-2">
+                                <i class="fas fa-plus"></i> Book Appointment
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- HISTORY -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white d-flex align-items-center">
+                    <i class="fas fa-history me-2"></i>
+                    <h5 class="mb-0">History</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.History.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Pet</th>
+                                        <th>Service</th>
+                                        <th>Date &amp; Time</th>
+                                        <th>Assigned</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var a in Model.History)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold">@a.PetName</div>
+                                                <small class="text-muted">@a.PetType @if(!string.IsNullOrEmpty(a.PetBreed)){
+                                                <text>• @a.PetBreed</text>
+                                            }
+    </small>
+                                        </td>
+                                        <td>@(a.Service?.Name ?? a.ServiceType)</td>
+                                        <td>
+                                            <div>@a.AppointmentDate.ToString("dddd, dd MMM yyyy")</div>
+                                            <small class="text-muted">@a.AppointmentDate.ToString("h:mm tt")</small>
+                                        </td>
+                                        <td>
+                                            @if (a.Doctor != null)
+                                            {
+                                                <span class="badge bg-success">@a.Doctor.Name (Doctor)</span>
+                                            }
+                                            else if (a.Staff != null)
+                                            {
+                                                <span class="badge bg-primary">@a.Staff.Name (Staff)</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">—</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-outline border border-1 border-success text-success">
+                                                Completed
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            @if (a.Service != null)
+                                            {
+                                                <span class="fw-semibold">RM @a.Service.Price.ToString("0.00")</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">—</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                                        }
+                                        else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-box-archive fa-2x text-muted mb-2"></i>
+                            <div class="text-muted">No past appointments found.</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
