@@ -72,11 +72,12 @@
 
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label asp-for="Pet.ServiceType" class="form-label">Service Type</label>
-                                <select asp-for="Pet.ServiceType" asp-items="Model.ServiceTypes" class="form-select">
+                                <label asp-for="Pet.ServiceId" class="form-label">Service Type</label>
+                                <select asp-for="Pet.ServiceId" asp-items="Model.ServiceTypes" class="form-select">
                                     <option value="">-- Select Service --</option>
                                 </select>
-                                <span asp-validation-for="Pet.ServiceType" class="text-danger"></span>
+                                <span asp-validation-for="Pet.ServiceId" class="text-danger"></span>
+
                             </div>
                         </div>
 

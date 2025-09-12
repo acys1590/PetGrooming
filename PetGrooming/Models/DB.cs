@@ -275,7 +275,7 @@ public class Appointment
     public string? ServiceType { get; set; }   // Legacy, optional
 
     [Required]
-    public int ServiceId { get; set; }          // FK
+    public int? ServiceId { get; set; }          // FK
     public virtual Service Service { get; set; } = null!;
 
 
