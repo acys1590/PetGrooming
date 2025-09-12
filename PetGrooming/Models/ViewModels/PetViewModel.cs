@@ -9,8 +9,8 @@ namespace PetGroomingSystem.Models.ViewModels
     public class PetViewModel
     {
         public required Appointment Pet { get; set; }
-       
-        public required SelectList ServiceTypes { get; set; }
+
+        public IEnumerable<SelectListItem> ServiceTypes { get; set; } = new List<SelectListItem>();
 
         [Required(ErrorMessage = "Appointment Date is required")]
         [Display(Name = "Appointment Date")]

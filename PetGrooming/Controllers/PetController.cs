@@ -61,12 +61,22 @@ namespace PetGroomingSystem.Controllers
             var viewModel = new PetViewModel
             {
                 Pet = new Appointment { AppointmentDate = DateTime.Now.AddDays(1) },
-                ServiceTypes = ServiceHelper.GetServiceTypeSelectList()
+
+                ServiceTypes = _context.Services
+                    .Where(s => s.IsActive)
+                    .Select(s => new SelectListItem
+                    {
+                        Value = s.Id.ToString(),
+                        Text = $"{s.Name} - RM {s.Price}"
+                    })
+                    .ToList()
 
 
             };
             return View(viewModel);
         }
+
+
 
         // POST: Pets/Create
         [HttpPost]
@@ -82,6 +92,15 @@ namespace PetGroomingSystem.Controllers
                     return View(viewModel);
                 }
 
+                viewModel.ServiceTypes = _context.Services
+               .Where(s => s.IsActive)
+               .Select(s => new SelectListItem
+               {
+                   Value = s.Id.ToString(),
+                   Text = $"{s.Name} - RM {s.Price}"
+               })
+               .ToList();
+
                 _context.Add(viewModel.Pet);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Pet created successfully!";
@@ -91,7 +110,6 @@ namespace PetGroomingSystem.Controllers
 
             return View(viewModel);
         }
-
 
 
         // GET: Pets/Edit/5

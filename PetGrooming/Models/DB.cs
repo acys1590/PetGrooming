@@ -272,11 +272,12 @@ public class Appointment
 
     [StringLength(50)]
     [Display(Name = "Service Type")]
-    public string? ServiceType { get; set; }   // Legacy string
+    public string? ServiceType { get; set; }   // Legacy, optional
 
     [Required]
-    public int ServiceId { get; set; }         // FK to Service
-    public virtual Service? Service { get; set; }
+    public int ServiceId { get; set; }          // FK
+    public virtual Service Service { get; set; } = null!;
+
 
     [Required, Display(Name = "Appointment Date")]
     public DateTime AppointmentDate { get; set; }
@@ -292,6 +293,8 @@ public class Appointment
 
     public int? StaffId { get; set; }
     public virtual Staff? Staff { get; set; }
+
+   
 
     public bool IsApproved { get; set; }
 }

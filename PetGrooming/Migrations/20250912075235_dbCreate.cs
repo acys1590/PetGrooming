@@ -5,7 +5,7 @@
 namespace PetGrooming.Migrations
 {
     /// <inheritdoc />
-    public partial class update : Migration
+    public partial class dbCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -57,21 +57,14 @@
                                     @if (pet.Service != null)
                                     {
                                         <span>@pet.Service.Name</span>
-                                        @if (pet.Service.Price > 0)
-                                        {
-                                            <small class="text-muted d-block">@pet.Service.Price.ToString("C")</small>
-                                        }
-                                    }
-                                    else if (!string.IsNullOrWhiteSpace(pet.ServiceType))
-                                    {
-                                        <span>@pet.ServiceType</span>
-                                        <small class="badge bg-info ms-1">legacy</small>
+                                       
                                     }
                                     else
                                     {
                                         <span class="text-muted">—</span>
                                     }
                                 </td>
+
 
                                 <td>@pet.AppointmentDate.ToString("yyyy-MM-dd HH:mm")</td>
 
