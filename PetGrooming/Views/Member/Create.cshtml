@@ -1,0 +1,39 @@
+﻿@model PetGroomingSystem.Models.ViewModels.MemberDetailVM
+
+@{
+    ViewData["Title"] = "Create Member";
+}
+
+<h2>Create Member</h2>
+
+<form asp-action="Create" enctype="multipart/form-data" method="post">
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Address" class="form-label"></label>
+        <input asp-for="Address" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DateOfBirth" class="form-label"></label>
+        <input asp-for="DateOfBirth" type="date" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label for="Photo" class="form-label">Upload Photo</label>
+        <input type="file" name="Photo" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

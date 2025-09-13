@@ -1,0 +1,43 @@
+﻿@model PetGroomingSystem.Models.ViewModels.MemberDetailVM
+
+@{
+    ViewData["Title"] = "Edit Member";
+    var photoPath = !string.IsNullOrEmpty(Model.UserPhoto)
+        ? Url.Content("~/photos/" + Model.UserPhoto)
+        : !string.IsNullOrEmpty(Model.MemberPhoto)
+            ? Url.Content("~/photos/" + Model.MemberPhoto)
+            : Url.Content("~/photos/default-user.jpg");
+}
+
+<h2>Edit Member</h2>
+
+<form asp-action="Edit" enctype="multipart/form-data" method="post">
+    <input type="hidden" asp-for="Email" />
+
+    <div class="text-center mb-3">
+        <img src="@photoPath" alt="Profile" class="img-thumbnail mb-2" style="width:120px;height:120px;object-fit:cover;" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Address" class="form-label"></label>
+        <input asp-for="Address" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DateOfBirth" class="form-label"></label>
+        <input asp-for="DateOfBirth" type="date" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label for="Photo" class="form-label">Change Photo</label>
+        <input type="file" name="Photo" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>
