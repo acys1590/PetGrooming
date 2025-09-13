@@ -1,39 +1,65 @@
-﻿@{
-    ViewBag.Title = "Payment";
-}
+﻿using Microsoft.AspNetCore.Mvc;
+using PetGrooming.Models;
+using System.Linq;
 
-<h2>Payment Page</h2>
-
-<p><strong>Service:</strong> @ViewBag.ServiceName</p>
-<p><strong>Price:</strong> RM @ViewBag.Price</p>
-
-<form asp-action="Process" method="post">
-    <input type="hidden" name="serviceId" value="@ViewBag.ServiceId" />
-
-    <label>Payment Method:</label>
-    <select name="paymentMethod" required>
-        <option value="card">Credit/Debit Card</option>
-        <option value="tng">Touch 'n Go</option>
-        <option value="cash">Cash</option>
-    </select>
-    <br /><br />
-
-    <div id="cardFields">
-        <label>Card Number:</label>
-        <input type="text" name="cardNumber" /><br />
-
-        <label>Expiry Date:</label>
-        <input type="text" name="expiryDate" placeholder="MM/YY" /><br />
-
-        <label>CVV:</label>
-        <input type="password" name="cvv" /><br />
-    </div>
-
-    <br />
-    <button type="submit">Pay Now</button>
-</form>
-
-@if (ViewBag.Message != null)
+namespace PetGroomingSystem.Controllers
 {
-    <p style="color:red;">@ViewBag.Message</p>
+    public class PaymentController : Controller
+    {
+        private readonly DB _context;
+
+        public PaymentController(DB context)
+        {
+            _context = context;
+        }
+
+        // Show payment page
+        public IActionResult Index(int serviceId)
+        {
+            var service = _context.Services.FirstOrDefault(s => s.Id == serviceId);
+
+            if (service == null)
+            {
+                return NotFound("Service not found.");
+            }
+
+            ViewBag.ServiceId = service.Id;
+            ViewBag.ServiceName = service.Name;
+            ViewBag.Price = service.Price;
+
+            return View(); // will render Views/Payment/Index.cshtml
+        }
+
+        // Handle payment submission
+        [HttpPost]
+        public IActionResult Payment(string paymentMethod, string cardNumber, string expiryDate, string cvv, int serviceId)
+        {
+            var service = _context.Services.FirstOrDefault(s => s.Id == serviceId);
+
+            if (service == null)
+            {
+                return NotFound("Service not found.");
+            }
+
+            if (paymentMethod == "card")
+            {
+                if (string.IsNullOrEmpty(cardNumber) || string.IsNullOrEmpty(expiryDate) || string.IsNullOrEmpty(cvv))
+                {
+                    ViewBag.Message = "⚠️ Please enter valid card details.";
+                    ViewBag.ServiceId = service.Id;
+                    ViewBag.ServiceName = service.Name;
+                    ViewBag.Price = service.Price;
+                    return View("Index");
+                }
+            }
+
+            ViewBag.Message = $"✅ Payment of RM{service.Price} for {service.Name} via {paymentMethod} was successful!";
+            return View("Success");
+        }
+
+        public IActionResult Success()
+        {
+            return View();
+        }
+    }
 }

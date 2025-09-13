@@ -1,106 +1,78 @@
-﻿@{
-    Layout = "~/Views/Shared/Main_Layout.cshtml";
+﻿@model List<PetGroomingSystem.Models.ViewModels.MemberDetailVM>
+
+@{
+    ViewData["Title"] = "Members List";
 }
 
-<div class="text-center mt-3 pt-3">
-    <h1 class="display-4 text-primary mb-4">Welcome to Pawsome Pet Grooming</h1>
-    <p class="lead mb-5">Professional pet grooming services for your beloved companions</p>
-</div>
-
-<div class="row">
-    <div class="col-md-8 mx-auto">
-        <div class="hero-section bg-light p-5 rounded-3 shadow-sm mb-5">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h2 class="h3 mb-3">Your Pet Deserves the Best Care</h2>
-                    <p class="mb-4">We provide professional grooming services with love and care for dogs, cats, and other small pets. Our experienced groomers ensure your pet looks and feels their best.</p>
-                    <a asp-controller="Appointment" asp-action="Create" class="btn btn-primary btn-lg me-3">Book Appointment</a>
-                    <a href="#services" class="btn btn-outline-secondary btn-lg">Our Services</a>
-                </div>
-                <div class="col-md-6 text-center">
-                    <div class="pet-icon" style="font-size: 8rem; color: #007bff;">
-                        🐕🐱
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<section id="services" class="mb-5">
-    <div class="container">
-        <h2 class="text-center mb-5">Our Services</h2>
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body text-center">
-                        <div class="service-icon mb-3" style="font-size: 3rem;">✂️</div>
-                        <h5 class="card-title">Full Grooming</h5>
-                        <p class="card-text">Complete grooming package including bath, haircut, nail trim, and ear cleaning.</p>
-                        <p class="text-primary fw-bold">Starting at $80</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body text-center">
-                        <div class="service-icon mb-3" style="font-size: 3rem;">🛁</div>
-                        <h5 class="card-title">Bath & Basic Care</h5>
-                        <p class="card-text">Refreshing bath with premium shampoo, basic brushing, and nail trim.</p>
-                        <p class="text-primary fw-bold">Starting at $40</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body text-center">
-                        <div class="service-icon mb-3" style="font-size: 3rem;">💅</div>
-                        <h5 class="card-title">Nail & Dental Care</h5>
-                        <p class="card-text">Nail trimming, teeth cleaning, and general health maintenance.</p>
-                        <p class="text-primary fw-bold">Starting at $30</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="bg-light py-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <h3>Why Choose Pawsome Pet Grooming?</h3>
-                <ul class="list-unstyled">
-                    <li class="mb-2">✅ Experienced and certified pet groomers</li>
-                    <li class="mb-2">✅ Safe and comfortable environment</li>
-                    <li class="mb-2">✅ High-quality grooming products</li>
-                    <li class="mb-2">✅ Personalized care for each pet</li>
-                    <li class="mb-2">✅ Competitive pricing</li>
-                    <li class="mb-2">✅ Flexible scheduling</li>
-                </ul>
-            </div>
-            <div class="col-md-6">
-                <h3>Contact Information</h3>
-                <div class="contact-info">
-                    <p><strong>📍 Address:</strong> 123 Pet Street, Pet City, PC 12345</p>
-                    <p><strong>📞 Phone:</strong> (555) 123-4567</p>
-                    <p><strong>📧 Email:</strong> info@pawsomegrooming.com</p>
-                    <p><strong>🕐 Hours:</strong></p>
-                    <ul class="list-unstyled ms-3">
-                        <li>Mon-Fri: 8:00 AM - 6:00 PM</li>
-                        <li>Saturday: 9:00 AM - 4:00 PM</li>
-                        <li>Sunday: Closed</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<div class="text-center mt-5">
-    <h3>Ready to pamper your pet?</h3>
-    <p class="mb-4">Book an appointment today and give your furry friend the royal treatment they deserve!</p>
-    <a asp-controller="Appointment" asp-action="Create" class="btn btn-success btn-lg">
-        Book Now 📅
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Members List</h2>
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-person-plus"></i> Add Member
     </a>
 </div>
+
+<form method="get" asp-action="Index" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="search" value="@ViewBag.CurrentSearch" class="form-control" placeholder="Search by name or email" />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th style="width: 120px;">Photo</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th style="width: 220px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var photoPath = !string.IsNullOrEmpty(item.UserPhoto)
+            ? Url.Content("~/photos/" + item.UserPhoto)
+            : !string.IsNullOrEmpty(item.MemberPhoto)
+            ? Url.Content("~/photos/" + item.MemberPhoto)
+            : Url.Content("~/photos/default-avatar.png");
+
+            <tr>
+                <td>
+                    <img src="@photoPath" alt="Photo" class="img-thumbnail" style="width:100px; height:100px; object-fit:cover;" />
+                </td>
+                <td>@item.Name</td>
+                <td>@item.Email</td>
+                <td>
+                    <a asp-action="Edit" asp-route-email="@item.Email" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-email="@item.Email" class="btn btn-sm btn-danger">Delete</a>
+                    <button type="button" class="btn btn-sm btn-info"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#details-@item.Email.Replace("@", "").Replace(".", "")">
+                        Details
+                    </button>
+                </td>
+            </tr>
+            <tr class="collapse" id="details-@item.Email.Replace("@", "").Replace(".", "")">
+                <td colspan="4">
+                    <div class="card card-body">
+                        <p><strong>Address:</strong> @item.Address</p>
+                        <p><strong>Date of Birth:</strong> @(item.DateOfBirth?.ToString("yyyy-MM-dd") ?? "N/A")</p>
+                        <p><strong>Age:</strong> @(item.Age?.ToString() ?? "N/A")</p>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Paging -->
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-search="@ViewBag.CurrentSearch">@i</a>
+            </li>
+        }
+    </ul>
+</nav>
