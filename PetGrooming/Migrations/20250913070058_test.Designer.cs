@@ -12,8 +12,8 @@ using PetGrooming.Models;
 namespace PetGrooming.Migrations
 {
     [DbContext(typeof(DB))]
-    [Migration("20250912075235_dbCreate")]
-    partial class dbCreate
+    [Migration("20250913070058_test")]
+    partial class test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -252,7 +252,7 @@ namespace PetGrooming.Migrations
                         new
                         {
                             Id = 2,
-                            DurationMinutes = 60,
+                            DurationMinutes = 90,
                             IsActive = true,
                             Name = "Full Grooming",
                             Price = 80m
@@ -260,7 +260,7 @@ namespace PetGrooming.Migrations
                         new
                         {
                             Id = 3,
-                            DurationMinutes = 60,
+                            DurationMinutes = 30,
                             IsActive = true,
                             Name = "Bath Only",
                             Price = 25m
@@ -268,7 +268,7 @@ namespace PetGrooming.Migrations
                         new
                         {
                             Id = 4,
-                            DurationMinutes = 60,
+                            DurationMinutes = 15,
                             IsActive = true,
                             Name = "Nail Trim",
                             Price = 15m
@@ -276,7 +276,7 @@ namespace PetGrooming.Migrations
                         new
                         {
                             Id = 5,
-                            DurationMinutes = 60,
+                            DurationMinutes = 30,
                             IsActive = true,
                             Name = "Vet Consultation",
                             Price = 60m
@@ -284,7 +284,7 @@ namespace PetGrooming.Migrations
                         new
                         {
                             Id = 6,
-                            DurationMinutes = 60,
+                            DurationMinutes = 45,
                             IsActive = true,
                             Name = "General Health Check",
                             Price = 80m
@@ -292,7 +292,7 @@ namespace PetGrooming.Migrations
                         new
                         {
                             Id = 7,
-                            DurationMinutes = 60,
+                            DurationMinutes = 20,
                             IsActive = true,
                             Name = "Vaccination",
                             Price = 70m
@@ -300,7 +300,7 @@ namespace PetGrooming.Migrations
                         new
                         {
                             Id = 8,
-                            DurationMinutes = 60,
+                            DurationMinutes = 30,
                             IsActive = true,
                             Name = "Flea/Tick Treatment",
                             Price = 50m
@@ -308,7 +308,7 @@ namespace PetGrooming.Migrations
                         new
                         {
                             Id = 9,
-                            DurationMinutes = 60,
+                            DurationMinutes = 45,
                             IsActive = true,
                             Name = "Minor Wound Care",
                             Price = 90m
@@ -316,7 +316,7 @@ namespace PetGrooming.Migrations
                         new
                         {
                             Id = 10,
-                            DurationMinutes = 60,
+                            DurationMinutes = 45,
                             IsActive = true,
                             Name = "Blood Test (Basic)",
                             Price = 120m
@@ -325,7 +325,7 @@ namespace PetGrooming.Migrations
                         {
                             Id = 11,
                             Description = "Base price; final amount may vary",
-                            DurationMinutes = 60,
+                            DurationMinutes = 120,
                             IsActive = true,
                             Name = "Spay/Neuter",
                             Price = 250m
@@ -333,7 +333,7 @@ namespace PetGrooming.Migrations
                         new
                         {
                             Id = 12,
-                            DurationMinutes = 60,
+                            DurationMinutes = 30,
                             IsActive = true,
                             Name = "Dental Care",
                             Price = 50m

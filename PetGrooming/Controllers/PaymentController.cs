@@ -1,0 +1,66 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using PetGrooming.Models;
+using PetGroomingSystem.Models; 
+using System.Linq;
+
+namespace PetGroomingSystem.Controllers
+{
+    public class PaymentController : Controller
+    {
+        private readonly DB _context;
+
+        public PaymentController(DB context)
+        {
+            _context = context;
+        }
+
+        // Show payment page
+        public IActionResult Index(int ServiceId)
+        {
+            var service = _context.Services.FirstOrDefault(s => s.Id == ServiceId);
+
+            if (service == null)
+            {
+                return NotFound("Service not found.");
+            }
+
+            ViewBag.ServiceId = service.Id;
+            ViewBag.ServiceName = service.Name;
+            ViewBag.Price = service.Price;
+
+            return View();
+        }
+
+        // Handle payment submission
+        [HttpPost]
+        public IActionResult Payment(string paymentMethod, string cardNumber, string expiryDate, string cvv, int serviceId)
+        {
+            var service = _context.Services.FirstOrDefault(s => s.Id == serviceId);
+
+            if (service == null)
+            {
+                return NotFound("Service not found.");
+            }
+
+            if (paymentMethod == "card")
+            {
+                if (string.IsNullOrEmpty(cardNumber) || string.IsNullOrEmpty(expiryDate) || string.IsNullOrEmpty(cvv))
+                {
+                    ViewBag.Message = "⚠️ Please enter valid card details.";
+                    ViewBag.ServiceId = service.Id;
+                    ViewBag.ServiceName = service.Name;
+                    ViewBag.Price = service.Price;
+                    return View("Index");
+                }
+            }
+
+            ViewBag.Message = $"✅ Payment of RM{service.Price} for {service.Name} via {paymentMethod} was successful!";
+            return View("Success");
+        }
+
+        public IActionResult Success()
+        {
+            return View();
+        }
+    }
+}
