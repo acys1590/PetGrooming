@@ -133,7 +133,7 @@ namespace PetGroomingSystem.Controllers
                 case "Admin":
                     return RedirectToAction("Index", "Admin");   // 管理员
                 case "Member":
-                    return RedirectToAction("Index", "Member");  // 会员
+                    return RedirectToAction("Index", "Member1");  // 会员
                 default:
                     return RedirectToAction("Index", "Home");    // 默认
             }
