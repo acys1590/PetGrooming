@@ -275,7 +275,7 @@ public class Appointment
 
     [Required]
     public int? ServiceId { get; set; }          // FK
-    public virtual Service Service { get; set; } = null!;
+    public virtual Service? Service { get; set; } = null!;
 
 
     [Required, Display(Name = "Appointment Date")]

@@ -19,7 +19,7 @@ namespace PetGroomingSystem.Controllers
 
         public AppointmentController(DB context)
         {
-            DB _context = context;
+            _context = context;
         }
 
         // GET: Appointment
