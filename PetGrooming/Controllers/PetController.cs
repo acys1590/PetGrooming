@@ -158,7 +158,7 @@
                     return NotFound();
                 }
 
-                if (!ModelState.IsValid)  // ✅ fixed
+                if (ModelState.IsValid)  // ✅ fixed
                 {
                     try
                     {
