@@ -103,23 +103,23 @@ public class DB : DbContext
         // Services (full list)
         modelBuilder.Entity<Service>().HasData(
             // Grooming
-            new Service { Id = 1, Name = "Basic Grooming", Price = 40m},
-            new Service { Id = 2 , Name = "Full Grooming", Price = 80m},
-            new Service { Id = 3, Name = "Bath Only", Price = 25m},
-            new Service { Id = 4, Name = "Nail Trim", Price = 15m},
+            new Service { Id = 1, Name = "Basic Grooming", Price = 40m, DurationMinutes = 60, IsActive = true },
+            new Service { Id = 2 , Name = "Full Grooming", Price = 80m, DurationMinutes = 90, IsActive = true },
+            new Service { Id = 3, Name = "Bath Only", Price = 25m, DurationMinutes = 30, IsActive = true },
+            new Service { Id = 4, Name = "Nail Trim", Price = 15m, DurationMinutes = 15, IsActive = true },
 
             // Doctor
-            new Service { Id = 5, Name = "Vet Consultation", Price = 60m},
-            new Service { Id = 6, Name = "General Health Check", Price = 80m },
-            new Service { Id = 7, Name = "Vaccination", Price = 70m },
-            new Service { Id = 8, Name = "Flea/Tick Treatment", Price = 50m },
-            new Service { Id = 9, Name = "Minor Wound Care", Price = 90m },
-            new Service { Id = 10, Name = "Blood Test (Basic)", Price = 120m },
-            new Service { Id = 11, Name = "Spay/Neuter", Price = 250m, Description = "Base price; final amount may vary" },
-            new Service { Id = 12, Name = "Dental Care", Price = 50m },
+            new Service { Id = 5, Name = "Vet Consultation", Price = 60m, DurationMinutes = 30, IsActive = true },
+            new Service { Id = 6, Name = "General Health Check", Price = 80m, DurationMinutes = 45, IsActive = true },
+            new Service { Id = 7, Name = "Vaccination", Price = 70m, DurationMinutes = 20, IsActive = true },
+            new Service { Id = 8, Name = "Flea/Tick Treatment", Price = 50m, DurationMinutes = 30, IsActive = true },
+            new Service { Id = 9, Name = "Minor Wound Care", Price = 90m, DurationMinutes = 45, IsActive = true },
+            new Service { Id = 10, Name = "Blood Test (Basic)", Price = 120m, DurationMinutes = 45, IsActive = true },
+            new Service { Id = 11, Name = "Spay/Neuter", Price = 250m, DurationMinutes = 120, IsActive = true, Description = "Base price; final amount may vary" },
+            new Service { Id = 12, Name = "Dental Care", Price = 50m, DurationMinutes = 30, IsActive = true },
 
             // Custom
-            new Service { Id = 13, Name = "Other / Custom Request", Price = 0m, Description = "Describe in Special Notes" }
+            new Service { Id = 13, Name = "Other / Custom Request", Price = 0m, DurationMinutes = 60, IsActive = true, Description = "Describe in Special Notes" }
         );
     }
 } 
@@ -269,14 +269,14 @@ public class Appointment
     [RegularExpression(@"^01(?:[\s-]?\d){8,9}", ErrorMessage = "Please enter a valid mobile number (starts with 01, 10–11 digits)")]
     public string PhoneNumber { get; set; } = string.Empty;
 
-
     [StringLength(50)]
     [Display(Name = "Service Type")]
-    public string? ServiceType { get; set; }   // Legacy string
+    public string? ServiceType { get; set; }   // Legacy, optional
 
     [Required]
-    public int ServiceId { get; set; }         // FK to Service
-    public virtual Service? Service { get; set; }
+    public int? ServiceId { get; set; }          // FK
+    public virtual Service? Service { get; set; } = null!;
+
 
     [Required, Display(Name = "Appointment Date")]
     public DateTime AppointmentDate { get; set; }
@@ -292,6 +292,8 @@ public class Appointment
 
     public int? StaffId { get; set; }
     public virtual Staff? Staff { get; set; }
+
+   
 
     public bool IsApproved { get; set; }
 }

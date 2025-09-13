@@ -15,6 +15,8 @@ namespace PetGroomingSystem.Controllers
     {
         private readonly DB _context;
 
+        public object ServiceId { get; private set; }
+
         public AppointmentController(DB context)
         {
             _context = context;
