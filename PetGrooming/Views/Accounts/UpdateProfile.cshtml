@@ -3,11 +3,44 @@
 
 @{
     Layout = "Main_Layout";
-}
-
-@{
     ViewBag.Title = "Profile";
 }
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+<style>
+    #preview {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        transition: transform 0.2s;
+    }
+
+        #preview:hover {
+            transform: scale(1.05);
+        }
+
+    #cropImage {
+        width: 80%;
+        max-width: 500px;
+        max-height: 80vh;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .cropper-btns {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .change-photo-btn {
+        margin-top: 10px;
+    }
+</style>
 
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -17,68 +50,49 @@
                     <h4>Update Profile</h4>
                 </div>
                 <div class="card-body">
-                    <form asp-action="UpdateProfile" method="post" enctype="multipart/form-data">
+                    <form asp-action="UpdateProfile" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <!-- Email (readonly) -->
                         <div class="mb-3">
                             <label asp-for="Email" class="form-label"></label>
                             <input asp-for="Email" class="form-control" readonly />
                         </div>
 
-                        <!-- Name -->
                         <div class="mb-3">
                             <label asp-for="Name" class="form-label"></label>
                             <input asp-for="Name" class="form-control" />
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
-                        <!-- Age (Optional) -->
                         <div class="mb-3">
                             <label asp-for="Age" class="form-label"></label>
                             <input asp-for="Age" type="number" class="form-control" min="0" placeholder="Enter your age (optional)" />
                             <span asp-validation-for="Age" class="text-danger"></span>
                         </div>
 
-                        <!-- Date of Birth (Optional) -->
                         <div class="mb-3">
                             <label asp-for="DateOfBirth" class="form-label"></label>
                             <input asp-for="DateOfBirth" type="date" class="form-control" />
                             <span asp-validation-for="DateOfBirth" class="text-danger"></span>
                         </div>
 
-                        <!-- Address (Optional) -->
                         <div class="mb-3">
                             <label asp-for="Address" class="form-label"></label>
                             <input asp-for="Address" class="form-control" placeholder="Enter your address (optional)" />
                             <span asp-validation-for="Address" class="text-danger"></span>
                         </div>
 
-                        <!-- Password -->
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input type="password" class="form-control" placeholder="********" readonly />
-                            <div class="mt-2">
-                                <a asp-action="UpdatePassword" class="btn btn-link p-0">Change Password</a>
-                            </div>
-                        </div>
-
-                        <!-- Photo -->
                         <div class="mb-3 text-center">
-                            <label asp-for="Photo" class="form-label d-block"></label>
-                            <div class="mb-2">
-                                <img id="preview" src="@(string.IsNullOrEmpty(Model.PhotoURL) ? "/images/default-avatar.png" : Model.PhotoURL)"
-                                     alt="Profile Photo" class="img-thumbnail rounded-circle"
-                                     style="width:120px; height:120px; object-fit:cover;" />
+                            <img id="preview" src="@(string.IsNullOrEmpty(Model.PhotoURL) ? "/images/default-avatar.png" : Model.PhotoURL)" />
+                            <div>
+                                <button type="button" class="btn btn-outline-primary change-photo-btn" id="changePhotoBtn">Change Photo</button>
+                                <input type="file" id="photoFileInput" accept="image/*" style="display:none;" />
                             </div>
-                            <input asp-for="Photo" type="file" class="form-control"
-                                   accept="image/jpeg,image/png"
-                                   onchange="document.getElementById('preview').src = window.URL.createObjectURL(this.files[0])" />
-                            <span asp-validation-for="Photo" class="text-danger"></span>
                         </div>
 
-                        <!-- Buttons -->
-                        <div class="d-flex justify-content-between">
+                        <input type="hidden" id="croppedPhoto" name="Photo" />
+
+                        <div class="d-flex justify-content-between mt-3">
                             <button type="submit" class="btn btn-success px-4">Update</button>
                             <button type="reset" class="btn btn-secondary px-4">Reset</button>
                         </div>
@@ -88,3 +102,96 @@
         </div>
     </div>
 </div>
+
+<!-- Crop Modal -->
+<div class="modal fade" id="cropModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" style="max-width:90vw;">
+        <div class="modal-content border-0">
+            <div class="modal-body text-center">
+                <img id="cropImage" src="@(string.IsNullOrEmpty(Model.PhotoURL) ? "/images/default-avatar.png" : Model.PhotoURL)" />
+                <div class="cropper-btns">
+                    <button type="button" class="btn btn-secondary" id="rotateLeft">⟲ Rotate Left</button>
+                    <button type="button" class="btn btn-secondary" id="rotateRight">⟳ Rotate Right</button>
+                    <button type="button" class="btn btn-secondary" id="zoomIn">＋ Zoom</button>
+                    <button type="button" class="btn btn-secondary" id="zoomOut">－ Zoom</button>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-primary" id="saveCrop">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script>
+    let cropper;
+    const preview = document.getElementById('preview');
+    const cropImage = document.getElementById('cropImage');
+    const photoInput = document.getElementById('croppedPhoto');
+    const changePhotoBtn = document.getElementById('changePhotoBtn');
+    const photoFileInput = document.getElementById('photoFileInput');
+    const cropModalEl = document.getElementById('cropModal');
+
+    function initCropper() {
+        if(cropper) cropper.destroy();
+        cropper = new Cropper(cropImage, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 0.8,
+            responsive: true,
+            movable: true,
+            zoomable: true,
+            rotatable: true
+        });
+    }
+
+    // 点击头像直接裁剪
+    preview.addEventListener('click', () => {
+        cropImage.src = preview.src;
+        initCropper();
+        bootstrap.Modal.getOrCreateInstance(cropModalEl).show();
+    });
+
+    // 点击“更换照片”
+    changePhotoBtn.addEventListener('click', () => photoFileInput.click());
+
+    // 选择本地文件
+    photoFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            cropImage.src = reader.result;
+            initCropper();
+            bootstrap.Modal.getOrCreateInstance(cropModalEl).show();
+        };
+        reader.readAsDataURL(file);
+        photoFileInput.value = "";
+    });
+
+    // Cropper 按钮
+    document.getElementById('rotateLeft').addEventListener('click', () => cropper?.rotate(-90));
+    document.getElementById('rotateRight').addEventListener('click', () => cropper?.rotate(90));
+    document.getElementById('zoomIn').addEventListener('click', () => cropper?.zoom(0.1));
+    document.getElementById('zoomOut').addEventListener('click', () => cropper?.zoom(-0.1));
+
+    // 保存裁剪
+    document.getElementById('saveCrop').addEventListener('click', () => {
+        if(cropper){
+            cropper.getCroppedCanvas({width:300, height:300}).toBlob(blob => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    photoInput.value = reader.result; // Base64
+                    preview.src = reader.result;
+                    cropImage.src = reader.result;
+                    bootstrap.Modal.getInstance(cropModalEl).hide();
+                };
+                reader.readAsDataURL(blob);
+            });
+        }
+    });
+
+    cropModalEl.addEventListener('shown.bs.modal', initCropper);
+</script>

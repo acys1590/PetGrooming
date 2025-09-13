@@ -33,23 +33,16 @@ namespace PetGroomingSystem.Controllers
         [HttpPost]
         public IActionResult Register(RegisterVM vm)
         {
+            // 检查邮箱是否已注册
             if (db.Users.Any(u => u.Email == vm.Email))
                 ModelState.AddModelError("Email", "Email already registered");
 
+            // 验证照片
             if (vm.Photo != null)
             {
                 var err = hp.ValidatePhoto(vm.Photo);
                 if (!string.IsNullOrEmpty(err))
                     ModelState.AddModelError("Photo", err);
-            }
-
-            // ===== 如果选择 Admin，需要验证专属密码 =====
-            if (vm.Role == "Admin")
-            {
-                if (vm.AdminSecret != "ADMIN12345") // 固定密码
-                {
-                    ModelState.AddModelError("AdminSecret", "Invalid Admin Secret Password");
-                }
             }
 
             if (ModelState.IsValid)
@@ -62,22 +55,19 @@ namespace PetGroomingSystem.Controllers
                     Email = vm.Email,
                     Name = vm.Name,
                     PasswordHash = hasher.HashPassword(null!, vm.Password),
-                    Role = vm.Role,  // 存 Admin 或 Member
+                    Role = "Member",  // 统一存 Member
                     PhotoPath = photoPath
                 };
                 db.Users.Add(user);
 
-                // Member 额外存进 Members 表
-                if (vm.Role == "Member")
+                // 存入 Members 表
+                var member = new Member
                 {
-                    var member = new Member
-                    {
-                        Email = vm.Email,
-                        Name = vm.Name,
-                        PhotoURL = photoPath
-                    };
-                    db.Members.Add(member);
-                }
+                    Email = vm.Email,
+                    Name = vm.Name,
+                    PhotoURL = photoPath
+                };
+                db.Members.Add(member);
 
                 db.SaveChanges();
                 TempData["Info"] = "Registration successful. Please login.";
@@ -87,7 +77,6 @@ namespace PetGroomingSystem.Controllers
             return View(vm);
         }
         #endregion
-
 
 
         #region Login/Logout
@@ -197,13 +186,13 @@ namespace PetGroomingSystem.Controllers
                 m.DateOfBirth = vm.DateOfBirth;
                 m.Age = vm.Age;
 
-                // 更新头像
-                if (vm.Photo != null)
+                // 更新头像（Base64）
+                if (!string.IsNullOrEmpty(vm.Photo))
                 {
                     hp.DeletePhoto(u.PhotoPath, "photos");
                     hp.DeletePhoto(m.PhotoURL, "photos");
 
-                    var newPhoto = hp.SavePhoto(vm.Photo, "photos");
+                    var newPhoto = hp.SavePhoto(vm.Photo, "photos"); // 使用 Base64 保存
                     u.PhotoPath = newPhoto;
                     m.PhotoURL = newPhoto;
                 }
@@ -261,6 +250,7 @@ namespace PetGroomingSystem.Controllers
             return RedirectToAction("UpdateProfile");
         }
         #endregion
+
 
 
         #region Forgot / Reset Password

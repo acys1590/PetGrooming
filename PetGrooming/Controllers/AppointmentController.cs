@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;                   // ✅ NEW
 using PetGrooming.Models;
-using System.Text.RegularExpressions;
+using PetGroomingSystem.Models.ViewModels;
 
 namespace PetGroomingSystem.Controllers
 {
@@ -46,75 +48,89 @@ namespace PetGroomingSystem.Controllers
             return View(appointment);
         }
 
+        // ===========================
+        //  Booking requires login
+        // ===========================
+
         // GET: Appointment/Create
+        [Authorize]                                             // ✅ must be logged in
         public async Task<IActionResult> Create()
         {
             await LoadServicesDropDown();
             ViewData["PetTypes"] = GetPetTypeSelectList();
-            return View();
+
+            // Prefill the email with the logged-in user's identity if available
+            var model = new Appointment
+            {
+                Email = User?.Identity?.Name ?? string.Empty
+            };
+            return View(model);
         }
 
         // POST: Appointment/Create
+        [Authorize]                                             // ✅ must be logged in
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("OwnerName,PetName,PetType,PetBreed,Age,Gender,Email,PhoneNumber,ServiceId,ServiceType,AppointmentDate,Notes")] Appointment appointment)
         {
-            if (ModelState.IsValid)
+            // Force email to the signed-in user to prevent spoofing
+            if (User?.Identity?.IsAuthenticated == true && !string.IsNullOrWhiteSpace(User.Identity.Name))
             {
-                // (A) Mobile number: starts with 01 and 10–11 digits total
-                if (!Regex.IsMatch(appointment.PhoneNumber ?? string.Empty, @"^01\d{8,9}$"))
-                {
-                    ModelState.AddModelError("PhoneNumber", "Please enter a valid mobile number (starts with 01, 10–11 digits).");
-                    await LoadAndReturn(appointment);
-                    return View(appointment);
-                }
-
-                // (B) Future date/time only
-                if (appointment.AppointmentDate <= DateTime.Now)
-                {
-                    ModelState.AddModelError("AppointmentDate", "Appointment date must be in the future.");
-                    await LoadAndReturn(appointment);
-                    return View(appointment);
-                }
-
-                // (C) 15-minute slots only (:00, :15, :30, :45)
-                if ((appointment.AppointmentDate.Minute % 15) != 0 || appointment.AppointmentDate.Second != 0)
-                {
-                    ModelState.AddModelError("AppointmentDate", "Appointments are only available in 15-minute slots (:00, :15, :30, :45).");
-                    await LoadAndReturn(appointment);
-                    return View(appointment);
-                }
-
-                // (D) Business hours only
-                if (!IsWithinBusinessHours(appointment.AppointmentDate, out var hoursError))
-                {
-                    ModelState.AddModelError("AppointmentDate", hoursError);
-                    await LoadAndReturn(appointment);
-                    return View(appointment);
-                }
-
-                // (E) If service is "Other / Custom Request", require ≥ 10 chars in Notes
-                var chosenService = await _context.Services.FindAsync(appointment.ServiceId);
-                if (chosenService != null && chosenService.Name == "Other / Custom Request")
-                {
-                    if (string.IsNullOrWhiteSpace(appointment.Notes) || appointment.Notes.Trim().Length < 10)
-                    {
-                        ModelState.AddModelError("Notes", "Please describe your custom request (at least 10 characters).");
-                        await LoadAndReturn(appointment);
-                        return View(appointment);
-                    }
-                }
-
-                appointment.CreatedDate = DateTime.Now;
-                _context.Add(appointment);
-                await _context.SaveChangesAsync();
-
-                TempData["Success"] = "Appointment booked successfully!";
-                return RedirectToAction(nameof(Confirmation), new { id = appointment.Id });
+                appointment.Email = User.Identity.Name!;
             }
 
-            await LoadAndReturn(appointment);
-            return View(appointment);
+            // ---------- Server-side phone normalization + validation ----------
+            var digits = Regex.Replace(appointment.PhoneNumber ?? "", @"\D", "");
+            appointment.PhoneNumber = digits;
+
+            if (!Regex.IsMatch(digits, @"^01\d{8,9}$"))
+            {
+                ModelState.AddModelError("PhoneNumber", "Please enter a valid mobile number (starts with 01, 10–11 digits).");
+            }
+
+            // ---------- Validate appointment in the future ----------
+            if (appointment.AppointmentDate <= DateTime.Now)
+            {
+                ModelState.AddModelError("AppointmentDate", "Appointment date must be in the future.");
+            }
+
+            // ---------- Working hours validation (Mon–Fri 08:00–18:00, Sat 09:00–16:00) ----------
+            var dt = appointment.AppointmentDate;
+            bool inBusinessHours =
+                (dt.DayOfWeek >= DayOfWeek.Monday && dt.DayOfWeek <= DayOfWeek.Friday && dt.TimeOfDay >= TimeSpan.FromHours(8) && dt.TimeOfDay <= TimeSpan.FromHours(18)) ||
+                (dt.DayOfWeek == DayOfWeek.Saturday && dt.TimeOfDay >= TimeSpan.FromHours(9) && dt.TimeOfDay <= TimeSpan.FromHours(16));
+
+            if (!inBusinessHours)
+            {
+                ModelState.AddModelError("AppointmentDate", "Selected time is outside business hours.");
+            }
+
+            // ---------- Require notes when "Other / Custom Request" ----------
+            var chosenService = await _context.Services.FindAsync(appointment.ServiceId);
+            if (chosenService != null && chosenService.Name == "Other / Custom Request")
+            {
+                if (string.IsNullOrWhiteSpace(appointment.Notes) || appointment.Notes.Trim().Length < 10)
+                {
+                    ModelState.AddModelError("Notes", "Please describe your custom request (at least 10 characters).");
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                await LoadServicesDropDown(appointment.ServiceId);
+                ViewData["PetTypes"] = GetPetTypeSelectList();
+                return View(appointment);
+            }
+
+            // Save
+            appointment.CreatedDate = DateTime.Now;
+            _context.Add(appointment);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Appointment booked successfully!";
+
+            // After booking, go straight to the user's list filtered by their email
+            return RedirectToAction(nameof(My), new { email = appointment.Email });
         }
 
         // GET: Appointment/Confirmation/5
@@ -131,25 +147,58 @@ namespace PetGroomingSystem.Controllers
             return View(appointment);
         }
 
+        // GET: /Appointment/My
+        // Shows Upcoming and History, filtered by email when provided (or by logged-in user if available).
+        [Authorize]                                             // ✅ require login to view personal list
+        public async Task<IActionResult> My(string? email = null)
+        {
+            var filterEmail = email ?? User?.Identity?.Name;
+            var now = DateTime.Now;
+
+            var query = _context.Appointments
+                .AsNoTracking()
+                .Include(a => a.Service)
+                .Include(a => a.Doctor)
+                .Include(a => a.Staff)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filterEmail))
+            {
+                query = query.Where(a => a.Email == filterEmail);
+                ViewData["FilterEmail"] = filterEmail;
+            }
+            else
+            {
+                // no email available: show nothing to avoid exposing other users' data
+                query = query.Where(a => false);
+                ViewData["FilterEmail"] = null;
+            }
+
+            var all = await query.OrderBy(a => a.AppointmentDate).ToListAsync();
+
+            var vm = new AppointmentListVM
+            {
+                Email = filterEmail,
+                Upcoming = all.Where(a => a.AppointmentDate >= now)
+                              .OrderBy(a => a.AppointmentDate).ToList(),
+                History = all.Where(a => a.AppointmentDate < now)
+                             .OrderByDescending(a => a.AppointmentDate).ToList()
+            };
+
+            return View(vm);
+        }
+
         // -------------------------
         // Helpers
         // -------------------------
 
-        private async Task LoadAndReturn(Appointment appointment)
-        {
-            await LoadServicesDropDown(appointment?.ServiceId);
-            ViewData["PetTypes"] = GetPetTypeSelectList();
-        }
-
         private async Task LoadServicesDropDown(int? selectedId = null)
         {
             var services = await _context.Services
-                .AsNoTracking()
-                .Where(s => s.IsActive)
                 .ToListAsync();
 
             var items = services
-                .OrderBy(s => s.Name == "Other / Custom Request" ? 1 : 0) // "Other" last
+                .OrderBy(s => s.Name == "Other / Custom Request" ? 1 : 0) // put "Other" last
                 .ThenBy(s => s.Name)
                 .Select(s => new SelectListItem
                 {
@@ -159,46 +208,6 @@ namespace PetGroomingSystem.Controllers
                 .ToList();
 
             ViewBag.ServiceId = new SelectList(items, "Value", "Text", selectedId?.ToString());
-        }
-
-        private static bool IsWithinBusinessHours(DateTime localDateTime, out string error)
-        {
-            // Business hours (local):
-            // Mon–Fri: 08:00–18:00
-            // Sat:     09:00–16:00
-            // Sun:     Closed
-            error = string.Empty;
-
-            var dow = localDateTime.DayOfWeek;
-            var t = localDateTime.TimeOfDay;
-
-            TimeSpan open, close;
-
-            switch (dow)
-            {
-                case DayOfWeek.Saturday:
-                    open = new TimeSpan(9, 0, 0);
-                    close = new TimeSpan(16, 0, 0);
-                    break;
-                case DayOfWeek.Sunday:
-                    error = "We’re closed on Sundays. Please pick Monday–Saturday during business hours.";
-                    return false;
-                default: // Mon–Fri
-                    open = new TimeSpan(8, 0, 0);
-                    close = new TimeSpan(18, 0, 0);
-                    break;
-            }
-
-            // Start inclusive, end exclusive
-            if (t < open || t >= close)
-            {
-                error = (dow == DayOfWeek.Saturday)
-                    ? "Saturday hours are 9:00 AM – 4:00 PM. Please pick a time within that range."
-                    : "Weekday hours are 8:00 AM – 6:00 PM (Mon–Fri). Please pick a time within that range.";
-                return false;
-            }
-
-            return true;
         }
 
         private SelectList GetPetTypeSelectList()

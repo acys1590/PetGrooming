@@ -35,6 +35,7 @@ namespace PetGrooming.Controllers
             var appointments = await _context.Appointments
             .Include(a => a.Doctor)
             .Include(a => a.Staff)
+            .Include(a => a.Service)
             .ToListAsync();
 
             // Group pets handled by Doctor/Staff

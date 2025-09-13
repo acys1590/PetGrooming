@@ -16,7 +16,6 @@ namespace PetGroomingSystem.ServiceRoleHelpers
             { "Minor Wound Care", "Doctor" },
             { "Blood Test (Basic)", "Doctor" },
             { "Spay/Neuter", "Doctor" },
-            { "Dental Care", "Doctor" },
             { "Other", "Doctor" },
 
             { "Basic Grooming", "Staff" },

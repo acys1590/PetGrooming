@@ -32,19 +32,10 @@
                         @if (Model.Service != null)
                         {
                             <span>@Model.Service.Name</span>
-                            @if (Model.Service.Price > 0)
-                            {
-                                <small class="text-muted d-block">Price: @Model.Service.Price.ToString("C")</small>
-                            }
-                            @if (Model.Service.DurationMinutes > 0)
-                            {
-                                <small class="text-muted d-block">Duration: @Model.Service.DurationMinutes minutes</small>
-                            }
                         }
                         else if (!string.IsNullOrWhiteSpace(Model.ServiceType))
                         {
                             <span>@Model.ServiceType</span>
-                            <small class="badge bg-info ms-1">legacy</small>
                         }
                         else
                         {
@@ -52,27 +43,31 @@
                         }
                     </dd>
 
+
                     <dt class="col-sm-3">Owner:</dt>
                     <dd class="col-sm-9">@Model.OwnerName</dd>
 
                     <dt class="col-sm-3">Phone:</dt>
                     <dd class="col-sm-9">@Model.PhoneNumber</dd>
 
-                    <dt class="col-sm-3">Assigned Doctor/Staff:</dt>
+                    
+                   <dt class="col-sm-3">Assigned To:</dt>
                     <dd class="col-sm-9">
                         @if (Model.Doctor != null)
                         {
-                            <span class="badge bg-success">@Model.Doctor.Name (Doctor)</span>
+                            <span>@Model.Doctor.Name (Doctor)</span>
                         }
                         else if (Model.Staff != null)
                         {
-                            <span class="badge bg-primary">@Model.Staff.Name (Staff)</span>
+                            <span>@Model.Staff.Name (Staff)</span>
                         }
                         else
                         {
-                            <span class="badge bg-warning">Not Assigned</span>
+                            <span class="text-muted">Not Assigned</span>
                         }
                     </dd>
+
+
 
                     <dt class="col-sm-3">Appointment Date:</dt>
                     <dd class="col-sm-9">@Model.AppointmentDate.ToString("MMMM dd, yyyy hh:mm tt")</dd>

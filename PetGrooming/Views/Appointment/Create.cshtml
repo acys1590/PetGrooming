@@ -89,14 +89,24 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Email" class="form-label"></label>
-                                <input asp-for="Email" class="form-control" type="email" placeholder="your.email@example.com" />
+                                <input asp-for="Email" class="form-control" type="email" placeholder="your.email@example.com" autocomplete="off" />
                                 <span asp-validation-for="Email" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label asp-for="PhoneNumber" class="form-label"></label>
-                                <input asp-for="PhoneNumber" class="form-control" type="tel" placeholder="(555) 123-4567" />
+                                <!-- ✅ Digits-only phone validation -->
+                                <input asp-for="PhoneNumber"
+                                       class="form-control"
+                                       type="text"
+                                       inputmode="numeric"
+                                       pattern="" ^01(?:[\s-]?\d){8,9}$"
+                                       placeholder="e.g. 0123456789"
+                                       autocomplete="off"
+                                       title="Must start with 01 and contain 10–11 digits"
+                                       oninput="this.value=this.value.replace(/\D/g,'');" />
                                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
+
                         </div>
 
                         <div class="mb-3">

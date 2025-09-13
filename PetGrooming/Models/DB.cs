@@ -266,15 +266,17 @@ public class Appointment
 
     [Required, Phone, StringLength(20)]
     [Display(Name = "Phone Number")]
+    [RegularExpression(@"^01(?:[\s-]?\d){8,9}", ErrorMessage = "Please enter a valid mobile number (starts with 01, 10–11 digits)")]
     public string PhoneNumber { get; set; } = string.Empty;
 
     [StringLength(50)]
     [Display(Name = "Service Type")]
-    public string? ServiceType { get; set; }   // Legacy string
+    public string? ServiceType { get; set; }   // Legacy, optional
 
     [Required]
-    public int ServiceId { get; set; }         // FK to Service
-    public virtual Service? Service { get; set; }
+    public int? ServiceId { get; set; }          // FK
+    public virtual Service Service { get; set; } = null!;
+
 
     [Required, Display(Name = "Appointment Date")]
     public DateTime AppointmentDate { get; set; }
@@ -290,6 +292,8 @@ public class Appointment
 
     public int? StaffId { get; set; }
     public virtual Staff? Staff { get; set; }
+
+   
 
     public bool IsApproved { get; set; }
 }
@@ -311,4 +315,5 @@ public class Service
 
     public int DurationMinutes { get; set; } = 60;
     public bool IsActive { get; set; } = true;
+
 }
