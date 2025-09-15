@@ -107,7 +107,7 @@ namespace PetGroomingSystem.Controllers
             TempData["Success"] = "Appointment booked successfully!";
 
             // Redirect to Payment page
-            return RedirectToAction("Index", "Payment", new { serviceId = appointment.ServiceId });
+            return RedirectToAction("Confirmation", new { id = appointment.Id });
         }
 
         // -------------------------
@@ -143,5 +143,20 @@ namespace PetGroomingSystem.Controllers
             };
             return new SelectList(petTypes, "Value", "Text");
         }
+
+        public IActionResult Confirmation(int id)
+        {
+            var appointment = _context.Appointments
+                .Include(a => a.Service)
+                .FirstOrDefault(a => a.Id == id);
+
+            if (appointment == null)
+            {
+                return NotFound();
+            }
+
+            return View(appointment);
+        }
+
     }
 }

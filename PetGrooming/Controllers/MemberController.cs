@@ -19,21 +19,20 @@ namespace PetGroomingSystem.Controllers
         // Index: List with Search + Paging
         public async Task<IActionResult> Index(string? search, int page = 1, int pageSize = 5)
         {
-            var query = db.Users.Where(u => u.Role == "Member");
+            var query = db.Users.AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
             {
                 query = query.Where(u => u.Name.Contains(search) || u.Email.Contains(search));
             }
 
-            int totalMembers = await query.CountAsync();
+            int total = await query.CountAsync();
             var users = await query
                 .OrderBy(u => u.Name)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            // Convert to VM list
             var members = new List<MemberDetailVM>();
             foreach (var user in users)
             {
@@ -52,16 +51,16 @@ namespace PetGroomingSystem.Controllers
 
             ViewBag.CurrentSearch = search;
             ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = (int)Math.Ceiling(totalMembers / (double)pageSize);
-            ViewBag.TotalMembers = totalMembers;
+            ViewBag.TotalPages = (int)Math.Ceiling(total / (double)pageSize);
+            ViewBag.TotalMembers = total;
 
-            return View(members); // ✅ list
+            return View(members);
         }
 
         // GET: Create
         public IActionResult Create()
         {
-            return View(new MemberDetailVM()); // ✅ single
+            return View(new MemberDetailVM());
         }
 
         // POST: Create
@@ -86,7 +85,6 @@ namespace PetGroomingSystem.Controllers
                 {
                     Email = vm.Email,
                     Name = vm.Name,
-                    Role = "Member",
                     PhotoPath = fileName
                 };
                 db.Users.Add(user);
@@ -105,7 +103,7 @@ namespace PetGroomingSystem.Controllers
                 await db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(vm); // ✅ single
+            return View(vm);
         }
 
         // GET: Edit
@@ -113,7 +111,7 @@ namespace PetGroomingSystem.Controllers
         {
             if (string.IsNullOrEmpty(email)) return NotFound();
 
-            var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email && u.Role == "Member");
+            var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email);
             var member = await db.Members.FirstOrDefaultAsync(m => m.Email == email);
 
             if (user == null && member == null) return NotFound();
@@ -129,7 +127,7 @@ namespace PetGroomingSystem.Controllers
                 MemberPhoto = member?.PhotoURL
             };
 
-            return View(vm); // ✅ single
+            return View(vm);
         }
 
         // POST: Edit
@@ -144,7 +142,6 @@ namespace PetGroomingSystem.Controllers
 
                 if (user == null || member == null) return NotFound();
 
-                // Save new photo if uploaded
                 if (Photo != null && Photo.Length > 0)
                 {
                     var folder = Path.Combine(env.WebRootPath, "photos");
@@ -170,7 +167,7 @@ namespace PetGroomingSystem.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            return View(vm); // ✅ single
+            return View(vm);
         }
 
         // GET: Delete
@@ -178,7 +175,7 @@ namespace PetGroomingSystem.Controllers
         {
             if (string.IsNullOrEmpty(email)) return NotFound();
 
-            var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email && u.Role == "Member");
+            var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email);
             var member = await db.Members.FirstOrDefaultAsync(m => m.Email == email);
 
             if (user == null && member == null) return NotFound();
@@ -194,7 +191,7 @@ namespace PetGroomingSystem.Controllers
                 MemberPhoto = member?.PhotoURL
             };
 
-            return View(vm); // ✅ single
+            return View(vm);
         }
 
         // POST: Delete

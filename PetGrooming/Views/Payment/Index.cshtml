@@ -1,0 +1,123 @@
+﻿@{
+    Layout = "Main_Layout";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">💳 Choose Payment Method</h2>
+
+    <form id="paymentForm" asp-action="Index" method="post">
+        <input type="hidden" name="serviceId" value="@ViewBag.ServiceId" />
+        <input type="hidden" name="appointmentId" value="@ViewBag.AppointmentId" />
+
+        <div class="row justify-content-center">
+            <!-- Card Payment -->
+            <div class="col-md-4 mb-3">
+                <label class="card p-3 shadow-lg text-center payment-option">
+                    <input type="radio" name="paymentMethod" value="card" class="d-none" required />
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg"
+                         alt="Card Payment" class="img-fluid mb-2" style="height:80px;" />
+                    <h5 class="fw-bold">Card Payment</h5>
+                </label>
+            </div>
+
+            <!-- TNG eWallet -->
+            <div class="col-md-4 mb-3">
+                <label class="card p-3 shadow-lg text-center payment-option">
+                    <input type="radio" name="paymentMethod" value="tng" class="d-none" />
+                    <img src="~/photos/TNG.png"
+                         alt="TNG eWallet" class="img-fluid mb-2" style="height:50px;" />
+                    <h5 class="fw-bold">TNG eWallet</h5>
+                </label>
+            </div>
+        </div>
+
+        <!-- Card Details Section (shown only if Card is selected) -->
+        <div id="cardFields" class="row justify-content-center mt-3" style="display:none;">
+            <div class="col-md-6">
+                <input type="text" name="cardHolderName" class="form-control mb-2" placeholder="Card Holder Name" />
+                <input type="text" name="cardNumber" class="form-control mb-2" placeholder="Card Number" />
+                <input type="text" name="expiryDate" class="form-control mb-2" placeholder="MM/YY" />
+                <input type="text" name="cvv" class="form-control mb-2" placeholder="CVV" />
+                <input type="password" name="cardPassword" class="form-control mb-2" placeholder="Password" />
+                <select name="cardType" class="form-control mb-2">
+                    <option value="">Select Card Type</option>
+                    <option value="Visa">Visa</option>
+                    <option value="MasterCard">MasterCard</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary px-5 py-2">Proceed</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .payment-option {
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s ease-in-out;
+        border-radius: 15px;
+    }
+
+        .payment-option:hover {
+            border: 2px solid #007bff;
+            transform: translateY(-3px);
+        }
+
+        .payment-option input:checked ~ img,
+        .payment-option input:checked ~ h5 {
+            border: 2px solid #007bff;
+            color: #007bff;
+        }
+
+        .payment-option img,
+        .payment-option h5 {
+            pointer-events: none;
+        }
+</style>
+
+<script>
+    const form = document.getElementById('paymentForm');
+    const cardFields = document.getElementById('cardFields');
+
+    document.querySelectorAll('.payment-option').forEach(label => {
+        label.addEventListener('click', () => {
+            const radio = label.querySelector('input[type="radio"]');
+            radio.checked = true;
+
+            // Show Card fields if Card selected
+            if (radio.value === 'card') {
+                cardFields.style.display = 'block';
+            } else {
+                cardFields.style.display = 'none';
+            }
+        });
+    });
+
+    // Form validation before submit
+    form.addEventListener('submit', function (e) {
+        const selectedPayment = form.querySelector('input[name="paymentMethod"]:checked');
+        if (!selectedPayment) {
+            alert('⚠️ Please select a payment method.');
+            e.preventDefault();
+            return;
+        }
+
+        if (selectedPayment.value === 'card') {
+            // Validate card fields
+            const cardHolder = form.querySelector('input[name="cardHolderName"]').value.trim();
+            const cardNumber = form.querySelector('input[name="cardNumber"]').value.trim();
+            const expiryDate = form.querySelector('input[name="expiryDate"]').value.trim();
+            const cvv = form.querySelector('input[name="cvv"]').value.trim();
+            const password = form.querySelector('input[name="cardPassword"]').value.trim();
+            const cardType = form.querySelector('select[name="cardType"]').value;
+
+            if (!cardHolder || !cardNumber || !expiryDate || !cvv || !password || !cardType) {
+                alert('⚠️ Please fill in all card details.');
+                e.preventDefault();
+            }
+        }
+    });
+</script>
