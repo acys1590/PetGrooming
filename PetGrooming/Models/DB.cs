@@ -260,7 +260,11 @@ public class Appointment
     public string PetType { get; set; } = string.Empty;
 
     public string PetBreed { get; set; } = string.Empty;
+
+    [Range(0, 99, ErrorMessage = "Age must be between 0 and 99.")]
     public int? Age { get; set; }
+
+
     public string? Gender { get; set; }
 
     [Required, EmailAddress, StringLength(255)]

@@ -20,7 +20,7 @@ namespace PetGroomingSystem.Controllers
             _context = context;
         }
 
-        // GET: Appointment
+        // Admin/listing
         public async Task<IActionResult> Index()
         {
             var appointments = await _context.Appointments
@@ -37,10 +37,19 @@ namespace PetGroomingSystem.Controllers
             await LoadServicesDropDown();
             ViewData["PetTypes"] = GetPetTypeSelectList();
 
+            // Server-side default to today's next 15-min slot
+            var now = DateTime.Now;
+            var minutesToAdd = (15 - (now.Minute % 15)) % 15;
+            if (minutesToAdd == 0) minutesToAdd = 15;
+            var nextQuarter = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0)
+                .AddMinutes(minutesToAdd);
+
             var model = new Appointment
             {
-                Email = User?.Identity?.Name ?? string.Empty
+                Email = User?.Identity?.Name ?? string.Empty,
+                AppointmentDate = nextQuarter
             };
+
             return View(model);
         }
 
@@ -56,33 +65,40 @@ namespace PetGroomingSystem.Controllers
                 appointment.Email = User.Identity.Name!;
             }
 
-            // Phone validation
+            // === Server-side validations ===
+
+            // (A) Age: 0–99 (max 2 digits)
+            if (appointment.Age.HasValue)
+            {
+                if (appointment.Age.Value < 0 || appointment.Age.Value > 99)
+                {
+                    ModelState.AddModelError("Age", "Age must be between 0 and 99.");
+                }
+            }
+
+            // (B) Phone (MY mobile: starts with 01 + 8–9 digits)
             var digits = Regex.Replace(appointment.PhoneNumber ?? "", @"\D", "");
             appointment.PhoneNumber = digits;
-
             if (!Regex.IsMatch(digits, @"^01\d{8,9}$"))
             {
                 ModelState.AddModelError("PhoneNumber", "Please enter a valid mobile number (starts with 01, 10–11 digits).");
             }
 
-            // Future date validation
+            // (C) AppointmentDate must be in future & within business hours
             if (appointment.AppointmentDate <= DateTime.Now)
             {
                 ModelState.AddModelError("AppointmentDate", "Appointment date must be in the future.");
             }
-
-            // Working hours validation
             var dt = appointment.AppointmentDate;
             bool inBusinessHours =
                 (dt.DayOfWeek >= DayOfWeek.Monday && dt.DayOfWeek <= DayOfWeek.Friday && dt.TimeOfDay >= TimeSpan.FromHours(8) && dt.TimeOfDay <= TimeSpan.FromHours(18)) ||
                 (dt.DayOfWeek == DayOfWeek.Saturday && dt.TimeOfDay >= TimeSpan.FromHours(9) && dt.TimeOfDay <= TimeSpan.FromHours(16));
-
             if (!inBusinessHours)
             {
                 ModelState.AddModelError("AppointmentDate", "Selected time is outside business hours.");
             }
 
-            // Notes validation for custom service
+            // (D) Notes required for "Other / Custom Request"
             var chosenService = await _context.Services.FindAsync(appointment.ServiceId);
             if (chosenService != null && chosenService.Name == "Other / Custom Request")
             {
@@ -99,21 +115,72 @@ namespace PetGroomingSystem.Controllers
                 return View(appointment);
             }
 
-            // Save appointment
+            // Save
             appointment.CreatedDate = DateTime.Now;
             _context.Add(appointment);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Appointment booked successfully!";
-
-            // Redirect to Payment page
-            return RedirectToAction("Confirmation", new { id = appointment.Id });
+            // Neutral confirmation (success only after payment)
+            return RedirectToAction(nameof(Confirmation), new { id = appointment.Id });
         }
 
-        // -------------------------
-        // Helpers
-        // -------------------------
+        // GET: Appointment/Confirmation/5
+        public IActionResult Confirmation(int id)
+        {
+            var appointment = _context.Appointments
+                .Include(a => a.Service)
+                .FirstOrDefault(a => a.Id == id);
 
+            if (appointment == null) return NotFound();
+
+            return View(appointment);
+        }
+
+        // View my appointments (Upcoming + History)
+        [Authorize]
+        public async Task<IActionResult> My(string? email = null)
+        {
+            var filterEmail = email ?? User?.Identity?.Name;
+            var query = _context.Appointments
+                .AsNoTracking()
+                .Include(a => a.Service)
+                .Include(a => a.Doctor)
+                .Include(a => a.Staff)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filterEmail))
+            {
+                query = query.Where(a => a.Email == filterEmail);
+                ViewData["FilterEmail"] = filterEmail;
+            }
+            else
+            {
+                query = query.Where(a => false);
+            }
+
+            var now = DateTime.Now;
+            var all = await query.OrderBy(a => a.AppointmentDate).ToListAsync();
+
+            var vm = new AppointmentListVM
+            {
+                Email = filterEmail,
+                Upcoming = all.Where(a => a.AppointmentDate >= now).OrderBy(a => a.AppointmentDate).ToList(),
+                History = all.Where(a => a.AppointmentDate < now).OrderByDescending(a => a.AppointmentDate).ToList()
+            };
+
+            return View(vm);
+        }
+
+        // Optional payment jump
+        [Authorize]
+        public IActionResult Pay(int id)
+        {
+            var appt = _context.Appointments.AsNoTracking().FirstOrDefault(a => a.Id == id);
+            if (appt == null) return NotFound();
+            return RedirectToAction("Index", "Payment", new { serviceId = appt.ServiceId, appointmentId = appt.Id });
+        }
+
+        // Helpers
         private async Task LoadServicesDropDown(int? selectedId = null)
         {
             var services = await _context.Services.ToListAsync();
@@ -143,20 +210,5 @@ namespace PetGroomingSystem.Controllers
             };
             return new SelectList(petTypes, "Value", "Text");
         }
-
-        public IActionResult Confirmation(int id)
-        {
-            var appointment = _context.Appointments
-                .Include(a => a.Service)
-                .FirstOrDefault(a => a.Id == id);
-
-            if (appointment == null)
-            {
-                return NotFound();
-            }
-
-            return View(appointment);
-        }
-
     }
 }
