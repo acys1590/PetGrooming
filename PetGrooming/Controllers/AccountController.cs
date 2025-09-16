@@ -47,20 +47,26 @@ namespace PetGroomingSystem.Controllers
 
             if (ModelState.IsValid)
             {
+                // 保存头像
                 string? photoPath = vm.Photo != null ? hp.SavePhoto(vm.Photo, "photos") : null;
 
-                var hasher = new PasswordHasher<User>();
+                // 创建用户
                 var user = new User
                 {
                     Email = vm.Email,
                     Name = vm.Name,
-                    PasswordHash = hasher.HashPassword(null!, vm.Password),
-                    Role = "Member",  // 统一存 Member
+                    Role = "Member",   // 默认角色
                     PhotoPath = photoPath
                 };
+
+                // ✅ 哈希密码（传入 user 而不是 null）
+                var hasher = new PasswordHasher<User>();
+                user.PasswordHash = hasher.HashPassword(user, vm.Password);
+
+                // 存入 Users 表
                 db.Users.Add(user);
 
-                // 存入 Members 表
+                // 同时存入 Members 表
                 var member = new Member
                 {
                     Email = vm.Email,
@@ -70,6 +76,7 @@ namespace PetGroomingSystem.Controllers
                 db.Members.Add(member);
 
                 db.SaveChanges();
+
                 TempData["Info"] = "Registration successful. Please login.";
                 return RedirectToAction("Login");
             }
@@ -89,13 +96,6 @@ namespace PetGroomingSystem.Controllers
         {
             if (!ModelState.IsValid)
                 return View(vm);
-
-            // ✅ 验证 fake "I'm not a robot"
-            if (!vm.NotRobot)
-            {
-                ModelState.AddModelError("", "Please confirm you are not a robot.");
-                return View(vm);
-            }
 
             // 查找用户
             var user = db.Users.FirstOrDefault(x => x.Email == vm.Email);

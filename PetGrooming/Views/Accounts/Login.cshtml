@@ -31,13 +31,6 @@
                             <span asp-validation-for="Password" class="text-danger small"></span>
                         </div>
 
-                        <!-- Fake reCAPTCHA (绑定到 LoginVM.NotRobot) -->
-                        <div class="mb-3 form-check">
-                            <input asp-for="NotRobot" class="form-check-input" id="notRobot" />
-                            <label class="form-check-label" for="notRobot">I'm not a robot</label>
-                            <span asp-validation-for="NotRobot" class="text-danger small"></span>
-                        </div>
-
                         <!-- Buttons -->
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary rounded-pill">Login</button>
