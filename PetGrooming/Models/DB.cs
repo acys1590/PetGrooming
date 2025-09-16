@@ -16,6 +16,8 @@ public class DB : DbContext
     public DbSet<Staff> Staffs { get; set; }
     public DbSet<Appointment> Appointments { get; set; } = null!;
     public DbSet<Service> Services { get; set; } = null!;   // NEW
+    public DbSet<Payment> Payments { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -237,6 +239,7 @@ public class User
 // Appointment model
 public class Appointment
 {
+
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
@@ -257,7 +260,11 @@ public class Appointment
     public string PetType { get; set; } = string.Empty;
 
     public string PetBreed { get; set; } = string.Empty;
+
+    [Range(0, 99, ErrorMessage = "Age must be between 0 and 99.")]
     public int? Age { get; set; }
+
+
     public string? Gender { get; set; }
 
     [Required, EmailAddress, StringLength(255)]
@@ -292,9 +299,6 @@ public class Appointment
 
     public int? StaffId { get; set; }
     public virtual Staff? Staff { get; set; }
-
-   
-
     public bool IsApproved { get; set; }
 }
 
@@ -316,4 +320,30 @@ public class Service
     public int DurationMinutes { get; set; } = 60;
     public bool IsActive { get; set; } = true;
 
+}
+public class Payment
+{
+    [Key]
+    public int Id { get; set; }
+
+    public int AppointmentId { get; set; }   // FK to Appointment
+    public int ServiceId { get; set; }       // FK to Service
+
+    [Required]
+    public decimal Amount { get; set; }
+
+    [Required]
+    [MaxLength(50)]
+    public string Method { get; set; } = string.Empty;  // Card, TNG, etc.
+
+    [MaxLength(100)]
+    public string? CardHolderName { get; set; }
+
+    [MaxLength(30)]
+    public string? CardMasked { get; set; }  // e.g. **** **** **** 1234
+
+    [MaxLength(200)]
+    public string Token { get; set; } = string.Empty;  // OTP / QR / Ref No.
+
+    public DateTime PaidAt { get; set; } = DateTime.UtcNow;
 }

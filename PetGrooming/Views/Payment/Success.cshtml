@@ -2,7 +2,10 @@
     ViewData["Title"] = "Payment Success";
 }
 
-<h2>🎉 Payment Successful!</h2>
-<p>@ViewBag.Message</p>
-
-<a asp-controller="Appointment" asp-action="Index">Back to Appointments</a>
+<div class="container mt-5 text-center">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-success">✅ Payment Successful!</h2>
+        <p>@ViewBag.Message</p>
+        <a class="btn btn-primary mt-3" asp-controller="Appointment" asp-action="My">Back to Dashboard</a>
+    </div>
+</div>

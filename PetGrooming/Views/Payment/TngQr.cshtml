@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Scan QR Code";
+    var paymentLink = ViewBag.PaymentLink as string;
+}
+
+<h3>📷 Scan this QR Code to pay</h3>
+
+<img src="@ViewBag.QrCode" alt="TNG QR Code" style="width:250px; margin-bottom:20px;" />
+
+<video id="preview" width="400" height="300" autoplay></video>
+<p id="result" style="font-weight:bold; margin-top:10px;"></p>
+
+<script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+<script>
+    const resultElement = document.getElementById("result");
+
+    function onScanSuccess(decodedText, decodedResult) {
+        console.log(`QR code detected: ${decodedText}`);
+        resultElement.innerText = `QR Code scanned! Redirecting...`;
+
+        // Redirect to server TngSuccess endpoint
+        window.location.href = decodedText;
+    }
+
+    function onScanFailure(error) {
+        // ignored in real-time scanning
+    }
+
+    let html5QrcodeScanner = new Html5Qrcode("preview");
+    html5QrcodeScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        onScanSuccess,
+        onScanFailure
+    );
+</script>

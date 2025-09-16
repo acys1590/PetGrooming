@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+
+	<data name="Pawsome Pet Grooming" xml:space="preserve"><value>Pawsome Pet Grooming</value></data>
+	<data name="Home" xml:space="preserve"><value>Laman Utama</value></data>
+	<data name="Book Appointment" xml:space="preserve"><value>Tempah Janji Temu</value></data>
+	<data name="My Appointments" xml:space="preserve"><value>Janji Temu Saya</value></data>
+	<data name="Profile" xml:space="preserve"><value>Profil</value></data>
+	<data name="Logout" xml:space="preserve"><value>Log Keluar</value></data>
+	<data name="Register" xml:space="preserve"><value>Daftar</value></data>
+	<data name="Login" xml:space="preserve"><value>Log Masuk</value></data>
+	<data name="Toggle theme" xml:space="preserve"><value>Tukar tema</value></data>
+	<data name="Theme" xml:space="preserve"><value>Tema</value></data>
+	<data name="Find Us" xml:space="preserve"><value>Lokasi Kami</value></data>
+	<data name="Get Directions" xml:space="preserve"><value>Dapatkan Arah</value></data>
+	<data name="Contact Info" xml:space="preserve"><value>Maklumat Hubungan</value></data>
+	<data name="Business Hours" xml:space="preserve"><value>Waktu Perniagaan</value></data>
+	<data name="Mon-Fri: 8:00 AM - 6:00 PM" xml:space="preserve"><value>Isnin–Jumaat: 8:00 PG – 6:00 PTG</value></data>
+	<data name="Saturday: 9:00 AM - 4:00 PM" xml:space="preserve"><value>Sabtu: 9:00 PG – 4:00 PTG</value></data>
+	<data name="Sunday: Closed" xml:space="preserve"><value>Ahad: Tutup</value></data>
+	<data name="Professional pet grooming services with love and care for your furry friends." xml:space="preserve">
+    <value>Perkhidmatan dandanan haiwan peliharaan yang profesional dengan penuh kasih sayang dan penjagaan.</value>
+  </data>
+	<data name="All rights reserved." xml:space="preserve"><value>Hak cipta terpelihara.</value></data>
+	<data name="Made with" xml:space="preserve"><value>Dihasilkan dengan</value></data>
+	<data name="for pets and their owners" xml:space="preserve"><value>untuk haiwan peliharaan dan pemiliknya</value></data>
+</root>

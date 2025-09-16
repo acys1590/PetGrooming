@@ -1,0 +1,31 @@
+﻿@model PetGroomingSystem.Models.ViewModels.HistoryVM
+
+@{
+    ViewData["Title"] = "Appointment Details";
+}
+
+<div class="container mt-4">
+    <h2>Appointment Details</h2>
+
+    <dl class="row">
+        <dt class="col-sm-3">Member Name</dt>
+        <dd class="col-sm-9">@Model.MemberName</dd>
+
+        <dt class="col-sm-3">Email</dt>
+        <dd class="col-sm-9">@Model.MemberEmail</dd>
+
+        <dt class="col-sm-3">Service</dt>
+        <dd class="col-sm-9">@Model.ServiceName</dd>
+
+        <dt class="col-sm-3">Price (RM)</dt>
+        <dd class="col-sm-9">@Model.Price.ToString("0.00")</dd>
+
+        <dt class="col-sm-3">Appointment Date</dt>
+        <dd class="col-sm-9">@Model.AppointmentDate.ToString("dd/MM/yyyy hh:mm tt")</dd>
+
+        <dt class="col-sm-3">Notes</dt>
+        <dd class="col-sm-9">@Model.Notes</dd>
+    </dl>
+
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>
