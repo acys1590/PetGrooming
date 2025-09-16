@@ -35,26 +35,50 @@ namespace PetGroomingSystem.Controllers
             return View();
         }
 
-        // Handle payment submission
-        [HttpPost]
-        public IActionResult Index(
-            string paymentMethod,
-            string? cardType,
-            string? cardHolderName,
-            string? cardNumber,
-            string? expiryDate,
-            string? cvv,
-            string? cardPassword,
-            string? phoneNumber,
-            int serviceId,
-            int appointmentId)
+        // Card payment page
+        public IActionResult CardPayment(int serviceId, int appointmentId)
         {
             var service = _context.Services.FirstOrDefault(s => s.Id == serviceId);
             if (service == null) return NotFound("⚠️ Service not found.");
 
-            // ===== CARD PAYMENT WITH OTP =====
+            // <-- fetch service for hidden inputs
+            ViewBag.Service = service;
+            ViewBag.AppointmentId = appointmentId;
+
+            if (TempData["Error"] != null)
+                ViewBag.Error = TempData["Error"];
+
+            return View();
+        }
+
+        // Handle payment submission
+        [HttpPost]
+        public IActionResult Index(
+        string paymentMethod,
+        string? cardType,
+        string? cardHolderName,
+        string? cardNumber,
+        string? expiryDate,
+        string? cvv,
+        string? cardPassword,
+        string? phoneNumber,
+        int serviceId,
+        int appointmentId)
+        {
+            var service = _context.Services.FirstOrDefault(s => s.Id == serviceId);
+            if (service == null) return NotFound("⚠️ Service not found.");
+
             if (paymentMethod == "Card")
             {
+                // Save all previous input to TempData
+                TempData["CardType"] = cardType;
+                TempData["CardHolderName"] = cardHolderName;
+                TempData["CardNumber"] = cardNumber;
+                TempData["ExpiryDate"] = expiryDate;
+                TempData["CVV"] = cvv;
+                TempData["CardPassword"] = cardPassword;
+
+                // Check required fields
                 if (string.IsNullOrWhiteSpace(cardType) ||
                     string.IsNullOrWhiteSpace(cardHolderName) ||
                     string.IsNullOrWhiteSpace(cardNumber) ||
@@ -62,13 +86,23 @@ namespace PetGroomingSystem.Controllers
                     string.IsNullOrWhiteSpace(cvv) ||
                     string.IsNullOrWhiteSpace(cardPassword))
                 {
-                    return PaymentError("⚠️ Please fill in all card details.", service, appointmentId);
+                    TempData["Error"] = "⚠️ Please fill in all card details.";
+                    return RedirectToAction("CardPayment", new { serviceId, appointmentId });
                 }
+
+                // CVV must be exactly 3 digits
+                if (!System.Text.RegularExpressions.Regex.IsMatch(cvv, @"^\d{3}$"))
+                {
+                    TempData["Error"] = "⚠️ CVV must be exactly 3 digits.";
+                    return RedirectToAction("CardPayment", new { serviceId, appointmentId });
+                }
+
+                // Optionally, you can add more format checks for card number, expiry, etc.
+                // But no further validation is required per your request.
 
                 // Generate OTP
                 var otp = new Random().Next(100000, 999999).ToString();
 
-                // Save OTP + info in session
                 HttpContext.Session.SetString("PaymentOTP", otp);
                 HttpContext.Session.SetString("OtpExpiry", DateTime.UtcNow.AddMinutes(5).ToString());
                 HttpContext.Session.SetInt32("AppointmentId", appointmentId);
@@ -88,16 +122,16 @@ namespace PetGroomingSystem.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to send OTP email.");
-                    return PaymentError("⚠️ Failed to send OTP. Please try again.", service, appointmentId);
+                    TempData["Error"] = "⚠️ Failed to send OTP. Please try again.";
+                    return RedirectToAction("CardPayment", new { serviceId, appointmentId });
                 }
 
                 return RedirectToAction("VerifyOtp");
             }
 
-            // ===== TNG eWallet =====
+            // TNG eWallet logic remains unchanged
             if (paymentMethod == "TNG")
             {
-                // Generate TNG QR payment link
                 var paymentLink = Url.Action("TngSuccess", "Payment", new { serviceId = service.Id, appointmentId }, Request.Scheme);
 
                 using var qrGenerator = new QRCodeGenerator();
@@ -108,17 +142,19 @@ namespace PetGroomingSystem.Controllers
                 var qrBase64 = Convert.ToBase64String(qrBytes);
 
                 ViewBag.QrCode = $"data:image/png;base64,{qrBase64}";
-                ViewBag.PaymentLink = paymentLink; // send actual link for redirect
+                ViewBag.PaymentLink = paymentLink;
                 ViewBag.AppointmentId = appointmentId;
+                ViewBag.Price = service.Price;
                 ViewBag.Message = $"📱 Scan this QR code to complete RM{service.Price:0.00} payment.";
 
                 return View("TngQr");
             }
 
-            return PaymentError("⚠️ Invalid payment method.", service, appointmentId);
+            TempData["Error"] = "⚠️ Invalid payment method.";
+            return RedirectToAction("CardPayment", new { serviceId, appointmentId });
         }
 
-        // ===== TNG QR Payment Success =====
+        // TNG QR Success
         public IActionResult TngSuccess(int serviceId, int appointmentId)
         {
             var service = _context.Services.FirstOrDefault(s => s.Id == serviceId);
@@ -139,17 +175,27 @@ namespace PetGroomingSystem.Controllers
             _context.Payments.Add(payment);
             _context.SaveChanges();
 
+            ViewBag.ServiceName = service.Name;
+            ViewBag.Price = service.Price;
+            ViewBag.AppointmentId = appointmentId;
+
             ViewBag.Message = $"✅ TNG payment of RM{service.Price:0.00} for {service.Name} was successful!";
             ViewBag.AppointmentId = appointmentId;
             return View("Success");
         }
 
-        // ===== OTP Verification =====
+        // OTP Verification
         public IActionResult VerifyOtp() => View();
 
         [HttpPost]
         public IActionResult VerifyOtp(string otpInput)
         {
+            if (string.IsNullOrWhiteSpace(otpInput) || !System.Text.RegularExpressions.Regex.IsMatch(otpInput, @"^\d{6}$"))
+            {
+                ViewBag.Error = "⚠️ Invalid OTP format. Must be 6 digits.";
+                return View();
+            }
+
             var storedOtp = HttpContext.Session.GetString("PaymentOTP");
             var expiry = HttpContext.Session.GetString("OtpExpiry");
             var appointmentId = HttpContext.Session.GetInt32("AppointmentId") ?? 0;
@@ -201,7 +247,7 @@ namespace PetGroomingSystem.Controllers
             return View("Success");
         }
 
-        // ===== RESEND OTP =====
+        // Resend OTP
         public IActionResult ResendOtp()
         {
             var serviceId = HttpContext.Session.GetInt32("ServiceId") ?? 0;
@@ -250,7 +296,7 @@ namespace PetGroomingSystem.Controllers
 
         public IActionResult Success() => View();
 
-        // ===== EMAIL SENDER =====
+        // Email Sender
         private void SendEmail(string toEmail, string subject, string htmlBody)
         {
             var email = new MimeMessage();

@@ -1,0 +1,98 @@
+﻿@{
+    Layout = "Main_Layout";
+    var service = ViewBag.Service as PetGrooming.Models.Service;
+    var appointmentId = ViewBag.AppointmentId;
+    var error = TempData["Error"] as string;
+
+    // Previous input values from TempData
+    var cardType = TempData["CardType"]?.ToString() ?? "";
+    var cardHolderName = TempData["CardHolderName"]?.ToString() ?? "";
+    var cardNumber = TempData["CardNumber"]?.ToString() ?? "";
+    var expiryDate = TempData["ExpiryDate"]?.ToString() ?? "";
+    var cvv = TempData["CVV"]?.ToString() ?? "";
+    var cardPassword = TempData["CardPassword"]?.ToString() ?? "";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4 rounded-4" style="max-width: 600px; margin:auto;">
+        <h2 class="text-center text-primary mb-4">💳 Card Payment</h2>
+
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <div class="alert alert-danger">@error</div>
+        }
+
+        <form asp-action="Index" method="post">
+            <input type="hidden" name="paymentMethod" value="Card" />
+            <input type="hidden" name="serviceId" value="@service?.Id" />
+            <input type="hidden" name="appointmentId" value="@appointmentId" />
+
+            <div class="mb-3">
+                <label class="form-label">Card Type</label>
+                <select name="cardType" class="form-control" required>
+                    <option value="">-- Select --</option>
+                    <option value="Visa">Visa</option>
+                    <option value="MasterCard">MasterCard</option>
+                </select>
+            </div>
+
+
+            <div class="mb-3">
+                <label class="form-label">Cardholder Name</label>
+                <input type="text" name="cardHolderName" class="form-control" placeholder="John Doe"
+                       value="@cardHolderName" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Card Number</label>
+                <input type="text" name="cardNumber" id="cardNumber" class="form-control" maxlength="19"
+                       placeholder="1234 5678 9012 3456" value="@cardNumber" required />
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label class="form-label">Expiry Date</label>
+                    <input type="text" name="expiryDate" id="expiryDate" class="form-control" maxlength="5"
+                           placeholder="MM/YY" value="@expiryDate" required />
+                </div>
+                <div class="col">
+                    <label class="form-label">CVV</label>
+                    <input type="password" name="cvv" id="cvv" class="form-control" maxlength="3"
+                           placeholder="123" value="@cvv" required />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Card Password</label>
+                <input type="password" name="cardPassword" class="form-control" maxlength="6"
+                       placeholder="******" value="@cardPassword" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Pay RM @service?.Price
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto format card number
+        document.getElementById("cardNumber").addEventListener("input", function (e) {
+            let value = e.target.value.replace(/\D/g, "");
+            value = value.substring(0, 16);
+            e.target.value = value.replace(/(.{4})/g, "$1 ").trim();
+        });
+
+        // Auto format expiry date MM/YY
+        document.getElementById("expiryDate").addEventListener("input", function (e) {
+            let value = e.target.value.replace(/\D/g, "");
+            if (value.length > 4) value = value.substring(0, 4);
+            if (value.length > 2) {
+                e.target.value = value.substring(0, 2) + "/" + value.substring(2);
+            } else {
+                e.target.value = value;
+            }
+        });
+    </script>
+}
