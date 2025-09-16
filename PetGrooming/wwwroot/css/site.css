@@ -343,3 +343,220 @@ html[data-bs-theme="dark"] .ratio > iframe {
 [data-bs-theme="dark"] .feature-icon {
     background: rgba(13,110,253,.15);
 }
+
+/* === Pawsome unified look (Admin + Customer) ============================= */
+/* 1) Font (loads even if not in <head> thanks to @import): */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --brand: #0d6efd; /* Bootstrap primary */
+    --brand-2: #3b82f6; /* soft blue for gradients */
+    --ink-1: #0f172a; /* heading text */
+    --ink-2: #475569; /* body text */
+    --muted: #64748b;
+    --surface: #ffffff;
+    --radius-xl: 20px;
+    --shadow-sm: 0 6px 16px rgba(2,6,23,.06);
+    --shadow-md: 0 10px 24px rgba(2,6,23,.08);
+}
+
+[data-bs-theme="dark"] {
+    --ink-1: #e5e7eb;
+    --ink-2: #cbd5e1;
+    --muted: #94a3b8;
+    --surface: #111827;
+    --shadow-sm: 0 6px 16px rgba(0,0,0,.35);
+    --shadow-md: 0 12px 28px rgba(0,0,0,.45);
+}
+
+/* 2) Base typography */
+html, body {
+    font-family: Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,'Noto Sans',sans-serif
+}
+
+body {
+    color: var(--ink-2)
+}
+
+h1, h2, h3, h4 {
+    color: var(--ink-1);
+    font-weight: 800;
+    letter-spacing: .2px
+}
+
+.lead, .text-muted {
+    color: var(--muted) !important
+}
+
+/* 3) Cards (match customer look) */
+.card {
+    border: 0;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    background: var(--surface)
+}
+
+    .card:hover {
+        box-shadow: var(--shadow-md);
+        transition: box-shadow .2s ease
+    }
+
+.card-header {
+    border: 0;
+    border-top-left-radius: var(--radius-xl);
+    border-top-right-radius: var(--radius-xl)
+}
+
+    .card-header.bg-primary {
+        background: linear-gradient(135deg,var(--brand),var(--brand-2)) !important
+    }
+
+/* 4) Buttons */
+.btn {
+    border-radius: 12px;
+    font-weight: 600
+}
+
+.btn-primary {
+    background: linear-gradient(135deg,var(--brand),var(--brand-2));
+    border: 0;
+    box-shadow: 0 8px 20px rgba(13,110,253,.25)
+}
+
+    .btn-primary:hover {
+        filter: brightness(1.05)
+    }
+
+.btn-outline-secondary {
+    color: var(--ink-1);
+    border-color: #cbd5e1
+}
+
+    .btn-outline-secondary:hover {
+        background: #f1f5f9;
+        color: var(--ink-1)
+    }
+
+[data-bs-theme="dark"] .btn-outline-secondary:hover {
+    background: #1f2937
+}
+
+/* 5) Info KPI cards (those 4 small tiles on admin dashboard) */
+.card.bg-info, .card.bg-success, .card.bg-warning, .card.bg-danger {
+    border: 0;
+    border-radius: 18px;
+    box-shadow: var(--shadow-sm)
+}
+
+.card.bg-info {
+    background: linear-gradient(135deg,#06b6d4,#3b82f6) !important
+}
+
+.card.bg-success {
+    background: linear-gradient(135deg,#22c55e,#16a34a) !important
+}
+
+.card.bg-warning {
+    background: linear-gradient(135deg,#f59e0b,#facc15) !important;
+    color: #0f172a !important
+}
+
+.card.bg-danger {
+    background: linear-gradient(135deg,#ef4444,#dc2626) !important
+}
+
+    .card.bg-info .card-title,
+    .card.bg-success .card-title,
+    .card.bg-warning .card-title,
+    .card.bg-danger .card-title {
+        font-weight: 800
+    }
+
+.card.bg-warning .card-text,
+.card.bg-warning .card-title {
+    color: #111827 !important
+}
+
+/* 6) Tables (My appointments & admin tables) */
+.table thead th {
+    font-weight: 700;
+    color: var(--ink-1)
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(59,130,246,.06)
+}
+
+[data-bs-theme="dark"] .table-hover tbody tr:hover {
+    background-color: rgba(59,130,246,.15)
+}
+
+/* 7) Badges */
+.badge {
+    border-radius: 999px;
+    padding: .45rem .7rem;
+    font-weight: 600
+}
+
+/* 8) Navbar right controls sizing (theme/lang) */
+.navbar .btn.btn-outline-light.btn-sm {
+    border-radius: 10px
+}
+
+.navbar .form-select.form-select-sm {
+    border-radius: 10px
+}
+
+/* 9) Charts container (admin pie chart) */
+#petsPieChart {
+    filter: drop-shadow(0 6px 16px rgba(2,6,23,.08))
+}
+
+[data-bs-theme="dark"] #petsPieChart {
+    filter: none
+}
+
+/* 10) Hero/section spacing parity */
+.text-center.mt-3.pt-3 + .row .hero-section {
+    border-radius: 24px
+}
+
+/* === Fix card header text contrast (Admin chart card, etc.) === */
+.card-header {
+    font-weight: 700;
+    color: var(--ink-1) !important; /* Always strong text */
+    background-color: var(--surface) !important; /* Follows theme */
+}
+
+[data-bs-theme="dark"] .card-header {
+    background-color: #1f2937 !important; /* Dark surface */
+    color: #f9fafb !important; /* Light ink */
+}
+
+/* === Fix headers + table headings for dark mode === */
+
+/* Section card headers (like "Upcoming", "History") */
+.card-header {
+    font-weight: 600;
+    color: var(--bs-dark) !important;
+    background: var(--bs-light) !important;
+    border-radius: .5rem .5rem 0 0;
+}
+
+[data-bs-theme="dark"] .card-header {
+    background: #1f2937 !important; /* dark gray */
+    color: #f9fafb !important; /* white text */
+}
+
+/* Table header (thead th) */
+.table thead th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+[data-bs-theme="dark"] .table thead th {
+    background-color: #111827; /* darker surface */
+    color: #f9fafb; /* bright text */
+    border-color: #374151; /* subtle row borders */
+}

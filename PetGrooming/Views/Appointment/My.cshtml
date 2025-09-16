@@ -6,20 +6,40 @@
     ViewData["Title"] = "My Appointments";
 }
 
-<div class="container mt-4 mb-5">
-    <div class="row">
-        <div class="col-md-10 mx-auto">
+<style>
+    .section-head {
+        background: linear-gradient(135deg, rgba(13,110,253,.12), rgba(102,16,242,.12));
+        border-radius: .85rem .85rem 0 0;
+    }
+
+    .status-badge {
+        border: 1px solid rgba(25,135,84,.35);
+        color: #198754;
+        background: transparent;
+    }
+
+    [data-bs-theme="dark"] .status-badge {
+        border-color: rgba(25,135,84,.55);
+    }
+
+    .table td, .table th {
+        vertical-align: middle;
+    }
+</style>
+
+<div class="container my-4 my-md-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <h2 class="mb-0"><i class="fas fa-list-alt"></i> My Appointments</h2>
-                <span class="text-muted">
-                    Signed in as <strong>@Model.Email</strong>
-                </span>
+                <span class="text-secondary">Signed in as <strong>@Model.Email</strong></span>
             </div>
 
             <!-- UPCOMING -->
             <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white d-flex align-items-center">
-                    <i class="fas fa-calendar-day me-2"></i>
+                <div class="section-head p-3 d-flex align-items-center">
+                    <i class="fas fa-calendar-day me-2 text-primary"></i>
                     <h5 class="mb-0">Upcoming</h5>
                 </div>
                 <div class="card-body">
@@ -43,57 +63,60 @@
                                         <tr>
                                             <td>
                                                 <div class="fw-semibold">@a.PetName</div>
-                                                <small class="text-muted">@a.PetType @if(!string.IsNullOrEmpty(a.PetBreed)){
-                                                <text>• @a.PetBreed</text>
-                                            }
-    </small>
-                                        </td>
-                                        <td>@(a.Service?.Name ?? a.ServiceType)</td>
-                                        <td>
-                                            <div>@a.AppointmentDate.ToString("dddd, dd MMM yyyy")</div>
-                                            <small class="text-muted">@a.AppointmentDate.ToString("h:mm tt")</small>
-                                        </td>
-                                        <td>
-                                            @if (a.Doctor != null)
-                                            {
-                                                <span class="badge bg-success">@a.Doctor.Name (Doctor)</span>
-                                            }
-                                            else if (a.Staff != null)
-                                            {
-                                                <span class="badge bg-primary">@a.Staff.Name (Staff)</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-warning text-dark">Not assigned</span>
-                                            }
-                                        </td>
-                                        <td>
-                                            @if (a.IsApproved)
-                                            {
-                                                <span class="badge bg-success">Approved</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-secondary">Pending</span>
-                                            }
-                                        </td>
-                                        <td class="text-end">
-                                            @if (a.Service != null)
-                                            {
-                                                <span class="fw-semibold">RM @a.Service.Price.ToString("0.00")</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">—</span>
-                                            }
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                                        }
-                                        else
+                                                <small class="text-muted">
+                                                    @a.PetType
+                                                    @if (!string.IsNullOrEmpty(a.PetBreed))
+                                                    {
+                                                        <text> • @a.PetBreed</text>
+                                                    }
+                                                </small>
+                                            </td>
+                                            <td>@(a.Service?.Name ?? a.ServiceType)</td>
+                                            <td>
+                                                <div>@a.AppointmentDate.ToString("dddd, dd MMM yyyy")</div>
+                                                <small class="text-muted">@a.AppointmentDate.ToString("h:mm tt")</small>
+                                            </td>
+                                            <td>
+                                                @if (a.Doctor != null)
+                                                {
+                                                    <span class="badge bg-success">@a.Doctor.Name (Doctor)</span>
+                                                }
+                                                else if (a.Staff != null)
+                                                {
+                                                    <span class="badge bg-primary">@a.Staff.Name (Staff)</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning text-dark">Not assigned</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (a.IsApproved)
+                                                {
+                                                    <span class="badge bg-success">Approved</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Pending</span>
+                                                }
+                                            </td>
+                                            <td class="text-end">
+                                                @if (a.Service != null)
+                                                {
+                                                    <span class="fw-semibold">RM @a.Service.Price.ToString("0.00")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">—</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
                     {
                         <div class="text-center py-4">
                             <i class="fas fa-calendar-plus fa-2x text-muted mb-2"></i>
@@ -108,8 +131,8 @@
 
             <!-- HISTORY -->
             <div class="card shadow-sm">
-                <div class="card-header bg-dark text-white d-flex align-items-center">
-                    <i class="fas fa-history me-2"></i>
+                <div class="section-head p-3 d-flex align-items-center">
+                    <i class="fas fa-history me-2 text-dark"></i>
                     <h5 class="mb-0">History</h5>
                 </div>
                 <div class="card-body">
@@ -133,52 +156,53 @@
                                         <tr>
                                             <td>
                                                 <div class="fw-semibold">@a.PetName</div>
-                                                <small class="text-muted">@a.PetType @if(!string.IsNullOrEmpty(a.PetBreed)){
-                                                <text>• @a.PetBreed</text>
-                                            }
-    </small>
-                                        </td>
-                                        <td>@(a.Service?.Name ?? a.ServiceType)</td>
-                                        <td>
-                                            <div>@a.AppointmentDate.ToString("dddd, dd MMM yyyy")</div>
-                                            <small class="text-muted">@a.AppointmentDate.ToString("h:mm tt")</small>
-                                        </td>
-                                        <td>
-                                            @if (a.Doctor != null)
-                                            {
-                                                <span class="badge bg-success">@a.Doctor.Name (Doctor)</span>
-                                            }
-                                            else if (a.Staff != null)
-                                            {
-                                                <span class="badge bg-primary">@a.Staff.Name (Staff)</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-secondary">—</span>
-                                            }
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-outline border border-1 border-success text-success">
-                                                Completed
-                                            </span>
-                                        </td>
-                                        <td class="text-end">
-                                            @if (a.Service != null)
-                                            {
-                                                <span class="fw-semibold">RM @a.Service.Price.ToString("0.00")</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">—</span>
-                                            }
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                                        }
-                                        else
+                                                <small class="text-muted">
+                                                    @a.PetType
+                                                    @if (!string.IsNullOrEmpty(a.PetBreed))
+                                                    {
+                                                        <text> • @a.PetBreed</text>
+                                                    }
+                                                </small>
+                                            </td>
+                                            <td>@(a.Service?.Name ?? a.ServiceType)</td>
+                                            <td>
+                                                <div>@a.AppointmentDate.ToString("dddd, dd MMM yyyy")</div>
+                                                <small class="text-muted">@a.AppointmentDate.ToString("h:mm tt")</small>
+                                            </td>
+                                            <td>
+                                                @if (a.Doctor != null)
+                                                {
+                                                    <span class="badge bg-success">@a.Doctor.Name (Doctor)</span>
+                                                }
+                                                else if (a.Staff != null)
+                                                {
+                                                    <span class="badge bg-primary">@a.Staff.Name (Staff)</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">—</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge status-badge">Completed</span>
+                                            </td>
+                                            <td class="text-end">
+                                                @if (a.Service != null)
+                                                {
+                                                    <span class="fw-semibold">RM @a.Service.Price.ToString("0.00")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">—</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
                     {
                         <div class="text-center py-4">
                             <i class="fas fa-box-archive fa-2x text-muted mb-2"></i>
@@ -187,6 +211,7 @@
                     }
                 </div>
             </div>
+
         </div>
     </div>
 </div>

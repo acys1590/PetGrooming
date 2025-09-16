@@ -8,23 +8,57 @@
     ViewData["Title"] = "Book Appointment";
 }
 
-<div class="container mt-5 mb-4">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">
-                        <i class="fas fa-calendar-plus"></i> Book Your Pet's Appointment
-                    </h2>
+<style>
+    .header-band {
+        background: linear-gradient(135deg, rgba(13,110,253,.12), rgba(102,16,242,.12));
+        border-radius: 1rem 1rem 0 0;
+    }
+
+    .step-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        padding: .45rem .75rem;
+        border-radius: .75rem;
+        background: rgba(13,110,253,.12);
+        color: #0d6efd;
+        font-weight: 600;
+    }
+
+    [data-bs-theme="dark"] .step-chip {
+        background: rgba(13,110,253,.18);
+    }
+
+    .hint {
+        color: var(--bs-secondary-color);
+    }
+</style>
+
+<div class="container my-4 my-md-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card shadow-sm">
+                <div class="header-band p-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge bg-primary rounded-circle p-3"><i class="fas fa-calendar-plus"></i></span>
+                        <div>
+                            <h2 class="mb-1">Book Your Pet’s Appointment</h2>
+                            <div class="step-chip"><i class="fa-solid fa-1"></i> Details</div>
+                            <div class="step-chip ms-1"><i class="fa-solid fa-2"></i> Review</div>
+                            <div class="step-chip ms-1"><i class="fa-solid fa-3"></i> Payment</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <p class="text-muted mb-4">
-                        Please fill out the form below to schedule your pet's grooming/doctor appointment.
+
+                <div class="card-body p-4 p-md-5">
+                    <p class="hint mb-4">
+                        Fill in the form below to schedule your pet’s grooming / doctor visit.
                     </p>
 
-                    <form asp-action="Create" method="post">
+                    <form asp-action="Create" method="post" novalidate>
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
+                        <!-- Owner & Pet Names -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="OwnerName" class="form-label"></label>
@@ -47,7 +81,7 @@
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label asp-for="Age" class="form-label"></label>
-                                <input asp-for="Age" class="form-control" type="number" min="0" placeholder="Age in years" />
+                                <input asp-for="Age" class="form-control" type="number" min="0" placeholder="Age (years)" />
                                 <span asp-validation-for="Age" class="text-danger"></span>
                             </div>
                             <div class="col-md-3 mb-3">
@@ -70,7 +104,7 @@
                                 <span asp-validation-for="PetType" class="text-danger"></span>
                             </div>
 
-                            <!-- UPDATED: Services dropdown from DB -->
+                            <!-- Services dropdown from DB -->
                             <div class="col-md-6 mb-3">
                                 <label asp-for="ServiceId" class="form-label">Service</label>
                                 <select asp-for="ServiceId" class="form-select" asp-items="ViewBag.ServiceId" id="ServiceId">
@@ -78,7 +112,7 @@
                                 </select>
                                 <span asp-validation-for="ServiceId" class="text-danger"></span>
 
-                                <!-- Shown only when 'Other' is chosen -->
+                                <!-- Only shown when 'Other' is picked -->
                                 <div id="otherHelp" class="alert alert-info mt-2 d-none" role="alert">
                                     You selected <strong>Other / Custom Request</strong>. Please describe your needs
                                     in <em>Special Notes</em> (minimum 10 characters).
@@ -86,6 +120,7 @@
                             </div>
                         </div>
 
+                        <!-- Contact -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Email" class="form-label"></label>
@@ -94,27 +129,26 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label asp-for="PhoneNumber" class="form-label"></label>
-                                <!-- ✅ Digits-only phone validation -->
                                 <input asp-for="PhoneNumber"
                                        class="form-control"
                                        type="text"
                                        inputmode="numeric"
-                                       pattern="" ^01(?:[\s-]?\d){8,9}$"
+                                       pattern="^01(?:[\s-]?\d){8,9}$"
                                        placeholder="e.g. 0123456789"
                                        autocomplete="off"
                                        title="Must start with 01 and contain 10–11 digits"
                                        oninput="this.value=this.value.replace(/\D/g,'');" />
                                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
-
                         </div>
 
+                        <!-- Date/Time -->
                         <div class="mb-3">
                             <label asp-for="AppointmentDate" class="form-label"></label>
                             <input asp-for="AppointmentDate" class="form-control" type="datetime-local" step="900" />
                             <span asp-validation-for="AppointmentDate" class="text-danger"></span>
                             <div class="form-text text-warning">
-                                Appointments are only available in 15-minute slots (:00, :15, :30, :45).
+                                Appointments are available in 15-minute slots (:00, :15, :30, :45).
                             </div>
                         </div>
 
@@ -124,14 +158,12 @@
                             <textarea asp-for="Notes" class="form-control" rows="3"
                                       placeholder="Describe special needs, e.g. sensitive skin shampoo, medicated bath, specific handling, etc."
                                       id="Notes" maxlength="500"></textarea>
-                            <div class="form-text">
-                                <span id="notesCounter">0</span> / 500 characters
-                            </div>
+                            <div class="form-text"><span id="notesCounter">0</span> / 500 characters</div>
                             <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
 
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a asp-controller="Main" asp-action="Index" class="btn btn-secondary me-md-2">
+                        <div class="d-flex justify-content-between flex-wrap gap-2">
+                            <a asp-controller="Main" asp-action="Index" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left"></i> Back to Home
                             </a>
                             <button type="submit" class="btn btn-success">
@@ -142,33 +174,34 @@
                 </div>
             </div>
 
-            <!-- Service Information -->
+            <!-- Helpful Info -->
             <div class="card mt-4 shadow-sm">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">Service Information</h5>
+                    <h5 class="mb-0"><i class="fa-solid fa-circle-info me-2"></i>Before You Come</h5>
                 </div>
                 <div class="card-body">
-                    <div class="row">
+                    <div class="row gy-3">
                         <div class="col-md-6">
-                            <h6>Business Hours:</h6>
-                            <ul class="list-unstyled">
-                                <li>Monday - Friday: 8:00 AM - 6:00 PM</li>
-                                <li>Saturday: 9:00 AM - 4:00 PM</li>
+                            <h6 class="mb-2">Business Hours</h6>
+                            <ul class="list-unstyled mb-0">
+                                <li>Mon–Fri: 8:00 AM – 6:00 PM</li>
+                                <li>Saturday: 9:00 AM – 4:00 PM</li>
                                 <li>Sunday: Closed</li>
                             </ul>
                         </div>
                         <div class="col-md-6">
-                            <h6>Preparation Tips:</h6>
-                            <ul class="list-unstyled">
+                            <h6 class="mb-2">Preparation Tips</h6>
+                            <ul class="list-unstyled mb-0">
                                 <li>• Please arrive 10 minutes early</li>
                                 <li>• Bring vaccination records</li>
                                 <li>• Inform us of any health issues</li>
-                                <li>• We'll call if we need to reschedule</li>
+                                <li>• We’ll call if we need to reschedule</li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -178,7 +211,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        // Round a Date to the next 15-minute mark
+        // Round a Date to next 15-min mark
         function roundToNextQuarter(d) {
             const ms = 1000 * 60 * 15;
             return new Date(Math.ceil(d.getTime() / ms) * ms);
@@ -212,9 +245,7 @@
                 dateInput.addEventListener('change', function () {
                     if (!dateInput.value) return;
                     const picked = new Date(dateInput.value);
-                    const minutes = picked.getMinutes();
-
-                    if (minutes % 15 !== 0) {
+                    if (picked.getMinutes() % 15 !== 0) {
                         alert("Appointments are only available in 15-minute slots (:00, :15, :30, :45). We adjusted your time to the nearest slot.");
                         const aligned = roundToNextQuarter(picked);
                         const alignedLocal = new Date(aligned.getTime() - (aligned.getTimezoneOffset() * 60000));
@@ -223,7 +254,7 @@
                 });
             }
 
-            // "Other / Custom Request" UI
+            // Other / Custom Request UI
             const serviceSelect = document.getElementById('ServiceId');
             const otherHelp = document.getElementById('otherHelp');
             const notes = document.getElementById('Notes');

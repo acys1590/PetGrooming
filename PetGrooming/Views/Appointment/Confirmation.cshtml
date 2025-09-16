@@ -9,94 +9,109 @@
     ViewData["Title"] = "Appointment Confirmation";
 }
 
-<div class="container mt-5 mb-4">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <!-- Neutral header (no success unless TempData is set by payment) -->
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0">
-                        <i class="fas fa-calendar-check"></i> Appointment Created
-                    </h3>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted">
-                        Your appointment has been created. Please proceed to payment to confirm your booking.
-                    </p>
+<style>
+    .ribbon {
+        background: linear-gradient(135deg, rgba(13,110,253,.12), rgba(102,16,242,.12));
+        border-radius: 1rem 1rem 0 0;
+    }
 
-                    <div class="row">
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        padding: .35rem .7rem;
+        border-radius: 999px;
+        background: rgba(13,110,253,.12);
+        color: #0d6efd;
+        font-weight: 600;
+    }
+
+    [data-bs-theme="dark"] .pill {
+        background: rgba(13,110,253,.18);
+    }
+
+    .summary-card {
+        border-radius: .9rem;
+        border: 1px solid rgba(0,0,0,.05);
+    }
+</style>
+
+<div class="container my-4 my-md-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card shadow-sm summary-card">
+                <div class="ribbon p-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-primary rounded-circle p-3"><i class="fas fa-calendar-check"></i></span>
+                            <div>
+                                <h3 class="mb-0">Appointment Created</h3>
+                                <small class="text-secondary">Please proceed to payment to confirm your booking.</small>
+                            </div>
+                        </div>
+                        <span class="pill"><i class="fa-solid fa-circle-exclamation"></i> Pending Payment</span>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <div class="row g-4">
                         <div class="col-md-6">
-                            <h5 class="text-primary">Pet Owner Information</h5>
-                            <table class="table table-borderless">
-                                <tr>
-                                    <td><strong>Name:</strong></td>
-                                    <td>@Model.OwnerName</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Email:</strong></td>
-                                    <td>@Model.Email</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Phone:</strong></td>
-                                    <td>@Model.PhoneNumber</td>
-                                </tr>
+                            <h5 class="text-primary mb-3"><i class="fa-solid fa-user me-2"></i>Pet Owner</h5>
+                            <table class="table table-borderless mb-0">
+                                <tr><td class="text-secondary">Name</td><td class="fw-semibold">@Model.OwnerName</td></tr>
+                                <tr><td class="text-secondary">Email</td><td class="fw-semibold">@Model.Email</td></tr>
+                                <tr><td class="text-secondary">Phone</td><td class="fw-semibold">@Model.PhoneNumber</td></tr>
                             </table>
                         </div>
+
                         <div class="col-md-6">
-                            <h5 class="text-primary">Pet & Service</h5>
-                            <table class="table table-borderless">
-                                <tr>
-                                    <td><strong>Pet Name:</strong></td>
-                                    <td>@Model.PetName</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Pet Type:</strong></td>
-                                    <td>@Model.PetType</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Service:</strong></td>
-                                    <td>@Model.Service?.Name</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Price:</strong></td>
-                                    <td>RM @Model.Service?.Price.ToString("0.00")</td>
-                                </tr>
+                            <h5 class="text-primary mb-3"><i class="fa-solid fa-paw me-2"></i>Pet & Service</h5>
+                            <table class="table table-borderless mb-0">
+                                <tr><td class="text-secondary">Pet Name</td><td class="fw-semibold">@Model.PetName</td></tr>
+                                <tr><td class="text-secondary">Pet Type</td><td class="fw-semibold">@Model.PetType</td></tr>
+                                <tr><td class="text-secondary">Service</td><td class="fw-semibold">@Model.Service?.Name</td></tr>
+                                <tr><td class="text-secondary">Price</td><td class="fw-bold text-primary">RM @Model.Service?.Price.ToString("0.00")</td></tr>
                             </table>
                         </div>
                     </div>
 
-                    <hr />
+                    <hr class="my-4" />
 
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h5 class="text-primary">Appointment Schedule</h5>
-                            <div class="d-flex align-items-center mb-3">
-                                <i class="fas fa-calendar-alt text-primary me-2" style="font-size: 1.5rem;"></i>
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <h5 class="text-primary mb-3"><i class="fa-solid fa-clock me-2"></i>Schedule</h5>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-calendar-alt text-primary me-3" style="font-size:1.75rem;"></i>
                                 <div>
-                                    <strong>Date & Time:</strong><br />
-                                    <span class="fs-5">@Model.AppointmentDate.ToString("dddd, MMMM dd, yyyy")</span><br />
-                                    <span class="fs-5">@Model.AppointmentDate.ToString("h:mm tt")</span>
+                                    <div class="fw-semibold fs-5">@Model.AppointmentDate.ToString("dddd, MMMM dd, yyyy")</div>
+                                    <div class="text-secondary fs-6">@Model.AppointmentDate.ToString("h:mm tt")</div>
                                 </div>
                             </div>
+                        </div>
 
-                            @if (!string.IsNullOrEmpty(Model.Notes))
-                            {
-                                <h5 class="text-primary">Special Notes</h5>
-                                <div class="alert alert-light">
+                        @if (!string.IsNullOrWhiteSpace(Model.Notes))
+                        {
+                            <div class="col-12">
+                                <h5 class="text-primary mb-2"><i class="fa-solid fa-note-sticky me-2"></i>Special Notes</h5>
+                                <div class="alert alert-secondary mb-0">
                                     @Model.Notes
                                 </div>
-                            }
-                        </div>
+                            </div>
+                        }
                     </div>
 
-                    <div class="text-center mt-4 mb-3">
-                        <a asp-controller="Appointment" asp-action="Pay" asp-route-id="@Model.Id" class="btn btn-success">
+                    <div class="d-flex flex-wrap gap-2 justify-content-center mt-4">
+                        <a asp-controller="Appointment" asp-action="Pay" asp-route-id="@Model.Id" class="btn btn-success btn-lg">
                             <i class="fas fa-credit-card"></i> Proceed to Payment
+                        </a>
+                        <a asp-controller="Appointment" asp-action="Create" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-plus"></i> New Booking
                         </a>
                     </div>
 
-                    <div class="alert alert-info mt-3">
-                        <i class="fas fa-info-circle"></i> You will see a success message here only after payment is completed.
+                    <div class="alert alert-info mt-4 mb-0">
+                        <i class="fas fa-info-circle me-1"></i>
+                        A success message will only appear here after payment is completed.
                     </div>
                 </div>
             </div>

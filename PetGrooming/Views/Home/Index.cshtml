@@ -6,6 +6,47 @@
     ViewData["Title"] = "Dashboard";
 }
 
+<!-- Slim page styles to match main site's rounded/shadowed cards -->
+<style>
+    .page-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: .5rem;
+        margin-bottom: 1rem
+    }
+
+    .card {
+        border: 0;
+        border-radius: 1rem;
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.08)
+    }
+
+    .card-header {
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem
+    }
+    /* Keep your existing bg-* colors; just improve dark mode surfaces a bit */
+    [data-bs-theme="dark"] .card:not(.text-white) {
+        background: #1f1f1f
+    }
+</style>
+
+<!-- Toolbar: Theme toggle + Language switch (EN/BM) -->
+<div class="page-toolbar">
+    <button id="themeToggle" class="btn btn-outline-secondary btn-sm" title="Toggle theme">
+        <i class="fas fa-moon"></i><span class="d-none d-md-inline ms-1">Theme</span>
+    </button>
+
+    <form asp-controller="Localization" asp-action="SetLanguage" method="post" class="d-inline">
+        <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+        <select id="adminCulture" name="culture" class="form-select form-select-sm" style="width:auto" onchange="this.form.submit()">
+            <option value="en-US">EN</option>
+            <option value="ms-MY">BM</option>
+        </select>
+    </form>
+</div>
+
 <div class="row mb-4">
     <div class="col-md-12">
         <h1><i class="fas fa-tachometer-alt"></i> Pet Grooming Dashboard</h1>
@@ -43,37 +84,37 @@
             </div>
         </div>
     </div>
- <div class="col-md-3">
-    <div class="card text-white bg-warning">
-        <div class="card-body">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <h4 class="card-title">@ViewBag.PetsWithEmployees</h4>
-                    <p class="card-text">Assigned Pets</p>
-                </div>
-                <div class="align-self-center">
-                    <i class="fas fa-check fa-2x"></i>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">@ViewBag.PetsWithEmployees</h4>
+                        <p class="card-text">Assigned Pets</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check fa-2x"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="col-md-3">
-    <div class="card text-white bg-danger">
-        <div class="card-body">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <h4 class="card-title">@ViewBag.PetsWithoutEmployees</h4>
-                    <p class="card-text">Unassigned Pets</p>
-                </div>
-                <div class="align-self-center">
-                    <i class="fas fa-times fa-2x"></i>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">@ViewBag.PetsWithoutEmployees</h4>
+                        <p class="card-text">Unassigned Pets</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-times fa-2x"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
- </div>
 </div>
 
 
@@ -117,9 +158,36 @@
             }
         });
     </script>
+
+    <!-- Theme + language (persists like customer side) -->
+    <script>
+        (function () {
+          const root = document.documentElement;
+          const saved = localStorage.getItem('theme') || 'light';
+          root.setAttribute('data-bs-theme', saved);
+
+          const btn = document.getElementById('themeToggle');
+          function setIcon() {
+            if (!btn) return;
+            btn.innerHTML = (root.getAttribute('data-bs-theme') === 'dark')
+              ? '<i class="fas fa-sun"></i><span class="d-none d-md-inline ms-1">Theme</span>'
+              : '<i class="fas fa-moon"></i><span class="d-none d-md-inline ms-1">Theme</span>';
+          }
+          setIcon();
+          if (btn) {
+            btn.addEventListener('click', function () {
+              const next = root.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+              root.setAttribute('data-bs-theme', next);
+              localStorage.setItem('theme', next);
+              setIcon();
+            });
+          }
+
+          // Set language dropdown to current culture
+          const ddl = document.getElementById('adminCulture');
+          if (ddl) {
+            ddl.value = "@System.Threading.Thread.CurrentThread.CurrentUICulture.Name";
+          }
+        })();
+    </script>
 }
-
-
-
-
-
