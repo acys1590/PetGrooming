@@ -115,4 +115,62 @@
 	<data name="Hours Label">
 		<value>Hours:</value>
 	</data>
+
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+	</resheader>
+
+	<data name="WelcomeTitle">
+		<value>Welcome to Pawsome Pet Grooming</value>
+	</data>
+	<data name="WelcomeTagline">
+		<value>Professional pet grooming services for your beloved companions</value>
+	</data>
+	<data name="HeroTitle">
+		<value>Your Pet Deserves the Best Care</value>
+	</data>
+	<data name="HeroBody">
+		<value>We provide professional grooming services with love and care for dogs, cats, and other small pets. Our experienced groomers ensure your pet looks and feels their best.</value>
+	</data>
+	<data name="BookAppointment">
+		<value>Book Appointment</value>
+	</data>
+	<data name="OurServices">
+		<value>Our Services</value>
+	</data>
+	<data name="OurServicesTitle">
+		<value>Our Services</value>
+	</data>
+
+	<data name="WhyChooseTitle">
+		<value>Why Choose Pawsome Pet Grooming?</value>
+	</data>
+	<data name="Experienced">
+		<value>Experienced and certified pet groomers</value>
+	</data>
+	<data name="Safe">
+		<value>Safe and comfortable environment</value>
+	</data>
+	<data name="Products">
+		<value>High-quality grooming products</value>
+	</data>
+	<data name="Personalized">
+		<value>Personalized care for each pet</value>
+	</data>
+	<data name="Pricing">
+		<value>Competitive pricing</value>
+	</data>
+	<data name="Scheduling">
+		<value>Flexible scheduling</value>
+	</data>
+	
 </root>

@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
     Layout = "Main_Layout";
     ViewData["Title"] = "Main Page";
 }
@@ -38,7 +40,7 @@
                         <div class="service-icon mb-3" style="font-size: 3rem;">✂️</div>
                         <h5 class="card-title">Full Grooming</h5>
                         <p class="card-text">Complete grooming package including bath, haircut, nail trim, and ear cleaning.</p>
-                        <p class="text-primary fw-bold">Starting at $80</p>
+                        <p class="text-primary fw-bold">Starting at RM80</p>
                     </div>
                 </div>
             </div>
@@ -48,7 +50,7 @@
                         <div class="service-icon mb-3" style="font-size: 3rem;">🛁</div>
                         <h5 class="card-title">Bath & Basic Care</h5>
                         <p class="card-text">Refreshing bath with premium shampoo, basic brushing, and nail trim.</p>
-                        <p class="text-primary fw-bold">Starting at $40</p>
+                        <p class="text-primary fw-bold">Starting at RM40</p>
                     </div>
                 </div>
             </div>
@@ -58,7 +60,7 @@
                         <div class="service-icon mb-3" style="font-size: 3rem;">💅</div>
                         <h5 class="card-title">Nail & Dental Care</h5>
                         <p class="card-text">Nail trimming, teeth cleaning, and general health maintenance.</p>
-                        <p class="text-primary fw-bold">Starting at $30</p>
+                        <p class="text-primary fw-bold">Starting at RM30</p>
                     </div>
                 </div>
             </div>
@@ -66,37 +68,95 @@
     </div>
 </section>
 
-<section class="bg-light py-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <h3>Why Choose Pawsome Pet Grooming?</h3>
-                <ul class="list-unstyled">
-                    <li class="mb-2">✅ Experienced and certified pet groomers</li>
-                    <li class="mb-2">✅ Safe and comfortable environment</li>
-                    <li class="mb-2">✅ High-quality grooming products</li>
-                    <li class="mb-2">✅ Personalized care for each pet</li>
-                    <li class="mb-2">✅ Competitive pricing</li>
-                    <li class="mb-2">✅ Flexible scheduling</li>
-                </ul>
+<!-- Why Choose (self-contained styles) -->
+<section class="py-5 bg-body-tertiary">
+  <style>
+    .why-card{border-radius:1rem}
+    .why-badge{width:56px;height:56px;display:grid;place-items:center;border-radius:14px;background:rgba(13,110,253,.12);color:#0d6efd;font-size:1.25rem}
+    .feature-icon{width:40px;height:40px;display:grid;place-items:center;background:rgba(13,110,253,.12);color:#0d6efd;flex:0 0 40px;border-radius:.5rem}
+    .feature-item{padding:.25rem 0}
+    [data-bs-theme="dark"] .why-badge,[data-bs-theme="dark"] .feature-icon{background:rgba(13,110,253,.15)}
+  </style>
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card why-card shadow-sm border-0">
+          <div class="card-body p-4 p-md-5">
+
+            <div class="text-center mb-4">
+              <div class="why-badge mx-auto mb-3">
+                <i class="fa-solid fa-paw"></i>
+              </div>
+              <h2 class="fw-bold mb-2">Why Choose Pawsome Pet Grooming?</h2>
+              <p class="text-secondary mb-0">We focus on safety, comfort, and results your pet will love.</p>
             </div>
-            <div class="col-md-6">
-                <h3>Contact Information</h3>
-                <div class="contact-info">
-                    <p><strong>📍 Address:</strong>9094 Jalan Genting Kelang 51000 Kuala Lumpur Federal Territory of Kuala Lumpur</p>
-                    <p><strong>📞 Phone:</strong> 011 777 8888</p>
-                    <p><strong>📧 Email:</strong> info@pawsomegrooming.com</p>
-                    <p><strong>🕐 Hours:</strong></p>
-                    <ul class="list-unstyled ms-3">
-                        <li>Mon-Fri: 8:00 AM - 6:00 PM</li>
-                        <li>Saturday: 9:00 AM - 4:00 PM</li>
-                        <li>Sunday: Closed</li>
-                    </ul>
+
+            <!-- 2-column features on md+, 1 column on mobile -->
+            <div class="row g-3 g-md-4">
+              <div class="col-md-6">
+                <div class="d-flex align-items-start gap-3 feature-item">
+                  <span class="feature-icon"><i class="fa-solid fa-badge-check"></i></span>
+                  <div>
+                    <h6 class="mb-1">Experienced & certified groomers</h6>
+                    <small class="text-secondary">Handled by trained professionals.</small>
+                  </div>
                 </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-start gap-3 feature-item">
+                  <span class="feature-icon"><i class="fa-solid fa-shield-dog"></i></span>
+                  <div>
+                    <h6 class="mb-1">Safe, comfortable environment</h6>
+                    <small class="text-secondary">Clean facilities & gentle handling.</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-start gap-3 feature-item">
+                  <span class="feature-icon"><i class="fa-solid fa-soap"></i></span>
+                  <div>
+                    <h6 class="mb-1">High-quality products</h6>
+                    <small class="text-secondary">Pet-friendly shampoos & tools.</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-start gap-3 feature-item">
+                  <span class="feature-icon"><i class="fa-solid fa-heart"></i></span>
+                  <div>
+                    <h6 class="mb-1">Personalized care</h6>
+                    <small class="text-secondary">Tailored to your pet’s needs.</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-start gap-3 feature-item">
+                  <span class="feature-icon"><i class="fa-solid fa-tags"></i></span>
+                  <div>
+                    <h6 class="mb-1">Competitive pricing</h6>
+                    <small class="text-secondary">Clear, fair rates—no surprises.</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-start gap-3 feature-item">
+                  <span class="feature-icon"><i class="fa-solid fa-clock"></i></span>
+                  <div>
+                    <h6 class="mb-1">Flexible scheduling</h6>
+                    <small class="text-secondary">Convenient time slots.</small>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </section>
+
+
 
 <div class="text-center mt-5">
     <h3>Ready to pamper your pet?</h3>

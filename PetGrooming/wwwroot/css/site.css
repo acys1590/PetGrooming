@@ -273,21 +273,73 @@ html[data-bs-theme="dark"] .ratio > iframe {
     background-color: #141a20;
     color: #e9eef3;
 }
-/* ===== Footer adjustments ===== */
-footer {
-    font-size: 0.9rem; /* slightly smaller text */
-    padding: 1rem 0; /* reduce top/bottom padding */
+ 
+/* Footer look & sizing */
+.site-footer {
+    background-color: #1f2428; /* darker */
+    color: #f3f4f6;
+    padding: 28px 0; /* shorter than before */
+    border-top: 1px solid rgba(255,255,255,.06);
 }
 
-    footer h5, footer h6 {
-        font-size: 1rem; /* shrink headings */
+    .site-footer h5, .site-footer h6 {
+        color: #ffffff;
     }
 
-    footer p, footer a {
-        font-size: 0.85rem; /* shrink body & links */
+    .site-footer p, .site-footer li, .site-footer a {
+        color: #d9dde3;
     }
 
-    footer iframe {
-        max-height: 180px; /* shrink map height */
-        border-radius: 6px; /* keep rounded look */
+        .site-footer a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+    .site-footer .btn-outline-light {
+        --bs-btn-color: #e7eef7;
+        --bs-btn-border-color: #7d8aa1;
+        --bs-btn-hover-bg: #e7eef7;
+        --bs-btn-hover-color: #1f2428;
+        --bs-btn-hover-border-color: #e7eef7;
     }
+
+    /* Make the footer map shorter to reduce total height */
+    .site-footer .ratio {
+        max-width: 420px;
+        height: 200px;
+    }
+/* Why Choose block */
+.why-card {
+    border-radius: 1rem;
+}
+
+.why-badge {
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: var(--bs-primary-bg-subtle, rgba(13,110,253,.12));
+    color: var(--bs-primary, #0d6efd);
+    font-size: 1.25rem;
+}
+
+.feature-icon {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    background: var(--bs-primary-bg-subtle, rgba(13,110,253,.12));
+    color: var(--bs-primary, #0d6efd);
+    flex: 0 0 40px;
+}
+
+.feature-item {
+    padding: .25rem 0;
+}
+
+/* Dark mode support if you use data-bs-theme="dark" */
+[data-bs-theme="dark"] .why-badge,
+[data-bs-theme="dark"] .feature-icon {
+    background: rgba(13,110,253,.15);
+}

@@ -9,14 +9,14 @@ using System.Globalization;
 var builder = WebApplication.CreateBuilder(args);
 
 // ===== MVC + Localization =====
+builder.Services.AddLocalization();
+
 builder.Services
     .AddControllersWithViews()
     .AddViewLocalization()
     .AddDataAnnotationsLocalization();
 
-builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-
-// ===== EF Core (use your DefaultConnection only; removed duplicate) =====
+// ===== EF Core (DefaultConnection only) =====
 var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<DB>(opts => opts.UseSqlServer(conn));
 
@@ -25,10 +25,10 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession();
 builder.Services.AddScoped<HelperBase>();
 
-// ===== Email Sender (yours) =====
+// ===== Email Sender =====
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 
-// ===== Cookie Auth (yours) =====
+// ===== Cookie Authentication =====
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -39,12 +39,27 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 var app = builder.Build();
 
-// Ensure DB exists (your behavior)
+// ===== Ensure DB exists =====
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<DB>();
     context.Database.EnsureCreated();
 }
+
+// ===== Request Localization (EN + BM) =====
+var supportedCultures = new[]
+{
+    new CultureInfo("en-US"),
+    new CultureInfo("ms-MY")
+};
+
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture("en-US")
+    .AddSupportedCultures("en-US", "ms-MY")
+    .AddSupportedUICultures("en-US", "ms-MY");
+
+// Prefer cookie over Accept-Language
+localizationOptions.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider());
 
 // ===== Pipeline =====
 if (!app.Environment.IsDevelopment())
@@ -56,18 +71,10 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
-
-// ===== Request Localization (EN + BM) =====
-var localizationOptions = new RequestLocalizationOptions()
-    .SetDefaultCulture("en-US")
-    .AddSupportedCultures("en-US", "ms-MY")
-    .AddSupportedUICultures("en-US", "ms-MY");
-
-// Prefer culture from cookie first
-localizationOptions.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider());
-
+// 🚨 Move localization BEFORE routing
 app.UseRequestLocalization(localizationOptions);
+
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
