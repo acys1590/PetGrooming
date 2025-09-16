@@ -27,7 +27,6 @@
   <ItemGroup>
     <Folder Include="Migrations\" />
     <Folder Include="obj\" />
-    <Folder Include="Views\Customers\" />
     <Folder Include="Views\Staff\" />
   </ItemGroup>
 

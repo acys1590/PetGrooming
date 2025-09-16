@@ -55,6 +55,7 @@
         var checkbox = $(this);
         var petId = checkbox.data('id');
         var approved = checkbox.is(':checked');
+        var label = checkbox.closest('.form-check').find('.approval-status'); // find the label
 
         // If user is UNCHECKING (disapproving), confirm first
         if (!approved) {
@@ -73,7 +74,19 @@
             type: 'POST',
             data: { id: petId, approved: approved },
             success: function (response) {
-                showNotification(response.message, "success");
+                if (response.success) {
+                    // ✅ Update label immediately
+                    label.text(approved ? "Approved" : "Pending");
+
+                    // Optional: add Bootstrap colors
+                    label.removeClass("text-success text-danger")
+                        .addClass(approved ? "text-success" : "text-danger");
+
+                    showNotification(response.message, "success");
+                } else {
+                    showNotification(response.message, "danger");
+                    checkbox.prop('checked', !approved); // revert if failed
+                }
             },
             error: function () {
                 showNotification("❌ Something went wrong. Try again.", "danger");
@@ -85,6 +98,7 @@
             }
         });
     });
+
 
 
 });
