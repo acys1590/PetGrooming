@@ -234,6 +234,9 @@ public class User
     public string? Address { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public int? Age { get; set; }
+
+    public int FailedAttempts { get; set; } = 0;   // 连续失败次数
+    public bool IsLocked { get; set; } = false;
 }
 
 // Appointment model

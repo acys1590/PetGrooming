@@ -1,0 +1,49 @@
+﻿@model IEnumerable<PetGrooming.Models.User>
+
+<h2>User Management</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Failed Attempts</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@user.Role</td>
+                <td>@user.FailedAttempts</td>
+                <td>
+                    @if (user.IsLocked)
+                    {
+                        <span class="badge bg-danger">Locked</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                </td>
+                <td>
+                    @if (user.IsLocked)
+                    {
+                        <form asp-action="Unlock" asp-route-email="@user.Email" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-warning">
+                                <i class="fas fa-unlock"></i> Unlock
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="text-muted">—</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

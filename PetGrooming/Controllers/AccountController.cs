@@ -97,7 +97,6 @@ namespace PetGroomingSystem.Controllers
             if (!ModelState.IsValid)
                 return View(vm);
 
-            // 查找用户
             var user = db.Users.FirstOrDefault(x => x.Email == vm.Email);
             if (user == null)
             {
@@ -105,14 +104,37 @@ namespace PetGroomingSystem.Controllers
                 return View(vm);
             }
 
-            // 验证密码
-            var hasher = new PasswordHasher<User>();
-            var result = hasher.VerifyHashedPassword(user, user.PasswordHash, vm.Password);
-            if (result == PasswordVerificationResult.Failed)
+            // 检查是否被锁定
+            if (user.IsLocked)
             {
-                ModelState.AddModelError("", "Invalid email or password");
+                ModelState.AddModelError("", "Your account is locked. Please contact admin.");
                 return View(vm);
             }
+
+            var hasher = new PasswordHasher<User>();
+            var result = hasher.VerifyHashedPassword(user, user.PasswordHash, vm.Password);
+
+            if (result == PasswordVerificationResult.Failed)
+            {
+                user.FailedAttempts++;
+
+                if (user.FailedAttempts >= 3)
+                {
+                    user.IsLocked = true;
+                    ModelState.AddModelError("", "Your account has been locked after 3 failed attempts.");
+                }
+                else
+                {
+                    ModelState.AddModelError("", $"Invalid email or password. Attempt {user.FailedAttempts}/3");
+                }
+
+                db.SaveChanges();
+                return View(vm);
+            }
+
+            // ✅ 登录成功后重置失败次数
+            user.FailedAttempts = 0;
+            db.SaveChanges();
 
             // 建立 Claims
             var claims = new List<Claim>
@@ -124,29 +146,16 @@ namespace PetGroomingSystem.Controllers
             var identity = new ClaimsIdentity(claims, "Login");
             var principal = new ClaimsPrincipal(identity);
 
-            // 登录
             await HttpContext.SignInAsync(principal);
 
             // 根据角色跳转
-            switch (user.Role)
+            return user.Role switch
             {
-                case "Admin":
-                    return RedirectToAction("Index", "Admin");   // 管理员
-                case "Member":
-                    return RedirectToAction("Index", "Main");  // 会员
-                default:
-                    return RedirectToAction("Index", "Home");    // 默认
-            }
+                "Admin" => RedirectToAction("Index", "Admin"),
+                "Member" => RedirectToAction("Index", "Main"),
+                _ => RedirectToAction("Index", "Home"),
+            };
         }
-
-        [Authorize]
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync();
-            TempData["Info"] = "You have been logged out.";
-            return RedirectToAction("Login");
-        }
-
         #endregion
 
 

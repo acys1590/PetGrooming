@@ -74,21 +74,28 @@ namespace PetGroomingSystem.Models.ViewModels
         [Required, MaxLength(100)]
         public string Name { get; set; } = string.Empty;
 
-        // ⚡ 改为 string? 来接收 Base64
+        // 用于接收裁剪后的 Base64 图片
         public string? Photo { get; set; }
-
         public string? PhotoURL { get; set; }
 
-        // Modal 修改密码
+        // 修改密码相关
         [DataType(DataType.Password)]
         public string? CurrentPassword { get; set; }
 
         [DataType(DataType.Password)]
+        [StringLength(100, MinimumLength = 5, ErrorMessage = "New password must be at least 5 characters.")]
         public string? NewPassword { get; set; }
+
+        [DataType(DataType.Password)]
+        [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+        public string? ConfirmPassword { get; set; }
+
+        // 其他资料
         public string? Address { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public int? Age { get; set; }
     }
+
 
 
 
