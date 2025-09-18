@@ -7,7 +7,6 @@
         <tr>
             <th>Email</th>
             <th>Role</th>
-            <th>Failed Attempts</th>
             <th>Status</th>
             <th>Action</th>
         </tr>
@@ -18,7 +17,6 @@
             <tr>
                 <td>@user.Email</td>
                 <td>@user.Role</td>
-                <td>@user.FailedAttempts</td>
                 <td>
                     @if (user.IsLocked)
                     {

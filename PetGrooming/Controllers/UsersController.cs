@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using PetGrooming.Models;   // 注意这里是 PetGrooming.Models (因为 DB 在这个 namespace)
 
-[Authorize(Roles = "Admin")]
+//[Authorize(Roles = "Admin")]
+[AllowAnonymous]
 public class UsersController : Controller
 {
     private readonly DB _context;

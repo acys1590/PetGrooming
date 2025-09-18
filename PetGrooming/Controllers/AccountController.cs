@@ -156,6 +156,14 @@ namespace PetGroomingSystem.Controllers
                 _ => RedirectToAction("Index", "Home"),
             };
         }
+
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            TempData["Info"] = "You have been logged out.";
+            return RedirectToAction("Login");
+        }
         #endregion
 
 
